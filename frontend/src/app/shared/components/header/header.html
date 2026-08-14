@@ -1,0 +1,11 @@
+<header class="header">
+  <button
+    class="toggle-button"
+    type="button"
+    aria-controls="mobile-navigation"
+    [attr.aria-expanded]="isNavigationOpen().toString()"
+    (click)="toggleNavigation()"
+  >
+    {{ isNavigationOpen() ? 'Close navigation' : 'Open navigation' }}
+  </button>
+</header>

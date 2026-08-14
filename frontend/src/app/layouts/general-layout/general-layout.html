@@ -1,0 +1,12 @@
+<app-sidebar />
+
+<main class="app-content">
+  <app-header
+    [isNavigationOpen]="isMobileNavigationOpen()"
+    (navigationToggled)="toggleMobileNavigation()"
+  />
+
+  <app-mobile-navigation [isOpen]="isMobileNavigationOpen()" />
+
+  <router-outlet />
+</main>

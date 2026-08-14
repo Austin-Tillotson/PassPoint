@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.header {
+  height: 4rem;
+  border-bottom: 1px solid;
+}
+
+.toggle-button {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  .toggle-button {
+    display: block;
+    margin: 1rem;
+  }
+}

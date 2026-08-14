@@ -1,0 +1,16 @@
+<main>
+  <button type="button" (click)="addPasswordDialog.open()">
+    Add password
+  </button>
+
+  <app-add-password-dialog
+    #addPasswordDialog
+    (passwordAdded)="addPasswordEntry($event)"
+  />
+
+  <section class="password-grid">
+    @for (entry of passwordEntries(); track entry.id) {
+      <app-password-card [siteName]="entry.siteName" />
+    }
+  </section>
+</main>

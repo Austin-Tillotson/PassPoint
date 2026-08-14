@@ -1,0 +1,21 @@
+:host {
+  display: none;
+}
+
+.sidebar {
+  display: grid;
+  min-height: 100%;
+  padding: 1rem;
+  border-right: 1px solid;
+}
+
+@media (min-width: 48.0625rem) {
+  :host {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16rem;
+    height: 100dvh;
+  }
+}

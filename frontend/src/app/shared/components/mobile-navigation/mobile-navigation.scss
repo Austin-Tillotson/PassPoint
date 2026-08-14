@@ -1,0 +1,25 @@
+:host {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  :host {
+    display: block;
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .mobile-navigation {
+    display: none;
+    padding: 1rem;
+    border-bottom: 1px solid;
+    background-color: white;
+  }
+
+  .mobile-navigation.is-open {
+    display: grid;
+  }
+}

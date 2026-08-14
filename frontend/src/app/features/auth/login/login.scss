@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+}
+
+form {
+  display: grid;
+}
+
+.form-field {
+  display: grid;
+  margin-bottom: 1rem;
+}

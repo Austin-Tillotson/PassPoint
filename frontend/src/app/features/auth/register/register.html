@@ -1,0 +1,39 @@
+<main class="register-page">
+  <app-card>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="confirm-password">Confirm password</label>
+        <input
+          id="confirm-password"
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <button type="submit">Create account</button>
+    </form>
+
+    <p><a routerLink="/login">Sign in</a></p>
+  </app-card>
+</main>

@@ -1,0 +1,29 @@
+<main class="login-page">
+  <app-card>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p><a routerLink="/register">Create an account</a></p>
+  </app-card>
+</main>

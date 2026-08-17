@@ -21,7 +21,13 @@
         />
       </div>
 
-      <button type="submit">Sign in</button>
+      @if (errorMessage()) {
+        <p role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
+      </button>
     </form>
 
     <p><a routerLink="/register">Create an account</a></p>

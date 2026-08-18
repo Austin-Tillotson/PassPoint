@@ -22,4 +22,16 @@ export class PasswordEntriesService {
       withCredentials: true,
     });
   }
+
+  update(id: string, entry: NewPasswordEntry): Observable<PasswordEntry> {
+    return this.http.put<PasswordEntry>(`${this.apiUrl}/${id}`, entry, {
+      withCredentials: true,
+    });
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      withCredentials: true,
+    });
+  }
 }

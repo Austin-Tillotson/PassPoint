@@ -25,11 +25,41 @@ export class Dashboard implements OnInit {
     });
   }
 
-  protected addPasswordEntry(entry: PasswordEntry): void {
-    this.passwordEntries.update((entries) =>
-      [...entries, entry].sort((first, second) =>
+  protected savePasswordEntry(savedEntry: PasswordEntry): void {
+    this.passwordEntries.update((entries) => {
+      const exists = entries.some((entry) => entry.id === savedEntry.id);
+
+      const updatedEntries = exists
+        ? entries.map((entry) =>
+            entry.id === savedEntry.id ? savedEntry : entry,
+          )
+        : [...entries, savedEntry];
+
+      return updatedEntries.sort((first, second) =>
         first.siteName.localeCompare(second.siteName),
-      ),
+      );
+    });
+  }
+
+  protected deletePasswordEntry(entry: PasswordEntry): void {
+    const shouldDelete = window.confirm(
+      `Delete the password entry for ${entry.siteName}?`,
     );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    this.errorMessage.set(null);
+
+    this.passwordEntriesService.delete(entry.id).subscribe({
+      next: () => {
+        this.passwordEntries.update((entries) =>
+          entries.filter((currentEntry) => currentEntry.id !== entry.id),
+        );
+      },
+      error: () =>
+        this.errorMessage.set('Unable to delete the password entry.'),
+    });
   }
 }

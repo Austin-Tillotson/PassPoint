@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 import { Card } from '../../../../shared/components/card/card';
 
@@ -11,4 +11,7 @@ import { Card } from '../../../../shared/components/card/card';
 export class PasswordCard {
   readonly siteName = input.required<string>();
   readonly password = input.required<string>();
+
+  readonly editRequested = output<void>();
+  readonly deleteRequested = output<void>();
 }

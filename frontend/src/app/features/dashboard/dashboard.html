@@ -1,5 +1,5 @@
 <main>
-  <button type="button" (click)="addPasswordDialog.open()">
+  <button type="button" (click)="passwordDialog.open()">
     Add password
   </button>
 
@@ -8,8 +8,8 @@
   }
 
   <app-add-password-dialog
-    #addPasswordDialog
-    (passwordAdded)="addPasswordEntry($event)"
+    #passwordDialog
+    (passwordSaved)="savePasswordEntry($event)"
   />
 
   <section class="password-grid">
@@ -17,6 +17,8 @@
       <app-password-card
         [siteName]="entry.siteName"
         [password]="entry.password"
+        (editRequested)="passwordDialog.open(entry)"
+        (deleteRequested)="deletePasswordEntry(entry)"
       />
     }
   </section>

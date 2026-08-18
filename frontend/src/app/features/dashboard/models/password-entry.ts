@@ -1,7 +1,8 @@
 export interface PasswordEntry {
-  id: number;
+  id: string;
   siteName: string;
   password: string;
+  createdAtUtc: string;
 }
 
-export type NewPasswordEntry = Omit<PasswordEntry, 'id'>;
+export type NewPasswordEntry = Pick<PasswordEntry, 'siteName' | 'password'>;

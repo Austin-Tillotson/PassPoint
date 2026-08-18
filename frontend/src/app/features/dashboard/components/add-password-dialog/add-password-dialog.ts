@@ -17,8 +17,9 @@ export class AddPasswordDialog {
   private readonly dialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
-  public readonly passwordAdded = output<PasswordEntry>();
+  public readonly passwordSaved = output<PasswordEntry>();
 
+  protected readonly editingEntry = signal<PasswordEntry | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isSubmitting = signal(false);
 
@@ -33,9 +34,15 @@ export class AddPasswordDialog {
     }),
   });
 
-  public open(): void {
-    this.passwordForm.reset();
+  public open(entry?: PasswordEntry): void {
+    this.editingEntry.set(entry ?? null);
     this.errorMessage.set(null);
+
+    this.passwordForm.reset({
+      siteName: entry?.siteName ?? '',
+      password: entry?.password ?? '',
+    });
+
     this.dialog().nativeElement.showModal();
   }
 
@@ -45,19 +52,29 @@ export class AddPasswordDialog {
       return;
     }
 
+    const editingEntry = this.editingEntry();
+    const passwordEntry = this.passwordForm.getRawValue();
+
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
-    this.passwordEntriesService
-      .create(this.passwordForm.getRawValue())
+    const request = editingEntry
+      ? this.passwordEntriesService.update(editingEntry.id, passwordEntry)
+      : this.passwordEntriesService.create(passwordEntry);
+
+    request
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (entry) => {
-          this.passwordAdded.emit(entry);
+          this.passwordSaved.emit(entry);
           this.dialog().nativeElement.close();
         },
         error: () => {
-          this.errorMessage.set('Unable to add the password. Please try again.');
+          this.errorMessage.set(
+            editingEntry
+              ? 'Unable to update the password. Please try again.'
+              : 'Unable to add the password. Please try again.',
+          );
         },
       });
   }

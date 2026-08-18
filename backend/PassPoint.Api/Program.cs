@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PassPoint.Api.Data;
 using PassPoint.Api.Models;
+using PassPoint.Api.Services;
 
 const string frontendCorsPolicy = "Frontend";
 
@@ -37,6 +38,9 @@ builder.Services
         options.Password.RequireNonAlphanumeric = false;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddDataProtection();
+builder.Services.AddSingleton<IPasswordProtector, PasswordProtector>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();

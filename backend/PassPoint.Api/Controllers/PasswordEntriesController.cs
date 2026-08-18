@@ -103,12 +103,74 @@ public class PasswordEntriesController : ControllerBase
         _context.PasswordEntries.Add(entry);
         await _context.SaveChangesAsync();
 
-        var response = ToResponse(entry);
-
         return CreatedAtAction(nameof(GetById), new
         {
             id = entry.Id
-        }, response);
+        }, ToResponse(entry));
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<PasswordEntryResponse>> Update(
+        Guid id,
+        UpdatePasswordEntryRequest request)
+    {
+        var userId = _userManager.GetUserId(User);
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var entry = await _context.PasswordEntries
+            .SingleOrDefaultAsync(entry =>
+                entry.Id == id && entry.UserId == userId);
+
+        if (entry is null)
+        {
+            return NotFound();
+        }
+
+        var siteName = request.SiteName.Trim();
+
+        if (string.IsNullOrWhiteSpace(siteName))
+        {
+            return BadRequest(new
+            {
+                message = "Site name is required."
+            });
+        }
+
+        entry.SiteName = siteName;
+        entry.EncryptedPassword = _passwordProtector.Protect(request.Password);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(ToResponse(entry));
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var userId = _userManager.GetUserId(User);
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var entry = await _context.PasswordEntries
+            .SingleOrDefaultAsync(entry =>
+                entry.Id == id && entry.UserId == userId);
+
+        if (entry is null)
+        {
+            return NotFound();
+        }
+
+        _context.PasswordEntries.Remove(entry);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     private PasswordEntryResponse ToResponse(PasswordEntry entry)

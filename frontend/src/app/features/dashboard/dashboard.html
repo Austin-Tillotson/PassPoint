@@ -3,6 +3,10 @@
     Add password
   </button>
 
+  @if (errorMessage()) {
+    <p role="alert">{{ errorMessage() }}</p>
+  }
+
   <app-add-password-dialog
     #addPasswordDialog
     (passwordAdded)="addPasswordEntry($event)"

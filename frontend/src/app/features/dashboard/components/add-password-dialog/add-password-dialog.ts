@@ -1,7 +1,9 @@
-import { Component, ElementRef, output, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, output, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
 
-import type { NewPasswordEntry } from '../../models/password-entry';
+import type { PasswordEntry } from '../../models/password-entry';
+import { PasswordEntriesService } from '../../services/password-entries.service';
 
 @Component({
   selector: 'app-add-password-dialog',
@@ -9,12 +11,16 @@ import type { NewPasswordEntry } from '../../models/password-entry';
   templateUrl: './add-password-dialog.html',
   styleUrl: './add-password-dialog.scss',
 })
-
 export class AddPasswordDialog {
+  private readonly passwordEntriesService = inject(PasswordEntriesService);
+
   private readonly dialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
-  public readonly passwordAdded = output<NewPasswordEntry>();
+  public readonly passwordAdded = output<PasswordEntry>();
+
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly isSubmitting = signal(false);
 
   protected readonly passwordForm = new FormGroup({
     siteName: new FormControl('', {
@@ -29,6 +35,7 @@ export class AddPasswordDialog {
 
   public open(): void {
     this.passwordForm.reset();
+    this.errorMessage.set(null);
     this.dialog().nativeElement.showModal();
   }
 
@@ -38,17 +45,26 @@ export class AddPasswordDialog {
       return;
     }
 
-    this.passwordAdded.emit({
-      siteName: this.passwordForm.controls.siteName.value,
-      password: this.passwordForm.controls.password.value,
-    });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
 
-    this.dialog().nativeElement.close();
+    this.passwordEntriesService
+      .create(this.passwordForm.getRawValue())
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: (entry) => {
+          this.passwordAdded.emit(entry);
+          this.dialog().nativeElement.close();
+        },
+        error: () => {
+          this.errorMessage.set('Unable to add the password. Please try again.');
+        },
+      });
   }
 
   protected onBackdropClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) {
       this.dialog().nativeElement.close();
     }
-}
+  }
 }

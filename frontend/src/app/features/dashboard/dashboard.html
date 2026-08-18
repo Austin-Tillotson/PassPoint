@@ -14,7 +14,10 @@
 
   <section class="password-grid">
     @for (entry of passwordEntries(); track entry.id) {
-      <app-password-card [siteName]="entry.siteName" />
+      <app-password-card
+        [siteName]="entry.siteName"
+        [password]="entry.password"
+      />
     }
   </section>
 </main>

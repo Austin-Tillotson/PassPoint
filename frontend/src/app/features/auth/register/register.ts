@@ -6,10 +6,11 @@ import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { Card } from '../../../shared/components/card/card';
+import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
 
 @Component({
   selector: 'app-register',
-  imports: [Card, ReactiveFormsModule, RouterLink],
+  imports: [Card, FloatingInput, ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

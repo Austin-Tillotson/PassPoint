@@ -1,0 +1,14 @@
+<div class="floating-field">
+  <input
+    [id]="id()"
+    [type]="type()"
+    [value]="value()"
+    [disabled]="isDisabled()"
+    [autocomplete]="autocomplete()"
+    placeholder=" "
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  />
+
+  <label [for]="id()">{{ label() }}</label>
+</div>

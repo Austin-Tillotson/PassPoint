@@ -1,26 +1,22 @@
 <main class="auth-page">
   <app-card class="card--large card--no-radius card--full-width">
     <h1>Log into PassPoint</h1>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-field">
-        <input
-          id="username"
-          type="text"
-          formControlName="username"
-          autocomplete="username"
-          placeholder="Username"
-        />
-      </div>
 
-      <div class="form-field">
-        <input
-          id="password"
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <app-floating-input
+        id="username"
+        label="Username"
+        autocomplete="username"
+        formControlName="username"
+      />
+
+      <app-floating-input
+        id="password"
+        label="Password"
         type="password"
-          formControlName="password"
-          autocomplete="current-password"
-          placeholder="Password"
-        />
-      </div>
+        autocomplete="current-password"
+        formControlName="password"
+      />
 
       @if (errorMessage()) {
         <p role="alert">{{ errorMessage() }}</p>

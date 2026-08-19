@@ -1,36 +1,30 @@
 <main class="auth-page">
   <app-card class="card--large card--no-radius card--full-width">
     <h1>Create an account</h1>
+
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-field">
-        <input
-          id="username"
-          type="text"
-          formControlName="username"
-          autocomplete="username"
-          placeholder="Username"
-        />
-      </div>
+      <app-floating-input
+        id="username"
+        label="Username"
+        autocomplete="username"
+        formControlName="username"
+      />
 
-      <div class="form-field">
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          autocomplete="new-password"
-          placeholder="Password"
-        />
-      </div>
+      <app-floating-input
+        id="password"
+        label="Password"
+        type="password"
+        autocomplete="new-password"
+        formControlName="password"
+      />
 
-      <div class="form-field">
-        <input
-          id="confirm-password"
-          type="password"
-          formControlName="confirmPassword"
-          autocomplete="new-password"
-          placeholder="Confirm password"
-        />
-      </div>
+      <app-floating-input
+        id="confirm-password"
+        label="Confirm password"
+        type="password"
+        autocomplete="new-password"
+        formControlName="confirmPassword"
+      />
 
       @if (errorMessage()) {
         <p role="alert">{{ errorMessage() }}</p>

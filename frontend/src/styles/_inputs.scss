@@ -13,8 +13,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus,
 textarea:focus,
 select:focus {
   border-color: #aeb8c5;
-  outline: 2px solid #edf0f3;
-  outline-offset: 1px;
+  outline: none;
 }
 
 input::placeholder,

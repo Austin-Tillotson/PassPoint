@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.floating-field {
+  position: relative;
+}
+
+.floating-field label {
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  padding: 0 0.25rem;
+  color: #8b95a1;
+  background-color: #ffffff;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: 0.15s ease;
+}
+
+.floating-field input:focus + label,
+.floating-field input:not(:placeholder-shown) + label {
+  top: 0;
+  color: #f97316;
+  font-size: 0.75rem;
+  transform: translateY(-50%);
+}

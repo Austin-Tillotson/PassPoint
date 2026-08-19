@@ -2,12 +2,13 @@ import { Component, ElementRef, inject, output, signal, viewChild } from '@angul
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 
+import { FloatingInput } from '../../../../shared/components/floating-input/floating-input';
 import type { PasswordEntry } from '../../models/password-entry';
 import { PasswordEntriesService } from '../../services/password-entries.service';
 
 @Component({
   selector: 'app-add-password-dialog',
-  imports: [ReactiveFormsModule],
+  imports: [FloatingInput, ReactiveFormsModule],
   templateUrl: './add-password-dialog.html',
   styleUrl: './add-password-dialog.scss',
 })

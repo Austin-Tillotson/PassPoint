@@ -1,0 +1,24 @@
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  width: 100%;
+  padding: 1rem 0.875rem;
+  border: 1px solid #e1e5ea;
+  border-radius: 0.875rem;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color: #aeb8c5;
+  outline: 2px solid #edf0f3;
+  outline-offset: 1px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8b95a1;
+  opacity: 1;
+}

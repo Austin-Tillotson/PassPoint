@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.auth-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  --auth-action-color: #fb923c;
+  --auth-action-hover-color: #f97316;
+}
+
+.auth-page form {
+  display: grid;
+}
+
+.auth-page .form-field {
+  display: grid;
+  margin-bottom: 1rem;
+}
+
+.auth-page h1 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.auth-page form + p {
+  margin: 3rem 0 0;
+}

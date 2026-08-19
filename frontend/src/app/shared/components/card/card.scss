@@ -10,6 +10,20 @@
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 
+.card__content {
+  width: 100%;
+  max-width: 35rem;
+  margin-inline: auto;
+}
+
 :host(.card--large) .card {
   padding: 5rem;
+}
+
+:host(.card--no-radius) .card {
+  border-radius: 0;
+}
+
+:host(.card--full-width) {
+  width: 100%;
 }

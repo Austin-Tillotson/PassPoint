@@ -1,18 +1,1 @@
-:host {
-  display: block;
-}
-
-.register-page {
-  display: grid;
-  min-height: 100dvh;
-  place-items: center;
-}
-
-form {
-  display: grid;
-}
-
-.form-field {
-  display: grid;
-  margin-bottom: 1rem;
-}
+@use '../auth-page';

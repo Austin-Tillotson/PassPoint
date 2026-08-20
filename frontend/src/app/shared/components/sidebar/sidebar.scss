@@ -4,18 +4,26 @@
 
 .sidebar {
   display: grid;
+  align-content: start;
   min-height: 100%;
-  padding: 1rem;
-  border-right: 1px solid;
+  padding: 1.25rem 0.875rem;
+  box-sizing: border-box;
+  border-right: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.sidebar__brand {
+  margin: 0 0 5rem;
+  color: #f97316;
+  font-size: 1.35rem;
+  font-weight: 700;
 }
 
 @media (min-width: 48.0625rem) {
   :host {
     display: block;
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0 auto 0 0;
     width: 16rem;
-    height: 100dvh;
   }
 }

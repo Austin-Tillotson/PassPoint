@@ -1,20 +1,38 @@
 <nav aria-label="Main navigation">
   <section class="navigation-section">
     <h2>Overview</h2>
+
     <ul>
-      <li><a routerLink="/dashboard">Dashboard</a></li>
+      <li>
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Dashboard
+        </a>
+      </li>
     </ul>
   </section>
 
   <section class="navigation-section">
     <h2>Tools</h2>
+
     <ul>
-      <li><a routerLink="/password-generator">Password generator</a></li>
+      <li>
+        <a
+          routerLink="/password-generator"
+          routerLinkActive="is-active"
+        >
+          Password generator
+        </a>
+      </li>
     </ul>
   </section>
 
   <section class="navigation-section">
     <h2>Account</h2>
+
     <ul>
       <li><a href="#!" (click)="$event.preventDefault()">Profile</a></li>
       <li><a href="#!" (click)="$event.preventDefault()">Settings</a></li>

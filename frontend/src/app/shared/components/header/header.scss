@@ -8,12 +8,12 @@
 }
 
 .toggle-button {
-  display: none;
+  display: block;
+  margin: 1rem;
 }
 
-@media (max-width: 48rem) {
+@media (min-width: 48.0625rem) {
   .toggle-button {
-    display: block;
-    margin: 1rem;
+    display: none;
   }
 }

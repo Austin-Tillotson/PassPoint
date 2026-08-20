@@ -1,13 +1,17 @@
 import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {
+  faBars,
+  faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { FloatingInput } from '../floating-input/floating-input';
 
 @Component({
   selector: 'app-header',
-  imports: [FloatingInput, ReactiveFormsModule],
+  imports: [FaIconComponent, FloatingInput, ReactiveFormsModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -26,6 +30,7 @@ export class Header implements OnInit {
     () => this.username()?.charAt(0).toUpperCase() ?? '?',
   );
 
+  protected readonly faBars = faBars;
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
 
   ngOnInit(): void {

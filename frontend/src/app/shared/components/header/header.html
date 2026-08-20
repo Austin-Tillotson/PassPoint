@@ -1,14 +1,4 @@
 <header class="header">
-  <button
-    class="toggle-button"
-    type="button"
-    aria-controls="mobile-navigation"
-    [attr.aria-expanded]="isNavigationOpen().toString()"
-    (click)="toggleNavigation()"
-  >
-    {{ isNavigationOpen() ? 'Close navigation' : 'Open navigation' }}
-  </button>
-
   <div class="header__search">
     <app-floating-input
       class="floating-input--no-margin"
@@ -33,4 +23,16 @@
       {{ username() ?? 'User' }}
     </span>
   </div>
+
+  <button
+    class="toggle-button"
+    type="button"
+    aria-controls="mobile-navigation"
+    [attr.aria-expanded]="isNavigationOpen().toString()"
+    [attr.aria-label]="isNavigationOpen() ? 'Close navigation' : 'Open navigation'"
+    [attr.title]="isNavigationOpen() ? 'Close navigation' : 'Open navigation'"
+    (click)="toggleNavigation()"
+  >
+    <fa-icon [icon]="faBars" aria-hidden="true" />
+  </button>
 </header>

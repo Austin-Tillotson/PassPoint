@@ -1,8 +1,4 @@
-<main>
-  <button type="button" (click)="passwordDialog.open()">
-    Add password
-  </button>
-
+<main class="dashboard-page">
   @if (errorMessage()) {
     <p role="alert">{{ errorMessage() }}</p>
   }
@@ -22,4 +18,14 @@
       />
     }
   </section>
+
+  <button
+    class="button button--primary add-password-button"
+    type="button"
+    aria-label="Add password"
+    title="Add password"
+    (click)="passwordDialog.open()"
+  >
+    <fa-icon [icon]="faPlus" aria-hidden="true" />
+  </button>
 </main>

@@ -1,4 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
 import { PasswordCard } from './components/password-card/password-card';
@@ -7,13 +9,14 @@ import { PasswordEntriesService } from './services/password-entries.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AddPasswordDialog, PasswordCard],
+  imports: [AddPasswordDialog, FaIconComponent, PasswordCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
   private readonly passwordEntriesService = inject(PasswordEntriesService);
 
+  protected readonly faPlus = faPlus;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly errorMessage = signal<string | null>(null);
 

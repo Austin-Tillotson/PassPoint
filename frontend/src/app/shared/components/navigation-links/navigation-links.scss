@@ -33,7 +33,9 @@ ul {
 }
 
 a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
   color: #475569;
@@ -41,8 +43,18 @@ a {
   text-decoration: none;
 }
 
+.navigation-icon {
+  width: 1.25rem;
+  color: #64748b;
+  text-align: center;
+}
+
 a:hover {
   background-color: #fff7ed;
+  color: #ea580c;
+}
+
+a:hover .navigation-icon {
   color: #ea580c;
 }
 
@@ -50,4 +62,8 @@ a.is-active {
   background-color: #fff7ed;
   color: #f97316;
   font-weight: 600;
+}
+
+a.is-active .navigation-icon {
+  color: #f97316;
 }

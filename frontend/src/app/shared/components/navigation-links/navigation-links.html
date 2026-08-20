@@ -9,7 +9,12 @@
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          Dashboard
+          <fa-icon
+            class="navigation-icon"
+            [icon]="faChartPie"
+            aria-hidden="true"
+          />
+          <span>Dashboard</span>
         </a>
       </li>
     </ul>
@@ -24,7 +29,12 @@
           routerLink="/password-generator"
           routerLinkActive="is-active"
         >
-          Password generator
+          <fa-icon
+            class="navigation-icon"
+            [icon]="faKey"
+            aria-hidden="true"
+          />
+          <span>Password Generator</span>
         </a>
       </li>
     </ul>
@@ -34,8 +44,27 @@
     <h2>Account</h2>
 
     <ul>
-      <li><a href="#!" (click)="$event.preventDefault()">Profile</a></li>
-      <li><a href="#!" (click)="$event.preventDefault()">Settings</a></li>
+      <li>
+        <a href="#!" (click)="$event.preventDefault()">
+          <fa-icon
+            class="navigation-icon"
+            [icon]="faUser"
+            aria-hidden="true"
+          />
+          <span>Profile</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#!" (click)="$event.preventDefault()">
+          <fa-icon
+            class="navigation-icon"
+            [icon]="faGear"
+            aria-hidden="true"
+          />
+          <span>Settings</span>
+        </a>
+      </li>
     </ul>
   </section>
 </nav>

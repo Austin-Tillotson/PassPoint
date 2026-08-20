@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { FloatingInput } from '../floating-input/floating-input';
@@ -24,6 +25,8 @@ export class Header implements OnInit {
   protected readonly userInitial = computed(
     () => this.username()?.charAt(0).toUpperCase() ?? '?',
   );
+
+  protected readonly faMagnifyingGlass = faMagnifyingGlass;
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({

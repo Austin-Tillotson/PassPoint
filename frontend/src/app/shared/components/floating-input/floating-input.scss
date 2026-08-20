@@ -30,3 +30,24 @@
   font-size: 0.75rem;
   transform: translateY(-50%);
 }
+
+.floating-field__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  color: #94a3b8;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.floating-field:focus-within .floating-field__icon {
+  color: #f97316;
+}
+
+.floating-field input.floating-field__input--with-icon {
+  padding-left: 2.75rem;
+}
+
+.floating-field label.floating-field__label--with-icon {
+  left: 2.5rem;
+}

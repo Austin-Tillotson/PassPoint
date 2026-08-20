@@ -1,0 +1,14 @@
+<button
+  class="logout-button"
+  type="button"
+  [disabled]="isLoggingOut()"
+  (click)="logout()"
+>
+  <fa-icon
+    class="logout-button__icon"
+    [icon]="faRightFromBracket"
+    aria-hidden="true"
+  />
+
+  <span>{{ isLoggingOut() ? 'Logging out...' : 'Log out' }}</span>
+</button>

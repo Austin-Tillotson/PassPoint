@@ -4,7 +4,7 @@
 
 .sidebar {
   display: grid;
-  align-content: start;
+  grid-template-rows: auto 1fr auto;
   min-height: 100%;
   padding: 1.25rem 0.875rem;
   box-sizing: border-box;

@@ -1,10 +1,11 @@
 import { Component, input } from '@angular/core';
 
+import { LogoutButton } from '../logout-button/logout-button';
 import { NavigationLinks } from '../navigation-links/navigation-links';
 
 @Component({
   selector: 'app-mobile-navigation',
-  imports: [NavigationLinks],
+  imports: [LogoutButton, NavigationLinks],
   templateUrl: './mobile-navigation.html',
   styleUrl: './mobile-navigation.scss',
 })

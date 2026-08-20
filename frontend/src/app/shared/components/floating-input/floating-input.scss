@@ -3,6 +3,10 @@
   margin-bottom: 1rem;
 }
 
+:host(.floating-input--no-margin) {
+  margin-bottom: 0;
+}
+
 .floating-field {
   position: relative;
 }

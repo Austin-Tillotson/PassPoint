@@ -7,6 +7,10 @@ export interface AuthCredentials {
   password: string;
 }
 
+export interface AuthenticatedUser {
+  username: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,6 +27,12 @@ export class AuthService {
 
   login(credentials: AuthCredentials): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/login`, credentials, {
+      withCredentials: true,
+    });
+  }
+
+  getCurrentUser(): Observable<AuthenticatedUser> {
+    return this.http.get<AuthenticatedUser>(`${this.apiUrl}/me`, {
       withCredentials: true,
     });
   }

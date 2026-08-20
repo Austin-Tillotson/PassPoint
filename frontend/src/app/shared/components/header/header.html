@@ -8,4 +8,28 @@
   >
     {{ isNavigationOpen() ? 'Close navigation' : 'Open navigation' }}
   </button>
+
+  <div class="header__search">
+    <app-floating-input
+      class="floating-input--no-margin"
+      id="password-search"
+      label="Search passwords"
+      type="search"
+      autocomplete="off"
+      [formControl]="searchControl"
+    />
+  </div>
+
+  <div
+    class="current-user"
+    [attr.aria-label]="'Signed in as ' + (username() ?? 'User')"
+  >
+    <span class="current-user__initial" aria-hidden="true">
+      {{ userInitial() }}
+    </span>
+
+    <span class="current-user__name">
+      {{ username() ?? 'User' }}
+    </span>
+  </div>
 </header>

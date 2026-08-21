@@ -13,6 +13,32 @@
   background-color: #f8fafc;
 }
 
+.header__search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 32rem;
+}
+
+.header__search input {
+  padding-left: 2.75rem;
+  background-color: #ffffff;
+}
+
+.header__search-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  z-index: 1;
+  color: #94a3b8;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.header__search:focus-within .header__search-icon {
+  color: #f97316;
+}
+
 .toggle-button {
   display: inline-grid;
   flex-shrink: 0;

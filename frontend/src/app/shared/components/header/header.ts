@@ -1,5 +1,4 @@
 import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faBars,
@@ -7,11 +6,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../../core/services/auth.service';
-import { FloatingInput } from '../floating-input/floating-input';
 
 @Component({
   selector: 'app-header',
-  imports: [FaIconComponent, FloatingInput, ReactiveFormsModule],
+  imports: [FaIconComponent],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -20,10 +18,6 @@ export class Header implements OnInit {
 
   readonly isNavigationOpen = input(false);
   readonly navigationToggled = output<void>();
-
-  protected readonly searchControl = new FormControl('', {
-    nonNullable: true,
-  });
 
   protected readonly username = signal<string | null>(null);
   protected readonly userInitial = computed(

@@ -1,13 +1,17 @@
 <header class="header">
   <div class="header__search">
-    <app-floating-input
-      class="floating-input--no-margin"
+    <fa-icon
+      class="header__search-icon"
+      [icon]="faMagnifyingGlass"
+      aria-hidden="true"
+    />
+
+    <input
       id="password-search"
-      label="Search passwords"
       type="search"
+      placeholder="Search passwords"
+      aria-label="Search saved passwords"
       autocomplete="off"
-      [formControl]="searchControl"
-      [leadingIcon]="faMagnifyingGlass"
     />
   </div>
 

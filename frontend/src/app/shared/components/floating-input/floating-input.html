@@ -1,28 +1,14 @@
 <div class="floating-field">
-  @if (leadingIcon(); as icon) {
-    <fa-icon
-      class="floating-field__icon"
-      [icon]="icon"
-      aria-hidden="true"
-    />
-  }
-
   <input
     [id]="id()"
     [type]="type()"
     [value]="value()"
     [disabled]="isDisabled()"
     [autocomplete]="autocomplete()"
-    [class.floating-field__input--with-icon]="leadingIcon()"
     placeholder=" "
     (input)="onInput($event)"
     (blur)="onBlur()"
   />
 
-  <label
-    [for]="id()"
-    [class.floating-field__label--with-icon]="leadingIcon()"
-  >
-    {{ label() }}
-  </label>
+  <label [for]="id()">{{ label() }}</label>
 </div>

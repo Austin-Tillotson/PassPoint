@@ -1,11 +1,8 @@
 import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 @Component({
   selector: 'app-floating-input',
-  imports: [FaIconComponent],
   templateUrl: './floating-input.html',
   styleUrl: './floating-input.scss',
   providers: [
@@ -21,7 +18,6 @@ export class FloatingInput implements ControlValueAccessor {
   readonly label = input.required<string>();
   readonly type = input('text');
   readonly autocomplete = input('');
-  readonly leadingIcon = input<IconDefinition | null>(null);
 
   protected readonly value = signal('');
   protected readonly isDisabled = signal(false);

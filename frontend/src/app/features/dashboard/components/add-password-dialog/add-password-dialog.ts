@@ -27,7 +27,10 @@ export class AddPasswordDialog {
   protected readonly passwordForm = new FormGroup({
     siteName: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [
+        Validators.required,
+        Validators.pattern(/^https?:\/\/.+/i),
+      ],
     }),
     password: new FormControl('', {
       nonNullable: true,

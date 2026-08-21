@@ -5,8 +5,10 @@
     [value]="value()"
     [disabled]="isDisabled()"
     [autocomplete]="autocomplete()"
-    placeholder=" "
+    [placeholder]="placeholder() || ' '"
+    [class.floating-field__input--invalid]="invalid()"
     (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
     (blur)="onBlur()"
   />
 

@@ -26,3 +26,12 @@
   font-size: 0.75rem;
   transform: translateY(-50%);
 }
+
+.floating-field input.floating-field__input--invalid,
+.floating-field input.floating-field__input--invalid:focus {
+  border-color: #dc2626;
+}
+
+.floating-field input:not(:focus)::placeholder {
+  color: transparent;
+}

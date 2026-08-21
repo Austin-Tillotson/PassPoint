@@ -18,6 +18,9 @@ export class FloatingInput implements ControlValueAccessor {
   readonly label = input.required<string>();
   readonly type = input('text');
   readonly autocomplete = input('');
+  readonly placeholder = input('');
+  readonly fillOnTab = input<string | null>(null);
+  readonly invalid = input(false);
 
   protected readonly value = signal('');
   protected readonly isDisabled = signal(false);
@@ -44,11 +47,29 @@ export class FloatingInput implements ControlValueAccessor {
   protected onInput(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    this.value.set(input.value);
-    this.onChange(input.value);
+    this.updateValue(input.value);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const fillValue = this.fillOnTab();
+
+    if (
+      event.key === 'Tab' &&
+      !event.shiftKey &&
+      this.value() === '' &&
+      fillValue
+    ) {
+      event.preventDefault();
+      this.updateValue(fillValue);
+    }
   }
 
   protected onBlur(): void {
     this.onTouched();
+  }
+
+  private updateValue(value: string): void {
+    this.value.set(value);
+    this.onChange(value);
   }
 }

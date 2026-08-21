@@ -18,8 +18,13 @@ export class PasswordCard {
   readonly deleteRequested = output<void>();
 
   protected readonly isPasswordVisible = signal(false);
+
   protected readonly displayedPassword = computed(() =>
     this.isPasswordVisible() ? this.password() : MASKED_PASSWORD,
+  );
+
+  protected readonly displayedSiteName = computed(() =>
+    this.siteName().replace(/^https?:\/\//i, ''),
   );
 
   protected togglePasswordVisibility(): void {

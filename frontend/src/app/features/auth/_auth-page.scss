@@ -6,8 +6,6 @@
   display: grid;
   min-height: 100dvh;
   place-items: center;
-  --auth-action-color: #fb923c;
-  --auth-action-hover-color: #f97316;
 }
 
 .auth-page form {
@@ -31,7 +29,7 @@
 
 .auth-page__errors {
   margin: 0 0 1rem;
-  color: #b91c1c;
+  color: var(--color-error);
   font-size: 0.875rem;
 }
 

@@ -7,7 +7,7 @@
   position: relative;
   min-height: 100dvh;
   min-width: 0;
-  background-color: #f8fafc;
+  background-color: var(--color-page-background);
 }
 
 @media (min-width: 48.0625rem) {

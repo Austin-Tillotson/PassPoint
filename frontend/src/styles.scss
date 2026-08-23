@@ -1,10 +1,11 @@
+@use 'styles/colors';
 @use 'styles/inputs';
 @use 'styles/buttons';
 
 :root {
   font-family: 'Inter', system-ui, sans-serif;
-  color: #334155;
-  background-color: #f8fafc;
+  color: var(--color-text-primary);
+  background-color: var(--color-page-background);
 }
 
 button,

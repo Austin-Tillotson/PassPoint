@@ -27,7 +27,7 @@
   border-radius: 50%;
   font-size: 1.25rem;
   line-height: 1;
-  box-shadow: 0 0.5rem 1rem rgb(15 23 42 / 15%);
+  box-shadow: 0 0.5rem 1rem var(--color-shadow);
 }
 
 @media (min-width: 48.0625rem) {

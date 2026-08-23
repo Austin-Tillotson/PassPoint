@@ -8,7 +8,7 @@
 
 .navigation-section + .navigation-section {
   padding-top: 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border-layout);
 }
 
 .navigation-section:last-child {
@@ -17,7 +17,7 @@
 
 h2 {
   margin: 0 0 0.75rem;
-  color: #94a3b8;
+  color: var(--color-text-subtle);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.025em;
@@ -38,32 +38,32 @@ a {
   gap: 0.75rem;
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
-  color: #475569;
+  color: var(--color-text-secondary);
   font-weight: 500;
   text-decoration: none;
 }
 
 .navigation-icon {
   width: 1.25rem;
-  color: #64748b;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 a:hover {
-  background-color: #fff7ed;
-  color: #ea580c;
+  background-color: var(--color-orange-light);
+  color: var(--color-orange-dark);
 }
 
 a:hover .navigation-icon {
-  color: #ea580c;
+  color: var(--color-orange-dark);
 }
 
 a.is-active {
-  background-color: #fff7ed;
-  color: #f97316;
+  background-color: var(--color-orange-light);
+  color: var(--color-orange-hover);
   font-weight: 600;
 }
 
 a.is-active .navigation-icon {
-  color: #f97316;
+  color: var(--color-orange-hover);
 }

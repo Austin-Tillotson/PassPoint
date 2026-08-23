@@ -12,8 +12,8 @@
   top: 50%;
   left: 0.875rem;
   padding: 0 0.25rem;
-  color: #8b95a1;
-  background-color: #ffffff;
+  color: var(--color-placeholder);
+  background-color: var(--color-surface);
   pointer-events: none;
   transform: translateY(-50%);
   transition: 0.15s ease;
@@ -22,14 +22,14 @@
 .floating-field input:focus + label,
 .floating-field input:not(:placeholder-shown) + label {
   top: 0;
-  color: #f97316;
+  color: var(--color-orange-hover);
   font-size: 0.75rem;
   transform: translateY(-50%);
 }
 
 .floating-field input.floating-field__input--invalid,
 .floating-field input.floating-field__input--invalid:focus {
-  border-color: #dc2626;
+  border-color: var(--color-error-border);
 }
 
 .floating-field input:not(:focus)::placeholder {

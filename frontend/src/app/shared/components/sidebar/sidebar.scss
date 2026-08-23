@@ -8,13 +8,13 @@
   min-height: 100%;
   padding: 1.25rem 0.875rem;
   box-sizing: border-box;
-  border-right: 1px solid #e2e8f0;
-  background-color: #ffffff;
+  border-right: 1px solid var(--color-border-layout);
+  background-color: var(--color-surface);
 }
 
 .sidebar__brand {
   margin: 0 0 5rem;
-  color: #f97316;
+  color: var(--color-orange-hover);
   font-size: 1.35rem;
   font-weight: 700;
 }

@@ -13,16 +13,16 @@
 }
 
 .button--primary {
-  background-color: #fb923c;
-  color: #ffffff;
+  background-color: var(--color-orange-primary);
+  color: var(--color-surface);
 }
 
 .button--primary:hover:not(:disabled) {
-  background-color: #f97316;
+  background-color: var(--color-orange-hover);
 }
 
 .button:focus-visible {
-  outline: 2px solid #fed7aa;
+  outline: 2px solid var(--color-orange-outline);
   outline-offset: 2px;
 }
 
@@ -32,13 +32,13 @@
 }
 
 .button--secondary {
-  border-color: #fb923c;
-  background-color: #ffffff;
-  color: #f97316;
+  border-color: var(--color-orange-primary);
+  background-color: var(--color-surface);
+  color: var(--color-orange-hover);
 }
 
 .button--secondary:hover {
-  background-color: #fff7ed;
+  background-color: var(--color-orange-light);
 }
 
 .button--full-width {

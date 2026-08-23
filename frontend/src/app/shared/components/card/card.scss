@@ -4,8 +4,8 @@
 
 .card {
   padding: 2rem;
-  background-color: #ffffff;
-  border: 1px solid #e1e5ea;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }

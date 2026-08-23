@@ -24,7 +24,11 @@
         </div>
       }
 
-      <button class="button button--primary" type="submit" [disabled]="isSubmitting()">
+      <button
+        class="button button--primary"
+        type="submit"
+        [disabled]="loginForm.invalid || isSubmitting()"
+      >
         {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
       </button>
     </form>

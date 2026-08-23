@@ -32,7 +32,11 @@
         </div>
       }
 
-      <button class="button button--primary" type="submit" [disabled]="isSubmitting()">
+      <button 
+        class="button button--primary" 
+        type="submit" 
+        [disabled]="registerForm.invalid || isSubmitting()"
+      >
         {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
       </button>
     </form>

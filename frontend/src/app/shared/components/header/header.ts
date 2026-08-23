@@ -18,6 +18,8 @@ export class Header implements OnInit {
 
   readonly isNavigationOpen = input(false);
   readonly navigationToggled = output<void>();
+  
+  readonly showPasswordSearch = input(false);
 
   protected readonly username = signal<string | null>(null);
   protected readonly userInitial = computed(

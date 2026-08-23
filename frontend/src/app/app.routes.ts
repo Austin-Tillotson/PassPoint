@@ -31,6 +31,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        data: { showPasswordSearch: true },
         loadComponent: () =>
           import('./features/dashboard/dashboard').then((module) => module.Dashboard),
       },

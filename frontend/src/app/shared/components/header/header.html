@@ -1,19 +1,21 @@
 <header class="header">
-  <div class="header__search">
-    <fa-icon
-      class="header__search-icon"
-      [icon]="faMagnifyingGlass"
-      aria-hidden="true"
-    />
+  @if (showPasswordSearch()) {
+    <div class="header__search">
+      <fa-icon
+        class="header__search-icon"
+        [icon]="faMagnifyingGlass"
+        aria-hidden="true"
+      />
 
-    <input
-      id="password-search"
-      type="search"
-      placeholder="Search passwords"
-      aria-label="Search saved passwords"
-      autocomplete="off"
-    />
-  </div>
+      <input
+        id="password-search"
+        type="search"
+        placeholder="Search passwords"
+        aria-label="Search saved passwords"
+        autocomplete="off"
+      />
+    </div>
+  }
 
   <div
     class="current-user"

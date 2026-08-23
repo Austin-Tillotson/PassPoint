@@ -1,5 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  NavigationEnd,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
+import { filter } from 'rxjs';
 
 import { Header } from '../../shared/components/header/header';
 import { MobileNavigation } from '../../shared/components/mobile-navigation/mobile-navigation';
@@ -11,11 +17,37 @@ import { Sidebar } from '../../shared/components/sidebar/sidebar';
   templateUrl: './general-layout.html',
   styleUrl: './general-layout.scss',
 })
-
 export class GeneralLayout {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+
   protected readonly isMobileNavigationOpen = signal(false);
+  protected readonly showPasswordSearch = signal(false);
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.updatePasswordSearchVisibility());
+
+    this.updatePasswordSearchVisibility();
+  }
 
   protected toggleMobileNavigation(): void {
     this.isMobileNavigationOpen.update((isOpen) => !isOpen);
+  }
+
+  private updatePasswordSearchVisibility(): void {
+    let activeRoute = this.router.routerState.snapshot.root;
+
+    while (activeRoute.firstChild) {
+      activeRoute = activeRoute.firstChild;
+    }
+
+    this.showPasswordSearch.set(
+      activeRoute.data['showPasswordSearch'] === true,
+    );
   }
 }

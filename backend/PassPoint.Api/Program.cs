@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,8 @@ builder.Services.ConfigureApplicationCookie(options =>
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
-builder.Services.AddDataProtection();
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<ApplicationDbContext>();
 builder.Services.AddSingleton<IPasswordProtector, PasswordProtector>();
 
 builder.Services.AddAuthorization();

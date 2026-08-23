@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface AuthCredentials {
   username: string;
@@ -16,7 +17,7 @@ export interface AuthenticatedUser {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7063/api/auth';
+  private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
 
   register(credentials: AuthCredentials): Observable<{ username: string }> {
     return this.http.post<{ username: string }>(

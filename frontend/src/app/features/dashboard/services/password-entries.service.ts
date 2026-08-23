@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 import type { NewPasswordEntry, PasswordEntry } from '../models/password-entry';
 
@@ -9,7 +10,7 @@ import type { NewPasswordEntry, PasswordEntry } from '../models/password-entry';
 })
 export class PasswordEntriesService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7063/api/password-entries';
+  private readonly apiUrl = `${environment.apiBaseUrl}/password-entries`;
 
   getAll(): Observable<PasswordEntry[]> {
     return this.http.get<PasswordEntry[]>(this.apiUrl, {

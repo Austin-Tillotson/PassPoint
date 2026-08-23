@@ -27,7 +27,9 @@
       />
 
       @if (errorMessage()) {
-        <p role="alert">{{ errorMessage() }}</p>
+        <div class="auth-page__errors" role="alert">
+          <p>{{ errorMessage() }}</p>
+        </div>
       }
 
       <button class="button button--primary" type="submit" [disabled]="isSubmitting()">

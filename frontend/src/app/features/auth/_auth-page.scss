@@ -28,3 +28,13 @@
 .auth-page form + p {
   margin: 3rem 0 0;
 }
+
+.auth-page__errors {
+  margin: 0 0 1rem;
+  color: #b91c1c;
+  font-size: 0.875rem;
+}
+
+.auth-page__errors p {
+  margin: 0;
+}

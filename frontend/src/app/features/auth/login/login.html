@@ -31,6 +31,15 @@
       >
         {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
       </button>
+
+      <button
+        class="button button--secondary button--full-width auth-page__demo-button"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="loginAsDemo()"
+      >
+        Demo
+      </button>
     </form>
 
     <p>

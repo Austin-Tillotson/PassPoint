@@ -4,9 +4,17 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AuthService } from '../../../core/services/auth.service';
+import {
+  AuthCredentials,
+  AuthService,
+} from '../../../core/services/auth.service';
 import { Card } from '../../../shared/components/card/card';
 import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
+
+const DEMO_CREDENTIALS: AuthCredentials = {
+  username: 'Demo',
+  password: 'Password123',
+};
 
 @Component({
   selector: 'app-login',
@@ -14,6 +22,7 @@ import { FloatingInput } from '../../../shared/components/floating-input/floatin
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
+
 export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -33,16 +42,24 @@ export class Login {
   });
 
   protected onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
+  }
 
+  this.login(this.loginForm.getRawValue());
+}
+
+protected loginAsDemo(): void {
+    this.login(DEMO_CREDENTIALS);
+  }
+
+  private login(credentials: AuthCredentials): void {
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
     this.authService
-      .login(this.loginForm.getRawValue())
+      .login(credentials)
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: () => void this.router.navigate(['/dashboard']),

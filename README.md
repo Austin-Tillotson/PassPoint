@@ -1,77 +1,66 @@
 # PassPoint
 
-<!-- TODO: Add the PassPoint logo above this heading. -->
-
-> A full-stack password-manager demonstration project. **Do not use it to store real passwords or sensitive information.**
+PassPoint is a full-stack password-manager demonstration project that showcases backend-focused web development; use demo data only, never real passwords.
 
 ## Screenshots
 
-| Login | Dashboard |
+| Login | Registration |
 | --- | --- |
-| _Screenshot coming soon_ | _Screenshot coming soon_ |
+| ![PassPoint login page](./docs/screenshots/login.png) | ![PassPoint registration page](./docs/screenshots/register.png) |
 
-<!--
-Replace the placeholders above with screenshots as the UI develops, for example:
+| Dashboard | Add password |
+| --- | --- |
+| ![PassPoint dashboard](./docs/screenshots/dashboard.png) | ![PassPoint add-password dialog](./docs/screenshots/add_password.png) |
 
-![PassPoint login page](./docs/images/login-page.png)
-![PassPoint dashboard](./docs/images/dashboard.png)
--->
+| Password generator |
+| --- |
+| ![PassPoint password generator](./docs/screenshots/gen_password.png) |
 
 ## About PassPoint
 
-PassPoint is a personal portfolio project that demonstrates full-stack web development, with an emphasis on backend development. The application will allow a user to sign in and manage demonstration site-password entries from a dashboard. It will also include a configurable password generator.
+PassPoint is a project built to demonstrate a complete web application stack, with particular attention to the API, authentication, database design, and deployment workflow. Users can create an account, sign in, and manage site-password entries that belong only to their account.
 
-The project is intentionally educational and is not intended to function as a production password manager. It should only be used with sample data.
+Passwords are encrypted by the ASP.NET Core API before being stored in PostgreSQL and decrypted only when returned to the authenticated user. The project also includes a configurable browser-based password generator. PassPoint is intentionally a demonstration project, not a production password manager, and should only contain public sample data.
+
+The site also offers a demo account with a quick log in. Use this for quick use of the site without having to create an account. Note Neon shuts down after a short time of inactivity so the initial login takes a minute for the database to start up. 
 
 ## Features
 
-Planned features include:
+- Account registration, login, logout, and authenticated routes
+- User-specific password-entry dashboard
+- Create, view, edit, delete, and show/hide password entries
+- Server-side password encryption using ASP.NET Core Data Protection
+- Configurable password generator with length, character-type, and letter-case options
+- Responsive desktop and mobile navigation
+- Client-side form validation and API error feedback
+- Automatic site favicon display when available
 
-- User account registration and sign-in
-- Protected dashboard for a user's saved demonstration entries
-- Create, view, edit, and delete password entries
-- Configurable password generator
-- Form validation
-- REST API backed by a relational database
-- Responsive user interface
+## Future Features
 
-## Local Development
-
-The Angular frontend is currently available for local development.
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (current LTS recommended)
-- npm
-
-### Run the frontend
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Open [http://localhost:4200](http://localhost:4200) in your browser.
-
-> On Windows systems where PowerShell blocks npm scripts, use `npm.cmd install` and `npm.cmd start` instead.
+- Functional search bar for the passwords
+- Folder groups for the passwords
+- Further UI refinement
 
 ## Live Demo
 
-The Vercel deployment link will be added when the project is complete.
+[Open the PassPoint demo](https://pass-point-lake.vercel.app)
+
+The Angular frontend is hosted on Vercel, utilizing docker-based ASP.NET API hosted on Render, which connects to a PostgreSQL database hosted on Neon. 
 
 ## Tools and Frameworks
 
-| Tool / Framework | Purpose | Status |
-| --- | --- | --- |
-| [Angular](https://angular.dev/) | Frontend application framework | In use |
-| [TypeScript](https://www.typescriptlang.org/) | Frontend programming language | In use |
-| [Sass](https://sass-lang.com/) / SCSS | Component and global styling | In use |
-| Angular Router | Client-side page navigation | In use |
-| Angular Reactive Forms | Login and future form handling | In use |
-| [PostgreSQL](https://www.postgresql.org/) | Planned relational database | Planned |
-| [Vercel](https://vercel.com/) | Planned frontend deployment | Planned |
-<!-- | [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | Planned backend REST API | Planned | -->
-<!-- | [C#](https://learn.microsoft.com/dotnet/csharp/) | Planned backend programming language | Planned | -->
-<!-- | [Entity Framework Core](https://learn.microsoft.com/ef/core/) | Planned database access and migrations | Planned | -->
-<!-- | [Docker](https://www.docker.com/) | Planned local API and database environment | Planned | -->
+| Tool / Framework | Purpose |
+| --- | --- |
+| [Angular](https://angular.dev/) | Frontend single-page application, routing, and reactive forms |
+| [TypeScript](https://www.typescriptlang.org/) | Frontend application language |
+| [Sass / SCSS](https://sass-lang.com/) | Shared design tokens and component styling |
+| [Font Awesome](https://fontawesome.com/) | Interface icons |
+| [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | Backend REST API |
+| [C#](https://learn.microsoft.com/dotnet/csharp/) | Backend application language |
+| [ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/security/authentication/identity) | Account management, authentication, and sessions |
+| [Npgsql](https://www.npgsql.org/) | PostgreSQL data access and database migrations |
+| [PostgreSQL](https://www.postgresql.org/) | Relational database |
+| [Docker](https://www.docker.com/) | Local PostgreSQL development environment and API containerization |
+| [Neon](https://neon.com/) | Hosted PostgreSQL database |
+| [Render](https://render.com/) | Hosted ASP.NET Core API container |
+| [Vercel](https://vercel.com/) | Hosted Angular frontend and API reverse proxy |

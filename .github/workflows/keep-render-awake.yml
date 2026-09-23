@@ -1,0 +1,32 @@
+name: Keep Render awake
+
+on:
+  schedule:
+    # Every 10 minutes, offset from the busiest start-of-hour window.
+    - cron: '7,17,27,37,47,57 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keep-render-awake
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    # Prevent forks from pinging the original deployment.
+    if: github.repository == 'Austin-Tillotson/PassPoint'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check API health
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            --connect-timeout 15 \
+            --max-time 120 \
+            --retry 1 \
+            --retry-delay 10 \
+            --retry-connrefused \
+            --write-out '\nHTTP %{http_code}; elapsed %{time_total}s\n' \
+            https://passpoint-api.onrender.com/health

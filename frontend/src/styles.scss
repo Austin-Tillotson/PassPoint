@@ -1,9 +1,13 @@
 @use 'styles/colors';
+@use 'styles/typography';
 @use 'styles/inputs';
 @use 'styles/buttons';
 
 :root {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
   color: var(--color-text-primary);
   background-color: var(--color-page-background);
 }

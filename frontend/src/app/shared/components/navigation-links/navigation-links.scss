@@ -18,9 +18,10 @@
 h2 {
   margin: 0 0 0.75rem;
   color: var(--color-text-subtle);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.025em;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-caption);
   text-transform: uppercase;
 }
 
@@ -39,7 +40,9 @@ a {
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
   color: var(--color-text-secondary);
-  font-weight: 500;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
   text-decoration: none;
 }
 
@@ -61,7 +64,7 @@ a:hover .navigation-icon {
 a.is-active {
   background-color: var(--color-orange-light);
   color: var(--color-orange-hover);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 a.is-active .navigation-icon {

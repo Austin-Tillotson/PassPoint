@@ -15,8 +15,10 @@
 .sidebar__brand {
   margin: 0 0 5rem;
   color: var(--color-orange-hover);
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: var(--font-size-brand);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
 }
 
 @media (min-width: 48.0625rem) {

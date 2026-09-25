@@ -26,7 +26,9 @@
   color: var(--color-text-secondary);
   cursor: pointer;
   font: inherit;
-  font-weight: 500;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
   text-align: left;
 }
 

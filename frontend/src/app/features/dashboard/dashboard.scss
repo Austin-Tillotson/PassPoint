@@ -37,3 +37,8 @@
     bottom: 1.5rem;
   }
 }
+
+.dashboard-page > [role='alert'] {
+  font-size: var(--font-size-ui);
+  line-height: var(--line-height-body);
+}

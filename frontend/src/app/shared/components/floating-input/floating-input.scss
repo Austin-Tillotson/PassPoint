@@ -14,6 +14,9 @@
   padding: 0 0.25rem;
   color: var(--color-placeholder);
   background-color: var(--color-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
   pointer-events: none;
   transform: translateY(-50%);
   transition: 0.15s ease;
@@ -23,7 +26,8 @@
 .floating-field input:not(:placeholder-shown) + label {
   top: 0;
   color: var(--color-orange-hover);
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
   transform: translateY(-50%);
 }
 

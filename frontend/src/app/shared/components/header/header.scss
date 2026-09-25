@@ -23,6 +23,7 @@
 .header__search input {
   padding-left: 2.75rem;
   background-color: var(--color-surface);
+  font-size: var(--font-size-body);
 }
 
 .header__search-icon {
@@ -75,8 +76,9 @@
   border-radius: 999rem;
   background-color: var(--color-surface);
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body);
 }
 
 .current-user__initial {

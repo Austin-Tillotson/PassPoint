@@ -35,8 +35,11 @@
 }
 
 .button:disabled {
+  border-color: var(--color-disabled-border);
+  background-color: var(--color-disabled-background);
+  color: var(--color-disabled-text);
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 1;
 }
 
 .button--secondary {

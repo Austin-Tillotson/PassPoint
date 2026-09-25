@@ -20,3 +20,13 @@ textarea::placeholder {
   color: var(--color-placeholder);
   opacity: 1;
 }
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  border-color: var(--color-disabled-border);
+  background-color: var(--color-disabled-background);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+  opacity: 1;
+}

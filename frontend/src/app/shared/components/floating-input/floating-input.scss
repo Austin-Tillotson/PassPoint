@@ -39,3 +39,8 @@
 .floating-field input:not(:focus)::placeholder {
   color: transparent;
 }
+
+.floating-field input:disabled + label {
+  background-color: var(--color-disabled-background);
+  color: var(--color-disabled-text);
+}

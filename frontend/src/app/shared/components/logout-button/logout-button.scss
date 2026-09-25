@@ -38,8 +38,9 @@
 }
 
 .logout-button:disabled {
+  background-color: var(--color-disabled-background);
+  color: var(--color-disabled-text);
   cursor: not-allowed;
-  opacity: 0.65;
 }
 
 .logout-button__icon {
@@ -50,4 +51,8 @@
 
 .logout-button:hover:not(:disabled) .logout-button__icon {
   color: var(--color-orange-dark);
+}
+
+.logout-button:disabled .logout-button__icon {
+  color: inherit;
 }

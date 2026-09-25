@@ -6,7 +6,7 @@
   min-height: 2.75rem;
   padding: 0.625rem 1rem;
   border: 1px solid transparent;
-  border-radius: 0.4375rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
   font-family: var(--font-family-body);
   font-size: var(--font-size-ui);

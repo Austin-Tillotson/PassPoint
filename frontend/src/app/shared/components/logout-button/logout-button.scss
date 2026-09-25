@@ -21,7 +21,7 @@
   gap: 0.75rem;
   padding: 0.625rem 0.75rem;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-control);
   background-color: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;

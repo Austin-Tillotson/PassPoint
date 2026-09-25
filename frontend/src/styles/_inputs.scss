@@ -9,10 +9,17 @@ select {
   box-sizing: border-box;
 }
 
-input:not([type="checkbox"]):not([type="radio"]):focus,
-textarea:focus,
-select:focus {
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select):focus {
   border-color: var(--color-border-focus);
+  // Thicken the existing border inward without shifting the field or its label.
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--input-focus-color, var(--color-border-focus));
+
+  @media (forced-colors: active) {
+    // High-contrast modes suppress shadows; keep a single inset focus edge.
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
 }
 
 input::placeholder,

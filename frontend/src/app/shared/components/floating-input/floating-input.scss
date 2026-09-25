@@ -33,6 +33,7 @@
 
 .floating-field input.floating-field__input--invalid,
 .floating-field input.floating-field__input--invalid:focus {
+  --input-focus-color: var(--color-error-border);
   border-color: var(--color-error-border);
 }
 

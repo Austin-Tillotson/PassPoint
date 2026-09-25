@@ -1,6 +1,6 @@
 :host {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .floating-field {
@@ -10,8 +10,8 @@
 .floating-field label {
   position: absolute;
   top: 50%;
-  left: 0.875rem;
-  padding: 0 0.25rem;
+  left: var(--space-3);
+  padding: 0 var(--space-1);
   color: var(--color-placeholder);
   background-color: var(--color-surface);
   font-size: var(--font-size-body);

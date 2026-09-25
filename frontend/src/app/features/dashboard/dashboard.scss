@@ -26,7 +26,7 @@
   padding: 0;
   font-size: 1.25rem;
   line-height: 1;
-  box-shadow: 0 0.5rem 1rem var(--color-shadow);
+  box-shadow: var(--shadow-raised);
 }
 
 @media (min-width: 48.0625rem) {

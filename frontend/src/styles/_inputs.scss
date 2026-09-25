@@ -13,7 +13,6 @@ input:not([type="checkbox"]):not([type="radio"]):focus,
 textarea:focus,
 select:focus {
   border-color: var(--color-border-focus);
-  outline: none;
 }
 
 input::placeholder,

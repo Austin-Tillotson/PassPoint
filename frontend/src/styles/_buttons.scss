@@ -34,11 +34,6 @@
   background-color: var(--color-accent-pressed);
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--color-orange-outline);
-  outline-offset: 2px;
-}
-
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.65;

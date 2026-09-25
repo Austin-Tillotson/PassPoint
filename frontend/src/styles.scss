@@ -18,3 +18,10 @@ textarea {
 body {
   margin: 0;
 }
+
+input,
+textarea,
+select,
+dialog {
+  color: var(--color-text-primary);
+}

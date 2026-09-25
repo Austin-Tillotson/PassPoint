@@ -1,6 +1,7 @@
 :root {
   --color-page-background: #f8f9fb;
   --color-surface: #ffffff;
+  --color-surface-pressed: #eef0f3;
 
   --color-text-primary: #20252d;
   --color-text-secondary: #4b5563;
@@ -14,6 +15,7 @@
 
   --color-accent: #b8491d;
   --color-accent-hover: #bc471c;
+  --color-accent-pressed: #a13d15;
   --color-accent-light: #fcf0e9;
 
   // Aliases used by existing components.

@@ -15,11 +15,15 @@
 .sidebar__brand {
   margin: 0 0 calc(2 * var(--space-4));
   padding-inline: var(--space-3);
-  color: var(--color-orange-hover);
+  color: var(--color-text-primary);
   font-size: var(--font-size-brand);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-heading);
-  letter-spacing: var(--letter-spacing-heading);
+  letter-spacing: var(--letter-spacing-brand);
+}
+
+.sidebar__brand-accent {
+  color: var(--color-accent);
 }
 
 @media (min-width: 48.0625rem) {

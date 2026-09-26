@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faChartPie, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faTableCellsLarge, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navigation-links',
@@ -10,6 +10,6 @@ import { faChartPie, faKey } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './navigation-links.scss',
 })
 export class NavigationLinks {
-  protected readonly faChartPie = faChartPie;
-  protected readonly faKey = faKey;
+  protected readonly faTableCellsLarge = faTableCellsLarge;
+  protected readonly faWandMagicSparkles = faWandMagicSparkles;
 }

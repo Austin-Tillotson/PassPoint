@@ -22,7 +22,7 @@ export class GeneralLayout {
   private readonly router = inject(Router);
 
   protected readonly isMobileNavigationOpen = signal(false);
-  protected readonly showPasswordSearch = signal(false);
+  protected readonly pageLabel = signal('PassPoint');
 
   constructor() {
     this.router.events
@@ -32,10 +32,10 @@ export class GeneralLayout {
       )
       .subscribe(() => {
         this.isMobileNavigationOpen.set(false);
-        this.updatePasswordSearchVisibility();
+        this.updatePageLabel();
       });
 
-    this.updatePasswordSearchVisibility();
+    this.updatePageLabel();
   }
 
   protected toggleMobileNavigation(): void {
@@ -51,15 +51,13 @@ export class GeneralLayout {
     header.focusNavigationToggle();
   }
 
-  private updatePasswordSearchVisibility(): void {
+  private updatePageLabel(): void {
     let activeRoute = this.router.routerState.snapshot.root;
 
     while (activeRoute.firstChild) {
       activeRoute = activeRoute.firstChild;
     }
 
-    this.showPasswordSearch.set(
-      activeRoute.data['showPasswordSearch'] === true,
-    );
+    this.pageLabel.set(activeRoute.data['pageLabel'] ?? 'PassPoint');
   }
 }

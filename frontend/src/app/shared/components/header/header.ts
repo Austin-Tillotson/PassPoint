@@ -2,7 +2,6 @@ import { Component, ElementRef, OnInit, computed, inject, input, output, signal,
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faBars,
-  faMagnifyingGlass,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,7 +20,7 @@ export class Header implements OnInit {
   readonly isNavigationOpen = input(false);
   readonly navigationToggled = output<void>();
   
-  readonly showPasswordSearch = input(false);
+  readonly pageLabel = input('PassPoint');
 
   protected readonly username = signal<string | null>(null);
   protected readonly userInitial = computed(
@@ -30,7 +29,6 @@ export class Header implements OnInit {
 
   protected readonly faBars = faBars;
   protected readonly faXmark = faXmark;
-  protected readonly faMagnifyingGlass = faMagnifyingGlass;
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({

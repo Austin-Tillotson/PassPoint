@@ -31,12 +31,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        data: { showPasswordSearch: true },
+        data: { pageLabel: 'Dashboard' },
         loadComponent: () =>
           import('./features/dashboard/dashboard').then((module) => module.Dashboard),
       },
       {
         path: 'password-generator',
+        data: { pageLabel: 'Password Generator' },
         loadComponent: () =>
           import('./features/password-generator/password-generator').then(
             (module) => module.PasswordGenerator,

@@ -5,88 +5,73 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  min-height: 4rem;
-  padding: 0.75rem clamp(1rem, 5vw, 5rem);
+  gap: var(--space-3);
+  min-height: 4.5rem;
+  padding: var(--space-3) clamp(1rem, 5vw, 5rem);
   box-sizing: border-box;
   border-bottom: 1px solid var(--color-border-layout);
   background-color: var(--color-surface);
 }
 
-.header__search {
-  position: relative;
-  flex: 1;
+.header__context {
   min-width: 0;
-  max-width: 32rem;
-}
-
-.header__search input {
-  padding-left: 2.75rem;
-  background-color: var(--color-surface);
-  font-size: var(--font-size-body);
-}
-
-.header__search-icon {
-  position: absolute;
-  top: 50%;
-  left: var(--space-3);
-  z-index: 1;
-  color: var(--color-text-subtle);
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.header__search:focus-within .header__search-icon {
-  color: var(--color-orange-hover);
-}
-
-.header__search {
-  flex: 1;
-  min-width: 0;
-  max-width: 32rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-medium);
 }
 
 .current-user {
-  display: inline-flex;
+  display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-3);
   margin-left: auto;
-  padding: 0.25rem 0.625rem 0.25rem 0.25rem;
-  border: 1px solid var(--color-border-layout);
-  border-radius: 999rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-ui);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-body);
 }
 
 .current-user__initial {
   display: grid;
-  width: 2rem;
-  height: 2rem;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
   place-items: center;
   border-radius: 50%;
   background-color: var(--color-orange-light);
   color: var(--color-orange-dark);
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-semibold);
+}
+
+.current-user__details {
+  display: none;
+  line-height: var(--line-height-body);
 }
 
 .current-user__name {
-  display: none;
+  display: block;
   max-width: 10rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-semibold);
+}
+
+.toggle-button {
+  flex-shrink: 0;
 }
 
 @media (min-width: 30rem) {
-  .current-user__name {
-    display: block;
+  .current-user__details {
+    display: grid;
   }
 }
 
 @media (min-width: 48.0625rem) {
+  .header {
+    gap: var(--space-6);
+  }
+
   .toggle-button {
     display: none;
   }

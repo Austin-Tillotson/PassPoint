@@ -1,21 +1,5 @@
 <header class="header">
-  @if (showPasswordSearch()) {
-    <div class="header__search">
-      <fa-icon
-        class="header__search-icon"
-        [icon]="faMagnifyingGlass"
-        aria-hidden="true"
-      />
-
-      <input
-        id="password-search"
-        type="search"
-        placeholder="Search passwords"
-        aria-label="Search saved passwords"
-        autocomplete="off"
-      />
-    </div>
-  }
+  <span class="header__context">{{ pageLabel() }}</span>
 
   <div
     class="current-user"
@@ -25,9 +9,11 @@
       {{ userInitial() }}
     </span>
 
-    <span class="current-user__name">
-      {{ username() ?? 'User' }}
-    </span>
+    <div class="current-user__details">
+      <span class="current-user__name" [title]="username() ?? 'User'">
+        {{ username() ?? 'User' }}
+      </span>
+    </div>
   </div>
 
   <button

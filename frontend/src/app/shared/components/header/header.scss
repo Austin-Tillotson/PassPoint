@@ -13,7 +13,21 @@
   background-color: var(--color-surface);
 }
 
+.header__brand {
+  flex-shrink: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-brand);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-brand);
+}
+
+.header__brand span {
+  color: var(--color-accent);
+}
+
 .header__context {
+  display: none;
   min-width: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-ui);
@@ -68,6 +82,14 @@
 }
 
 @media (min-width: 48.0625rem) {
+  .header__brand {
+    display: none;
+  }
+
+  .header__context {
+    display: block;
+  }
+
   .header {
     gap: var(--space-6);
   }

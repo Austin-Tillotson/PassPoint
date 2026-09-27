@@ -1,11 +1,13 @@
 <header class="header">
+  <span class="header__brand">Pass<span>Point</span></span>
   <span class="header__context">{{ pageLabel() }}</span>
 
-  <div
-    class="current-user"
-    [attr.aria-label]="'Signed in as ' + (username() ?? 'User')"
-  >
-    <span class="current-user__initial" aria-hidden="true">
+  <div class="current-user">
+    <span
+      class="current-user__initial"
+      role="img"
+      [attr.aria-label]="'Account: ' + (username() ?? 'User')"
+    >
       {{ userInitial() }}
     </span>
 

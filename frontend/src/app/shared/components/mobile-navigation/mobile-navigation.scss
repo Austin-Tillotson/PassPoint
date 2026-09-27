@@ -14,20 +14,6 @@
   display: block;
 }
 
-.mobile-navigation__brand {
-  margin: 0 0 var(--space-6);
-  padding-inline: var(--space-3);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-brand);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-heading);
-  letter-spacing: var(--letter-spacing-brand);
-}
-
-.mobile-navigation__brand span {
-  color: var(--color-accent);
-}
-
 @media (min-width: 48.0625rem) {
   :host {
     display: none;

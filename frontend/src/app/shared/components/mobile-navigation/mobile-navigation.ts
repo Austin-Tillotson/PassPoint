@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 import { LogoutButton } from '../logout-button/logout-button';
 import { NavigationLinks } from '../navigation-links/navigation-links';
@@ -12,4 +12,5 @@ import { NavigationLinks } from '../navigation-links/navigation-links';
 
 export class MobileNavigation {
   readonly isOpen = input(false);
+  readonly navigationClosed = output<void>();
 }

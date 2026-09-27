@@ -31,6 +31,7 @@
   </div>
 
   <button
+    #navigationToggle
     class="button button--secondary button--icon toggle-button"
     type="button"
     aria-controls="mobile-navigation"
@@ -39,6 +40,6 @@
     [attr.title]="isNavigationOpen() ? 'Close navigation' : 'Open navigation'"
     (click)="toggleNavigation()"
   >
-    <fa-icon [icon]="faBars" aria-hidden="true" />
+    <fa-icon [icon]="isNavigationOpen() ? faXmark : faBars" aria-hidden="true" />
   </button>
 </header>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faTableCellsLarge, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,8 @@ import { faTableCellsLarge, faWandMagicSparkles } from '@fortawesome/free-solid-
   styleUrl: './navigation-links.scss',
 })
 export class NavigationLinks {
+  readonly linkSelected = output<void>();
+
   protected readonly faTableCellsLarge = faTableCellsLarge;
   protected readonly faWandMagicSparkles = faWandMagicSparkles;
 }

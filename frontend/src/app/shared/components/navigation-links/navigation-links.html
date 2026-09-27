@@ -9,6 +9,7 @@
           routerLinkActive="is-active"
           ariaCurrentWhenActive="page"
           [routerLinkActiveOptions]="{ exact: true }"
+          (click)="linkSelected.emit()"
         >
           <fa-icon
             class="navigation-icon"
@@ -28,6 +29,7 @@
       <li>
         <a
           routerLink="/password-generator"
+          (click)="linkSelected.emit()"
           routerLinkActive="is-active"
           ariaCurrentWhenActive="page"
         >

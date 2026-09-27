@@ -2,12 +2,18 @@
 
 <main class="app-content">
   <app-header
+    #header
     [isNavigationOpen]="isMobileNavigationOpen()"
     [showPasswordSearch]="showPasswordSearch()"
     (navigationToggled)="toggleMobileNavigation()"
+    (keydown.escape)="closeMobileNavigation(header)"
   />
 
-  <app-mobile-navigation [isOpen]="isMobileNavigationOpen()" />
+  <app-mobile-navigation
+    [isOpen]="isMobileNavigationOpen()"
+    (navigationClosed)="closeMobileNavigation(header)"
+    (keydown.escape)="closeMobileNavigation(header)"
+  />
 
   <router-outlet />
 </main>

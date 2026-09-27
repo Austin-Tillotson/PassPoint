@@ -3,7 +3,9 @@
   class="mobile-navigation"
   [class.is-open]="isOpen()"
 >
-  <app-navigation-links />
+  <p class="mobile-navigation__brand">Pass<span>Point</span></p>
+
+  <app-navigation-links (linkSelected)="navigationClosed.emit()" />
 
   <app-logout-button class="logout-button--mobile" />
 </div>

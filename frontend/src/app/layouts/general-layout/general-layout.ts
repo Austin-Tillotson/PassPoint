@@ -30,13 +30,25 @@ export class GeneralLayout {
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => this.updatePasswordSearchVisibility());
+      .subscribe(() => {
+        this.isMobileNavigationOpen.set(false);
+        this.updatePasswordSearchVisibility();
+      });
 
     this.updatePasswordSearchVisibility();
   }
 
   protected toggleMobileNavigation(): void {
     this.isMobileNavigationOpen.update((isOpen) => !isOpen);
+  }
+
+  protected closeMobileNavigation(header: Header): void {
+    if (!this.isMobileNavigationOpen()) {
+      return;
+    }
+
+    this.isMobileNavigationOpen.set(false);
+    header.focusNavigationToggle();
   }
 
   private updatePasswordSearchVisibility(): void {

@@ -1,8 +1,9 @@
-import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faBars,
   faMagnifyingGlass,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../../core/services/auth.service';
@@ -15,6 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class Header implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly navigationToggle = viewChild.required<ElementRef<HTMLButtonElement>>('navigationToggle');
 
   readonly isNavigationOpen = input(false);
   readonly navigationToggled = output<void>();
@@ -27,12 +29,17 @@ export class Header implements OnInit {
   );
 
   protected readonly faBars = faBars;
+  protected readonly faXmark = faXmark;
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({
       next: (user) => this.username.set(user.username),
     });
+  }
+
+  public focusNavigationToggle(): void {
+    this.navigationToggle().nativeElement.focus();
   }
 
   protected toggleNavigation(): void {

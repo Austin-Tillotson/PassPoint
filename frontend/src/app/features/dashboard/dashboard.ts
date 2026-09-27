@@ -1,4 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  OnInit,
+  afterNextRender,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,10 +24,29 @@ import { PasswordEntriesService } from './services/password-entries.service';
 })
 export class Dashboard implements OnInit {
   private readonly passwordEntriesService = inject(PasswordEntriesService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly headingAddButton =
+    viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
 
   protected readonly faPlus = faPlus;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly showFloatingAdd = signal(false);
+
+  constructor() {
+    afterNextRender(() => {
+      if (typeof IntersectionObserver === 'undefined') {
+        return;
+      }
+
+      const observer = new IntersectionObserver(([entry]) => {
+        this.showFloatingAdd.set(!entry.isIntersecting);
+      });
+
+      observer.observe(this.headingAddButton().nativeElement);
+      this.destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   ngOnInit(): void {
     this.passwordEntriesService.getAll().subscribe({

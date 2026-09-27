@@ -1,11 +1,22 @@
 .dashboard-page {
   min-height: 100%;
-  padding: var(--space-6) clamp(1rem, 5vw, 5rem) 5rem;
+  padding: var(--space-6) clamp(1rem, 5vw, 5rem) calc(5rem + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
 .dashboard-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   margin-bottom: var(--space-6);
+}
+
+.dashboard-heading__copy {
+  min-width: 0;
+}
+
+.dashboard-heading__add {
+  flex-shrink: 0;
 }
 
 .dashboard-heading h1 {
@@ -39,7 +50,7 @@
 .add-password-button {
   position: fixed;
   right: 1rem;
-  bottom: 1rem;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   z-index: 1;
   width: 3.25rem;
   height: 3.25rem;
@@ -50,10 +61,15 @@
 }
 
 @media (min-width: 48.0625rem) {
+  .dashboard-heading {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
 
   .add-password-button {
-    right: 1.5rem;
-    bottom: 1.5rem;
+    display: none;
   }
 }
 

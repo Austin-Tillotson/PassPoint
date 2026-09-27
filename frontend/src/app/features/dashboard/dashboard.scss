@@ -1,7 +1,27 @@
 .dashboard-page {
   min-height: 100%;
-  padding: 1rem clamp(1rem, 5vw, 5rem) 5rem;
+  padding: var(--space-6) clamp(1rem, 5vw, 5rem) 5rem;
   box-sizing: border-box;
+}
+
+.dashboard-heading {
+  margin-bottom: var(--space-6);
+}
+
+.dashboard-heading h1 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: clamp(1.75rem, 2.5vw, 2rem);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+.dashboard-heading p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
 }
 
 .password-grid {

@@ -61,21 +61,21 @@ a {
   line-height: 1;
 }
 
-a:hover {
-  background-color: var(--color-orange-light);
-  color: var(--color-orange-dark);
+a:hover:not(.is-active) {
+  background-color: var(--color-surface-pressed);
+  color: var(--color-text-primary);
 }
 
-a:hover .navigation-icon {
-  color: var(--color-orange-dark);
+a:hover:not(.is-active) .navigation-icon {
+  color: inherit;
 }
 
 a.is-active {
-  background-color: var(--color-orange-light);
-  color: var(--color-orange-hover);
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
   font-weight: var(--font-weight-semibold);
 }
 
 a.is-active .navigation-icon {
-  color: var(--color-orange-hover);
+  color: inherit;
 }

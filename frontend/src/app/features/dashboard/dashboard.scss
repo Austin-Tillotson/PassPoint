@@ -36,7 +36,7 @@
 }
 
 .password-list {
-  --password-list-columns: minmax(0, 1fr) minmax(0, 0.65fr) 10rem;
+  --password-list-columns: minmax(0, 1fr) 2.75rem;
 
   border: 1px solid var(--color-border-layout);
   border-radius: var(--radius-surface);
@@ -66,11 +66,6 @@
   border-top: 1px solid var(--color-border-layout);
 }
 
-@media (max-width: 63.9375rem) {
-  .password-list__heading {
-    display: none;
-  }
-}
 
 .add-password-button {
   position: fixed;

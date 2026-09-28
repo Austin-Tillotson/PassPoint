@@ -12,13 +12,14 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
+import { PasswordDetailDialog } from './components/password-detail-dialog/password-detail-dialog';
 import { PasswordRow } from './components/password-row/password-row';
 import type { PasswordEntry } from './models/password-entry';
 import { PasswordEntriesService } from './services/password-entries.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AddPasswordDialog, FaIconComponent, PasswordRow],
+  imports: [AddPasswordDialog, FaIconComponent, PasswordRow, PasswordDetailDialog],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -27,6 +28,9 @@ export class Dashboard implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly headingAddButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
+
+  private readonly detailDialog = viewChild.required(PasswordDetailDialog);
+  protected readonly isDeleting = signal(false);
 
   protected readonly faPlus = faPlus;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
@@ -56,6 +60,11 @@ export class Dashboard implements OnInit {
     });
   }
 
+  protected openDetails(entry: PasswordEntry): void {
+    this.errorMessage.set(null);
+    this.detailDialog().open(entry);
+  }
+
   protected savePasswordEntry(savedEntry: PasswordEntry): void {
     this.passwordEntries.update((entries) => {
       const exists = entries.some((entry) => entry.id === savedEntry.id);
@@ -83,14 +92,20 @@ export class Dashboard implements OnInit {
 
     this.errorMessage.set(null);
 
+    this.isDeleting.set(true);
     this.passwordEntriesService.delete(entry.id).subscribe({
       next: () => {
+        this.isDeleting.set(false);
+        this.detailDialog().close();
+        this.headingAddButton().nativeElement.focus();
         this.passwordEntries.update((entries) =>
           entries.filter((currentEntry) => currentEntry.id !== entry.id),
         );
       },
-      error: () =>
-        this.errorMessage.set('Unable to delete the password entry.'),
+      error: () => {
+        this.isDeleting.set(false);
+        this.errorMessage.set('Unable to delete the password entry.');
+      },
     });
   }
 }

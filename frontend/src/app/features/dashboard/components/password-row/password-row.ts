@@ -1,9 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';
-
-
-const MASKED_PASSWORD = '********';
+import { faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-password-row',
@@ -13,18 +10,12 @@ const MASKED_PASSWORD = '********';
 })
 export class PasswordRow {
   readonly siteName = input.required<string>();
-  readonly password = input.required<string>();
 
-  readonly editRequested = output<void>();
-  readonly deleteRequested = output<void>();
+  readonly detailsRequested = output<void>();
 
-  protected readonly isPasswordVisible = signal(false);
   protected readonly failedFaviconUrl = signal<string | null>(null);
   protected readonly faGlobe = faGlobe;
-
-  protected readonly displayedPassword = computed(() =>
-    this.isPasswordVisible() ? this.password() : MASKED_PASSWORD,
-  );
+  protected readonly faChevronRight = faChevronRight;
 
   protected readonly displayedSiteName = computed(() =>
     this.siteName()
@@ -45,10 +36,6 @@ export class PasswordRow {
 
     return faviconUrl !== '' && this.failedFaviconUrl() !== faviconUrl;
   });
-
-  protected togglePasswordVisibility(): void {
-    this.isPasswordVisible.update((isVisible) => !isVisible);
-  }
 
   protected handleFaviconError(): void {
     this.failedFaviconUrl.set(this.faviconUrl());

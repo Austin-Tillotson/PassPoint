@@ -2,17 +2,16 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 
-import { Card } from '../../../../shared/components/card/card';
 
 const MASKED_PASSWORD = '********';
 
 @Component({
-  selector: 'app-password-card',
-  imports: [Card, FaIconComponent],
-  templateUrl: './password-card.html',
-  styleUrl: './password-card.scss',
+  selector: 'app-password-row',
+  imports: [FaIconComponent],
+  templateUrl: './password-row.html',
+  styleUrl: './password-row.scss',
 })
-export class PasswordCard {
+export class PasswordRow {
   readonly siteName = input.required<string>();
   readonly password = input.required<string>();
 

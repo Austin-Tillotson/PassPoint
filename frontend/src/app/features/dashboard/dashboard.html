@@ -25,15 +25,24 @@
     (passwordSaved)="savePasswordEntry($event)"
   />
 
-  <section class="password-grid">
-    @for (entry of passwordEntries(); track entry.id) {
-      <app-password-card
-        [siteName]="entry.siteName"
-        [password]="entry.password"
-        (editRequested)="passwordDialog.open(entry)"
-        (deleteRequested)="deletePasswordEntry(entry)"
-      />
-    }
+  <section class="password-list" aria-label="Saved passwords">
+    <div class="password-list__heading" aria-hidden="true">
+      <span>Site</span>
+      <span>Password</span>
+      <span>Actions</span>
+    </div>
+    <ul class="password-list__entries">
+      @for (entry of passwordEntries(); track entry.id) {
+        <li>
+          <app-password-row
+            [siteName]="entry.siteName"
+            [password]="entry.password"
+            (editRequested)="passwordDialog.open(entry)"
+            (deleteRequested)="deletePasswordEntry(entry)"
+          />
+        </li>
+      }
+    </ul>
   </section>
 
   @if (showFloatingAdd()) {

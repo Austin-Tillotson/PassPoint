@@ -12,13 +12,13 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
-import { PasswordCard } from './components/password-card/password-card';
+import { PasswordRow } from './components/password-row/password-row';
 import type { PasswordEntry } from './models/password-entry';
 import { PasswordEntriesService } from './services/password-entries.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AddPasswordDialog, FaIconComponent, PasswordCard],
+  imports: [AddPasswordDialog, FaIconComponent, PasswordRow],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

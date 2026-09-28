@@ -35,16 +35,41 @@
   line-height: var(--line-height-body);
 }
 
-.password-grid {
-  --password-card-min-width: 15rem;
-  --site-name-max-width: 20rem;
+.password-list {
+  --password-list-columns: minmax(0, 1fr) minmax(0, 0.65fr) 10rem;
 
+  border: 1px solid var(--color-border-layout);
+  border-radius: var(--radius-surface);
+  background-color: var(--color-surface);
+}
+
+.password-list__heading {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, var(--password-card-min-width)), 1fr)
-  );
-  gap: 1rem;
+  grid-template-columns: var(--password-list-columns);
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-layout);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caption);
+  text-transform: uppercase;
+}
+
+.password-list__entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.password-list__entries > li + li {
+  border-top: 1px solid var(--color-border-layout);
+}
+
+@media (max-width: 63.9375rem) {
+  .password-list__heading {
+    display: none;
+  }
 }
 
 .add-password-button {

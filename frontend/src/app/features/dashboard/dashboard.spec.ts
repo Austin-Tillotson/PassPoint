@@ -74,4 +74,17 @@ describe('Dashboard Add password actions', () => {
     fixture.destroy();
     expect(disconnect).toHaveBeenCalledTimes(1);
   });
+
+  it('adds saved entries in name order and replaces an edited entry without duplication', async () => {
+    const dialog = fixture.debugElement.query(By.directive(AddPasswordDialog)).componentInstance as AddPasswordDialog;
+    const entry = { id: '1', siteName: 'https://zebra.example.com', password: 'Sample-only', createdAtUtc: '2026-09-25T12:00:00Z' };
+    dialog.passwordSaved.emit(entry);
+    dialog.passwordSaved.emit({ ...entry, id: '2', siteName: 'https://alpha.example.com' });
+    await fixture.whenStable();
+    const names = () => [...fixture.nativeElement.querySelectorAll('.password-row__name')].map((element: any) => element.textContent.trim());
+    expect(names()).toEqual(['alpha.example.com', 'zebra.example.com']);
+    dialog.passwordSaved.emit({ ...entry, siteName: 'https://beta.example.com' });
+    await fixture.whenStable();
+    expect(names()).toEqual(['alpha.example.com', 'beta.example.com']);
+  });
 });

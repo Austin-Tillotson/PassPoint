@@ -52,6 +52,7 @@ export class AddPasswordDialog {
     });
 
     this.dialog().nativeElement.showModal();
+    this.dialog().nativeElement.querySelector<HTMLInputElement>('[formControlName="siteName"] input')?.focus();
   }
 
   protected onSubmit(): void {

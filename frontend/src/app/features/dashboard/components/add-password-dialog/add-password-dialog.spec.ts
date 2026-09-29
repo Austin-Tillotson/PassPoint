@@ -25,6 +25,7 @@ describe('Password form submission', () => {
 
   it('shows linked field errors and focuses the first invalid input', async () => {
     const { fixture, service, submit } = await setup(false);
+    expect(document.activeElement).toBe(fixture.nativeElement.querySelector('[formControlName=siteName] input'));
     submit();
     await fixture.whenStable();
     const site = fixture.nativeElement.querySelector('[formControlName=siteName] input');

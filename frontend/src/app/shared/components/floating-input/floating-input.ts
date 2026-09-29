@@ -21,6 +21,7 @@ export class FloatingInput implements ControlValueAccessor {
   readonly placeholder = input('');
   readonly fillOnTab = input<string | null>(null);
   readonly invalid = input(false);
+  readonly describedBy = input<string | null>(null);
 
   protected readonly value = signal('');
   protected readonly isDisabled = signal(false);

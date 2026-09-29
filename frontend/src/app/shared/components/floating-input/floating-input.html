@@ -4,6 +4,8 @@
     [type]="type()"
     [value]="value()"
     [disabled]="isDisabled()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.aria-invalid]="invalid() ? 'true' : null"
     [autocomplete]="autocomplete()"
     [placeholder]="placeholder() || ' '"
     [class.floating-field__input--invalid]="invalid()"

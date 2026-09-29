@@ -45,3 +45,20 @@
   background-color: var(--color-disabled-background);
   color: var(--color-disabled-text);
 }
+
+:host(.floating-input--dialog) {
+  .floating-field input {
+    min-height: 3.5rem;
+    padding: var(--space-4);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+  }
+
+  .floating-field input:not(:focus):not(:placeholder-shown) + label {
+    color: var(--color-text-secondary);
+  }
+
+  .floating-field input.floating-field__input--invalid + label {
+    color: var(--color-error);
+  }
+}

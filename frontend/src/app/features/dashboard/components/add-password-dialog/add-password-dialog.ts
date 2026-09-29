@@ -1,6 +1,8 @@
 import { Component, ElementRef, inject, output, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import { FloatingInput } from '../../../../shared/components/floating-input/floating-input';
 import type { PasswordEntry } from '../../models/password-entry';
@@ -8,7 +10,7 @@ import { PasswordEntriesService } from '../../services/password-entries.service'
 
 @Component({
   selector: 'app-add-password-dialog',
-  imports: [FloatingInput, ReactiveFormsModule],
+  imports: [FloatingInput, ReactiveFormsModule, FaIconComponent],
   templateUrl: './add-password-dialog.html',
   styleUrl: './add-password-dialog.scss',
 })
@@ -23,6 +25,7 @@ export class AddPasswordDialog {
   protected readonly editingEntry = signal<PasswordEntry | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isSubmitting = signal(false);
+  protected readonly faXmark = faXmark;
 
   protected readonly passwordForm = new FormGroup({
     siteName: new FormControl('', {

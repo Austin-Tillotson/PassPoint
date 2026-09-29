@@ -42,6 +42,7 @@ export class AddPasswordDialog {
   });
 
   public open(entry?: PasswordEntry): void {
+    if (this.isSubmitting()) return;
     this.editingEntry.set(entry ?? null);
     this.errorMessage.set(null);
 
@@ -54,8 +55,11 @@ export class AddPasswordDialog {
   }
 
   protected onSubmit(): void {
+    if (this.isSubmitting()) return;
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
+      const fieldName = this.passwordForm.controls.siteName.invalid ? 'siteName' : 'password';
+      this.dialog().nativeElement.querySelector<HTMLInputElement>(`[formControlName="${fieldName}"] input`)?.focus();
       return;
     }
 
@@ -64,13 +68,17 @@ export class AddPasswordDialog {
 
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
+    this.passwordForm.disable();
 
     const request = editingEntry
       ? this.passwordEntriesService.update(editingEntry.id, passwordEntry)
       : this.passwordEntriesService.create(passwordEntry);
 
     request
-      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .pipe(finalize(() => {
+        this.isSubmitting.set(false);
+        this.passwordForm.enable();
+      }))
       .subscribe({
         next: (entry) => {
           this.passwordSaved.emit(entry);
@@ -86,8 +94,12 @@ export class AddPasswordDialog {
       });
   }
 
+  protected onCancel(event: Event): void {
+    if (this.isSubmitting()) event.preventDefault();
+  }
+
   protected onBackdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
+    if (!this.isSubmitting() && event.target === event.currentTarget) {
       this.dialog().nativeElement.close();
     }
   }

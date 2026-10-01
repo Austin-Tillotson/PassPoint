@@ -71,7 +71,6 @@
   overflow: hidden;
 }
 
-
 .add-password-button {
   position: fixed;
   right: 1rem;
@@ -101,4 +100,41 @@
 .dashboard-page > [role='alert'] {
   font-size: var(--font-size-ui);
   line-height: var(--line-height-body);
+}
+
+.loading-status {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-ui);
+}
+.loading-status:empty {
+  margin: 0;
+}
+.password-skeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 5rem;
+  padding: var(--space-3) var(--space-4);
+  box-sizing: border-box;
+}
+.password-skeleton + .password-skeleton {
+  border-top: 1px solid var(--color-border-layout);
+}
+.password-skeleton span {
+  background: var(--color-border-layout);
+  border-radius: var(--radius-control);
+}
+.password-skeleton__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+.password-skeleton__text {
+  width: min(45%, 16rem);
+  height: 1rem;
+}
+.password-skeleton__action {
+  width: 1rem;
+  height: 1rem;
+  margin-left: auto;
 }

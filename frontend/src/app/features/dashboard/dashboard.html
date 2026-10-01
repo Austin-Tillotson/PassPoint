@@ -9,6 +9,7 @@
       #headingAddButton
       class="button button--primary dashboard-heading__add"
       type="button"
+      [disabled]="!canAddPassword()"
       (click)="passwordDialog.open()"
     >
       <fa-icon [icon]="faPlus" aria-hidden="true" />
@@ -16,43 +17,52 @@
     </button>
   </header>
 
-  @if (errorMessage()) {
-    <p role="alert">{{ errorMessage() }}</p>
-  }
+  <p class="loading-status" role="status" aria-live="polite">
+    {{ isLoading() ? 'Loading passwords…' : '' }}
+  </p>
 
-  <app-add-password-dialog
-    #passwordDialog
-    (passwordSaved)="savePasswordEntry($event)"
-  />
+  <app-add-password-dialog #passwordDialog (passwordSaved)="savePasswordEntry($event)" />
 
   <app-password-detail-dialog
-    [errorMessage]="errorMessage()"
+    [errorMessage]="deleteError()"
     [isDeleting]="isDeleting()"
     (editRequested)="passwordDialog.open($event)"
     (deleteRequested)="deletePasswordEntry($event)"
   />
 
-  <section class="password-list" aria-label="Saved passwords">
-    <div class="password-list__heading" aria-hidden="true">
-      <span>Site</span>
-      <span>View</span>
-    </div>
-    <ul class="password-list__entries">
-      @for (entry of passwordEntries(); track entry.id) {
-        <li>
-          <app-password-row
-            [siteName]="entry.siteName"
-            (detailsRequested)="openDetails(entry)"
-          />
-        </li>
-      }
-    </ul>
+  <section class="password-list" aria-label="Saved passwords" [attr.aria-busy]="isLoading()">
+    @if (isLoading()) {
+      <div aria-hidden="true">
+        @for (row of [1, 2, 3]; track row) {
+          <div class="password-skeleton">
+            <span class="password-skeleton__icon"></span
+            ><span class="password-skeleton__text"></span
+            ><span class="password-skeleton__action"></span>
+          </div>
+        }
+      </div>
+    } @else if (loadError()) {
+      <p role="alert">{{ loadError() }}</p>
+    } @else if (hasLoaded()) {
+      <div class="password-list__heading" aria-hidden="true">
+        <span>Site</span>
+        <span>View</span>
+      </div>
+      <ul class="password-list__entries">
+        @for (entry of passwordEntries(); track entry.id) {
+          <li>
+            <app-password-row [siteName]="entry.siteName" (detailsRequested)="openDetails(entry)" />
+          </li>
+        }
+      </ul>
+    }
   </section>
 
   @if (showFloatingAdd()) {
     <button
       class="button button--primary add-password-button"
       type="button"
+      [disabled]="!canAddPassword()"
       aria-label="Add password"
       title="Add password"
       (click)="passwordDialog.open()"

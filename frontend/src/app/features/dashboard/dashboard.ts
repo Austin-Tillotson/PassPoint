@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   OnInit,
@@ -8,6 +9,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,7 +37,13 @@ export class Dashboard implements OnInit {
 
   protected readonly faPlus = faPlus;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
-  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly loadError = signal<string | null>(null);
+  protected readonly deleteError = signal<string | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly hasLoaded = signal(false);
+  protected readonly canAddPassword = computed(
+    () => this.hasLoaded() && !this.isLoading() && !this.loadError(),
+  );
   protected readonly showFloatingAdd = signal(false);
 
   constructor() {
@@ -53,15 +62,23 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    this.passwordEntriesService.getAll().subscribe({
-      next: (entries) => this.passwordEntries.set(entries),
-      error: () =>
-        this.errorMessage.set('Unable to load your saved passwords.'),
-    });
+    this.passwordEntriesService
+      .getAll()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isLoading.set(false)),
+      )
+      .subscribe({
+        next: (entries) => {
+          this.passwordEntries.set(entries);
+          this.hasLoaded.set(true);
+        },
+        error: () => this.loadError.set('Unable to load your saved passwords.'),
+      });
   }
 
   protected openDetails(entry: PasswordEntry): void {
-    this.errorMessage.set(null);
+    this.deleteError.set(null);
     this.detailDialog().open(entry);
   }
 
@@ -90,7 +107,7 @@ export class Dashboard implements OnInit {
       return;
     }
 
-    this.errorMessage.set(null);
+    this.deleteError.set(null);
 
     this.isDeleting.set(true);
     this.passwordEntriesService.delete(entry.id).subscribe({
@@ -104,7 +121,7 @@ export class Dashboard implements OnInit {
       },
       error: () => {
         this.isDeleting.set(false);
-        this.errorMessage.set('Unable to delete the password entry.');
+        this.deleteError.set('Unable to delete the password entry.');
       },
     });
   }

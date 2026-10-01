@@ -31,7 +31,7 @@ describe('Dashboard Add password actions', () => {
       imports: [Dashboard],
       providers: [{
         provide: PasswordEntriesService,
-        useValue: { getAll: () => of([]) },
+        useValue: { getAll: () => of([{ id: 'existing', siteName: 'https://existing.example.com', password: 'Sample', createdAtUtc: '' }]) },
       }],
     }).compileComponents();
 
@@ -82,9 +82,9 @@ describe('Dashboard Add password actions', () => {
     dialog.passwordSaved.emit({ ...entry, id: '2', siteName: 'https://alpha.example.com' });
     await fixture.whenStable();
     const names = () => [...fixture.nativeElement.querySelectorAll('.password-row__name')].map((element: any) => element.textContent.trim());
-    expect(names()).toEqual(['alpha.example.com', 'zebra.example.com']);
+    expect(names()).toEqual(['alpha.example.com', 'existing.example.com', 'zebra.example.com']);
     dialog.passwordSaved.emit({ ...entry, siteName: 'https://beta.example.com' });
     await fixture.whenStable();
-    expect(names()).toEqual(['alpha.example.com', 'beta.example.com']);
+    expect(names()).toEqual(['alpha.example.com', 'beta.example.com', 'existing.example.com']);
   });
 });

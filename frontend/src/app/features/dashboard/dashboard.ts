@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  Injector,
   ElementRef,
   OnInit,
   afterNextRender,
@@ -12,7 +13,7 @@ import {
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faKey } from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
 import { PasswordDetailDialog } from './components/password-detail-dialog/password-detail-dialog';
@@ -29,6 +30,8 @@ import { PasswordEntriesService } from './services/password-entries.service';
 export class Dashboard implements OnInit {
   private readonly passwordEntriesService = inject(PasswordEntriesService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
+  private readonly emptyAddButton = viewChild<ElementRef<HTMLButtonElement>>('emptyAddButton');
   private readonly headingAddButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
 
@@ -36,6 +39,7 @@ export class Dashboard implements OnInit {
   protected readonly isDeleting = signal(false);
 
   protected readonly faPlus = faPlus;
+  protected readonly faKey = faKey;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly loadError = signal<string | null>(null);
   protected readonly deleteError = signal<string | null>(null);
@@ -45,6 +49,7 @@ export class Dashboard implements OnInit {
     () => this.hasLoaded() && !this.isLoading() && !this.loadError(),
   );
   protected readonly showFloatingAdd = signal(false);
+  protected readonly isEmpty = computed(() => this.hasLoaded() && !this.isLoading() && !this.loadError() && this.passwordEntries().length === 0);
 
   constructor() {
     afterNextRender(() => {
@@ -83,6 +88,7 @@ export class Dashboard implements OnInit {
   }
 
   protected savePasswordEntry(savedEntry: PasswordEntry): void {
+    const wasEmpty = this.isEmpty();
     this.passwordEntries.update((entries) => {
       const exists = entries.some((entry) => entry.id === savedEntry.id);
 
@@ -96,6 +102,13 @@ export class Dashboard implements OnInit {
         first.siteName.localeCompare(second.siteName),
       );
     });
+    if (wasEmpty) this.focusAddAction();
+  }
+
+  private focusAddAction(): void {
+    afterNextRender(() => {
+      (this.emptyAddButton() ?? this.headingAddButton()).nativeElement.focus();
+    }, { injector: this.injector });
   }
 
   protected deletePasswordEntry(entry: PasswordEntry): void {
@@ -114,7 +127,7 @@ export class Dashboard implements OnInit {
       next: () => {
         this.isDeleting.set(false);
         this.detailDialog().close();
-        this.headingAddButton().nativeElement.focus();
+        this.focusAddAction();
         this.passwordEntries.update((entries) =>
           entries.filter((currentEntry) => currentEntry.id !== entry.id),
         );

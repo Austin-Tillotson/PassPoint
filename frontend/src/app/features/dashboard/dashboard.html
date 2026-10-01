@@ -7,6 +7,7 @@
 
     <button
       #headingAddButton
+      [hidden]="isEmpty()"
       class="button button--primary dashboard-heading__add"
       type="button"
       [disabled]="!canAddPassword()"
@@ -43,6 +44,15 @@
       </div>
     } @else if (loadError()) {
       <p role="alert">{{ loadError() }}</p>
+    } @else if (isEmpty()) {
+      <div class="dashboard-state">
+        <fa-icon class="dashboard-state__icon" [icon]="faKey" aria-hidden="true" />
+        <h2>No passwords yet</h2>
+        <p>Add your first entry to keep your logins in one place.</p>
+        <button #emptyAddButton class="button button--primary" type="button" (click)="passwordDialog.open()">
+          <fa-icon [icon]="faPlus" aria-hidden="true" /> Add your first password
+        </button>
+      </div>
     } @else if (hasLoaded()) {
       <div class="password-list__heading" aria-hidden="true">
         <span>Site</span>
@@ -58,7 +68,7 @@
     }
   </section>
 
-  @if (showFloatingAdd()) {
+  @if (showFloatingAdd() && !isEmpty()) {
     <button
       class="button button--primary add-password-button"
       type="button"

@@ -56,6 +56,17 @@ describe('Password form submission', () => {
     expect(service.update).toHaveBeenCalledTimes(2);
   });
 
+  it('reveals the still-focused control after validation grows a short dialog', async () => {
+    const { fixture, dialog } = await setup(false);
+    const cancel = fixture.nativeElement.querySelector('footer button') as HTMLButtonElement;
+    vi.spyOn(dialog, 'getBoundingClientRect').mockReturnValue({ top: 0, bottom: 100, height: 100 } as DOMRect);
+    vi.spyOn(cancel, 'getBoundingClientRect').mockReturnValue({ top: 90, bottom: 134, height: 44 } as DOMRect);
+    const scroll = vi.fn(); cancel.scrollIntoView = scroll;
+    cancel.focus(); await fixture.whenStable();
+    expect(scroll).toHaveBeenCalledWith({ block: 'nearest', behavior: 'instant' });
+    expect(document.activeElement).toBe(cancel);
+  });
+
   it('emits the saved entry and closes after success', async () => {
     const { fixture, dialog, response, submit } = await setup();
     const saved = vi.fn();

@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, Injector, afterNextRender, inject, output, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -16,6 +16,7 @@ import { PasswordEntriesService } from '../../services/password-entries.service'
 })
 export class AddPasswordDialog {
   private readonly passwordEntriesService = inject(PasswordEntriesService);
+  private readonly injector = inject(Injector);
 
   private readonly dialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
@@ -93,6 +94,21 @@ export class AddPasswordDialog {
           );
         },
       });
+  }
+
+  protected keepFocusedControlVisible(event: FocusEvent): void {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    afterNextRender(() => {
+      const dialog = this.dialog().nativeElement;
+      if (!dialog.open || document.activeElement !== target || !dialog.contains(target)) return;
+      const bounds = dialog.getBoundingClientRect();
+      const control = target.getBoundingClientRect();
+      // Blur validation can grow the form after the browser's focus scroll.
+      if (bounds.height > 0 && (control.top < bounds.top + 6 || control.bottom > bounds.bottom - 6)) {
+        target.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+      }
+    }, { injector: this.injector });
   }
 
   protected onCancel(event: Event): void {

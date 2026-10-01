@@ -171,6 +171,7 @@ describe('Dashboard request states', () => {
     const details = fixture.debugElement.query(By.directive(PasswordDetailDialog))
       .componentInstance as PasswordDetailDialog;
     vi.spyOn(details, 'close').mockImplementation(() => {});
+    (element.querySelector('.password-row__site') as HTMLButtonElement).focus();
     details.deleteRequested.emit(entry);
     deletion.next();
     deletion.complete();

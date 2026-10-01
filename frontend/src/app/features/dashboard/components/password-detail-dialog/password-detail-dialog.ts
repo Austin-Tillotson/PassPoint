@@ -13,6 +13,7 @@ export class PasswordDetailDialog {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   readonly errorMessage = input<string | null>(null);
   readonly isDeleting = input(false);
+  readonly deletingEntryId = input<string | null>(null);
   readonly editRequested = output<PasswordEntry>();
   readonly deleteRequested = output<PasswordEntry>();
   protected readonly entry = signal<PasswordEntry | null>(null);
@@ -33,6 +34,10 @@ export class PasswordDetailDialog {
     this.entry.set(entry);
     this.isPasswordVisible.set(false);
     this.dialog().nativeElement.showModal();
+  }
+
+  isShowing(id: string): boolean {
+    return this.dialog().nativeElement.open && this.entry()?.id === id;
   }
 
   close(): void {

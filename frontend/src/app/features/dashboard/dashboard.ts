@@ -18,6 +18,8 @@ import {
   faKey,
   faRotateRight,
   faTriangleExclamation,
+  faCheck,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
@@ -50,7 +52,16 @@ export class Dashboard implements OnInit {
   protected readonly faTriangleExclamation = faTriangleExclamation;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly loadError = signal<string | null>(null);
-  protected readonly deleteError = signal<string | null>(null);
+  private readonly selectedEntryId = signal<string | null>(null);
+  private readonly deleteErrors = signal<Record<string, string>>({});
+  protected readonly deleteError = computed(
+    () => this.deleteErrors()[this.selectedEntryId() ?? ''] ?? null,
+  );
+  protected readonly feedback = signal('');
+  protected readonly feedbackVersion = signal(0);
+  protected readonly deletingEntryId = signal<string | null>(null);
+  protected readonly faCheck = faCheck;
+  protected readonly faXmark = faXmark;
   protected readonly isLoading = signal(false);
   protected readonly hasLoaded = signal(false);
   protected readonly canAddPassword = computed(
@@ -133,12 +144,13 @@ export class Dashboard implements OnInit {
   }
 
   protected openDetails(entry: PasswordEntry): void {
-    this.deleteError.set(null);
+    this.selectedEntryId.set(entry.id);
     this.detailDialog().open(entry);
   }
 
   protected savePasswordEntry(savedEntry: PasswordEntry): void {
     const wasEmpty = this.isEmpty();
+    const isEdit = this.passwordEntries().some((entry) => entry.id === savedEntry.id);
     this.passwordEntries.update((entries) => {
       const exists = entries.some((entry) => entry.id === savedEntry.id);
 
@@ -148,6 +160,7 @@ export class Dashboard implements OnInit {
 
       return updatedEntries.sort((first, second) => first.siteName.localeCompare(second.siteName));
     });
+    this.announceSuccess(isEdit ? 'Password updated' : 'Password added');
     if (wasEmpty) this.focusAddAction();
   }
 
@@ -161,28 +174,74 @@ export class Dashboard implements OnInit {
   }
 
   protected deletePasswordEntry(entry: PasswordEntry): void {
-    const shouldDelete = window.confirm(`Delete the password entry for ${entry.siteName}?`);
-
-    if (!shouldDelete) {
-      return;
-    }
-
-    this.deleteError.set(null);
-
-    this.isDeleting.set(true);
-    this.passwordEntriesService.delete(entry.id).subscribe({
-      next: () => {
-        this.isDeleting.set(false);
-        this.detailDialog().close();
-        this.focusAddAction();
-        this.passwordEntries.update((entries) =>
-          entries.filter((currentEntry) => currentEntry.id !== entry.id),
-        );
-      },
-      error: () => {
-        this.isDeleting.set(false);
-        this.deleteError.set('Unable to delete the password entry.');
-      },
+    if (this.isDeleting()) return;
+    if (!window.confirm(`Delete the password entry for ${entry.siteName}?`)) return;
+    this.deleteErrors.update((errors) => {
+      const updated = { ...errors };
+      delete updated[entry.id];
+      return updated;
     });
+    this.deletingEntryId.set(entry.id);
+    this.isDeleting.set(true);
+    this.passwordEntriesService
+      .delete(entry.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isDeleting.set(false);
+          const entries = this.passwordEntries();
+          const index = entries.findIndex((current) => current.id === entry.id);
+          const nextId = entries[index + 1]?.id ?? entries[index - 1]?.id;
+          const deletedRow = this.findRow(entry.id);
+          const shouldClose = this.detailDialog().isShowing(entry.id);
+          const shouldFocus = shouldClose || !!deletedRow?.contains(document.activeElement);
+          if (shouldClose) this.detailDialog().close();
+          this.passwordEntries.set(entries.filter((current) => current.id !== entry.id));
+          this.announceSuccess('Password deleted');
+          if (shouldFocus) {
+            afterNextRender(
+              () => {
+                // Do not interrupt a control selected while the request was pending.
+                if (document.activeElement !== document.body && document.activeElement?.isConnected)
+                  return;
+                const target = nextId
+                  ? this.findRow(nextId)?.querySelector<HTMLElement>('.password-row__site')
+                  : this.emptyAddButton()?.nativeElement;
+                target?.focus();
+              },
+              { injector: this.injector },
+            );
+          }
+        },
+        error: () => {
+          this.isDeleting.set(false);
+          this.deleteErrors.update((errors) => ({
+            ...errors,
+            [entry.id]: 'Unable to delete the password entry. Please try again.',
+          }));
+        },
+      });
+  }
+
+  protected dismissFeedback(event: Event): void {
+    if (document.activeElement === event.currentTarget) {
+      const target =
+        this.emptyAddButton()?.nativeElement ??
+        this.host.nativeElement.querySelector<HTMLButtonElement>('.password-row__site') ??
+        this.headingAddButton().nativeElement;
+      target.focus();
+    }
+    this.feedback.set('');
+  }
+
+  private announceSuccess(message: string): void {
+    this.feedback.set(message);
+    this.feedbackVersion.update((version) => version + 1);
+  }
+
+  private findRow(id: string): HTMLElement | undefined {
+    return Array.from(
+      this.host.nativeElement.querySelectorAll<HTMLElement>('[data-entry-id]'),
+    ).find((row) => row.dataset['entryId'] === id);
   }
 }

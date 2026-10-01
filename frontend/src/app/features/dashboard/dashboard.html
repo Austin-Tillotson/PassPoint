@@ -22,11 +22,31 @@
     {{ isLoading() ? 'Loading passwords…' : '' }}
   </p>
 
+  <div class="dashboard-feedback" [class.dashboard-feedback--visible]="!!feedback()">
+    <p role="status" aria-live="polite" aria-atomic="true">
+      @for (version of [feedbackVersion()]; track version) {
+        <span>{{ feedback() }}</span>
+      }
+    </p>
+    @if (feedback()) {
+      <fa-icon [icon]="faCheck" aria-hidden="true" />
+      <button
+        class="button button--icon"
+        type="button"
+        aria-label="Dismiss success message"
+        (click)="dismissFeedback($event)"
+      >
+        <fa-icon [icon]="faXmark" aria-hidden="true" />
+      </button>
+    }
+  </div>
+
   <app-add-password-dialog #passwordDialog (passwordSaved)="savePasswordEntry($event)" />
 
   <app-password-detail-dialog
     [errorMessage]="deleteError()"
     [isDeleting]="isDeleting()"
+    [deletingEntryId]="deletingEntryId()"
     (editRequested)="passwordDialog.open($event)"
     (deleteRequested)="deletePasswordEntry($event)"
   />
@@ -76,7 +96,7 @@
       </div>
       <ul class="password-list__entries">
         @for (entry of passwordEntries(); track entry.id) {
-          <li>
+          <li [attr.data-entry-id]="entry.id">
             <app-password-row [siteName]="entry.siteName" (detailsRequested)="openDetails(entry)" />
           </li>
         }

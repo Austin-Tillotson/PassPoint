@@ -166,3 +166,29 @@
   max-width: 100%;
   white-space: normal;
 }
+
+.dashboard-feedback {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.dashboard-feedback--visible {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border-layout);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+.dashboard-feedback p {
+  margin: 0;
+  flex: 1;
+  font-size: var(--font-size-ui);
+}
+.dashboard-feedback p:empty {
+  display: none;
+}
+.dashboard-feedback > fa-icon {
+  order: -1;
+  color: var(--color-text-secondary);
+}

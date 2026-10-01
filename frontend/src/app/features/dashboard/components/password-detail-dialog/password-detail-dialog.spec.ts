@@ -3,7 +3,12 @@ import { vi } from 'vitest';
 import { PasswordDetailDialog } from './password-detail-dialog';
 
 describe('Password details', () => {
-  const entry = { id: '1', siteName: 'https://example.com', password: 'Sample-only', createdAtUtc: '2026-09-25T12:00:00Z' };
+  const entry = {
+    id: '1',
+    siteName: 'https://example.com',
+    password: 'Sample-only',
+    createdAtUtc: '2026-09-25T12:00:00Z',
+  };
 
   async function setup() {
     const fixture = TestBed.createComponent(PasswordDetailDialog);
@@ -35,6 +40,21 @@ describe('Password details', () => {
     expect(edited).toHaveBeenCalledWith(entry);
   });
 
+  it('labels only the entry being deleted while blocking overlapping actions', async () => {
+    const { fixture } = await setup();
+    fixture.componentRef.setInput('isDeleting', true);
+    fixture.componentRef.setInput('deletingEntryId', 'other');
+    await fixture.whenStable();
+    const button = fixture.nativeElement.querySelector(
+      'footer button:last-child',
+    ) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(button.textContent).not.toContain('Deleting');
+    fixture.componentRef.setInput('deletingEntryId', entry.id);
+    await fixture.whenStable();
+    expect(button.textContent).toContain('Deleting');
+  });
+
   it('requests deletion without closing details and displays failure feedback', async () => {
     const { fixture, component, dialog } = await setup();
     const deleted = vi.fn();
@@ -44,6 +64,8 @@ describe('Password details', () => {
     expect(dialog.close).not.toHaveBeenCalled();
     fixture.componentRef.setInput('errorMessage', 'Unable to delete the password entry.');
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Unable to delete');
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
+      'Unable to delete',
+    );
   });
 });

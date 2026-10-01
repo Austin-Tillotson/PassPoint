@@ -13,7 +13,12 @@ import {
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faPlus, faKey } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlus,
+  faKey,
+  faRotateRight,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
 import { PasswordDetailDialog } from './components/password-detail-dialog/password-detail-dialog';
@@ -31,6 +36,7 @@ export class Dashboard implements OnInit {
   private readonly passwordEntriesService = inject(PasswordEntriesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly emptyAddButton = viewChild<ElementRef<HTMLButtonElement>>('emptyAddButton');
   private readonly headingAddButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
@@ -40,16 +46,24 @@ export class Dashboard implements OnInit {
 
   protected readonly faPlus = faPlus;
   protected readonly faKey = faKey;
+  protected readonly faRotateRight = faRotateRight;
+  protected readonly faTriangleExclamation = faTriangleExclamation;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly loadError = signal<string | null>(null);
   protected readonly deleteError = signal<string | null>(null);
-  protected readonly isLoading = signal(true);
+  protected readonly isLoading = signal(false);
   protected readonly hasLoaded = signal(false);
   protected readonly canAddPassword = computed(
     () => this.hasLoaded() && !this.isLoading() && !this.loadError(),
   );
   protected readonly showFloatingAdd = signal(false);
-  protected readonly isEmpty = computed(() => this.hasLoaded() && !this.isLoading() && !this.loadError() && this.passwordEntries().length === 0);
+  protected readonly isEmpty = computed(
+    () =>
+      this.hasLoaded() &&
+      !this.isLoading() &&
+      !this.loadError() &&
+      this.passwordEntries().length === 0,
+  );
 
   constructor() {
     afterNextRender(() => {
@@ -67,11 +81,47 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadEntries();
+  }
+
+  protected loadEntries(): void {
+    if (this.isLoading()) return;
+    const retry = this.host.nativeElement.querySelector('.dashboard-retry');
+    const restoreFocus = !!retry && document.activeElement === retry;
+    this.isLoading.set(true);
+    this.loadError.set(null);
+    if (restoreFocus) {
+      afterNextRender(
+        () => {
+          if (document.activeElement === document.body) {
+            this.host.nativeElement.querySelector<HTMLElement>('.loading-status')?.focus();
+          }
+        },
+        { injector: this.injector },
+      );
+    }
     this.passwordEntriesService
       .getAll()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.isLoading.set(false)),
+        finalize(() => {
+          this.isLoading.set(false);
+          if (restoreFocus && !this.destroyRef.destroyed) {
+            afterNextRender(
+              () => {
+                const active = document.activeElement;
+                const status = this.host.nativeElement.querySelector('.loading-status');
+                if (active !== document.body && active !== status) return;
+                this.host.nativeElement
+                  .querySelector<HTMLElement>(
+                    '.dashboard-retry, .dashboard-state button, .password-row__site',
+                  )
+                  ?.focus();
+              },
+              { injector: this.injector },
+            );
+          }
+        }),
       )
       .subscribe({
         next: (entries) => {
@@ -93,28 +143,25 @@ export class Dashboard implements OnInit {
       const exists = entries.some((entry) => entry.id === savedEntry.id);
 
       const updatedEntries = exists
-        ? entries.map((entry) =>
-            entry.id === savedEntry.id ? savedEntry : entry,
-          )
+        ? entries.map((entry) => (entry.id === savedEntry.id ? savedEntry : entry))
         : [...entries, savedEntry];
 
-      return updatedEntries.sort((first, second) =>
-        first.siteName.localeCompare(second.siteName),
-      );
+      return updatedEntries.sort((first, second) => first.siteName.localeCompare(second.siteName));
     });
     if (wasEmpty) this.focusAddAction();
   }
 
   private focusAddAction(): void {
-    afterNextRender(() => {
-      (this.emptyAddButton() ?? this.headingAddButton()).nativeElement.focus();
-    }, { injector: this.injector });
+    afterNextRender(
+      () => {
+        (this.emptyAddButton() ?? this.headingAddButton()).nativeElement.focus();
+      },
+      { injector: this.injector },
+    );
   }
 
   protected deletePasswordEntry(entry: PasswordEntry): void {
-    const shouldDelete = window.confirm(
-      `Delete the password entry for ${entry.siteName}?`,
-    );
+    const shouldDelete = window.confirm(`Delete the password entry for ${entry.siteName}?`);
 
     if (!shouldDelete) {
       return;

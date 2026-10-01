@@ -18,7 +18,7 @@
     </button>
   </header>
 
-  <p class="loading-status" role="status" aria-live="polite">
+  <p class="loading-status" tabindex="-1" role="status" aria-live="polite">
     {{ isLoading() ? 'Loading passwords…' : '' }}
   </p>
 
@@ -43,13 +43,29 @@
         }
       </div>
     } @else if (loadError()) {
-      <p role="alert">{{ loadError() }}</p>
+      <div class="dashboard-state">
+        <fa-icon class="dashboard-state__icon" [icon]="faTriangleExclamation" aria-hidden="true" />
+        <h2>Couldn’t load passwords</h2>
+        <p role="alert">{{ loadError() }} Please try again.</p>
+        <button
+          class="button button--primary dashboard-retry"
+          type="button"
+          (click)="loadEntries()"
+        >
+          <fa-icon [icon]="faRotateRight" aria-hidden="true" /> Retry
+        </button>
+      </div>
     } @else if (isEmpty()) {
       <div class="dashboard-state">
         <fa-icon class="dashboard-state__icon" [icon]="faKey" aria-hidden="true" />
         <h2>No passwords yet</h2>
         <p>Add your first entry to keep your logins in one place.</p>
-        <button #emptyAddButton class="button button--primary" type="button" (click)="passwordDialog.open()">
+        <button
+          #emptyAddButton
+          class="button button--primary"
+          type="button"
+          (click)="passwordDialog.open()"
+        >
           <fa-icon [icon]="faPlus" aria-hidden="true" /> Add your first password
         </button>
       </div>

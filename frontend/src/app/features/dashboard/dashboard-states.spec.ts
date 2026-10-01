@@ -36,18 +36,24 @@ describe('Dashboard request states', () => {
   async function setup() {
     const request = new Subject<PasswordEntry[]>();
     const deletion = new Subject<void>();
+    const requests = [request];
+    const getAll = vi.fn(() => requests.shift()!);
     await TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [
-        {
-          provide: PasswordEntriesService,
-          useValue: { getAll: () => request, delete: () => deletion },
-        },
+        { provide: PasswordEntriesService, useValue: { getAll, delete: () => deletion } },
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(Dashboard);
     await fixture.whenStable();
-    return { request, deletion, fixture, element: fixture.nativeElement as HTMLElement };
+    return {
+      request,
+      requests,
+      getAll,
+      deletion,
+      fixture,
+      element: fixture.nativeElement as HTMLElement,
+    };
   }
   it.each(['populated', 'empty', 'failure'])(
     'guards both Add actions until a successful load: %s',
@@ -62,7 +68,7 @@ describe('Dashboard request states', () => {
       const buttons = () =>
         Array.from(
           element.querySelectorAll<HTMLButtonElement>(
-            '.dashboard-heading__add:not([hidden]), .add-password-button, .dashboard-state button',
+            '.dashboard-heading__add:not([hidden]), .add-password-button, .dashboard-state button:not(.dashboard-retry)',
           ),
         );
       expect(buttons()).toHaveLength(2);
@@ -172,6 +178,100 @@ describe('Dashboard request states', () => {
     expect(element.textContent).toContain('No passwords yet');
     expect(document.activeElement).toBe(element.querySelector('.dashboard-state button'));
     vi.restoreAllMocks();
+  });
+  it.each(['rows', 'empty', 'failure'])(
+    'retries into %s with only one pending request',
+    async (outcome) => {
+      const { request, requests, getAll, fixture, element } = await setup();
+      const dialog = fixture.debugElement.query(By.directive(AddPasswordDialog))
+        .componentInstance as AddPasswordDialog;
+      const open = vi.spyOn(dialog, 'open').mockImplementation(() => {});
+      reportVisibility(false);
+      request.error(new Error('Fixture failure'));
+      await fixture.whenStable();
+      const next = new Subject<PasswordEntry[]>();
+      requests.push(next);
+      const retry = element.querySelector('.dashboard-retry') as HTMLButtonElement;
+      retry.focus();
+      retry.click();
+      retry.click();
+      await fixture.whenStable();
+      expect(getAll).toHaveBeenCalledTimes(2);
+      expect(element.querySelector('.password-skeleton')).not.toBeNull();
+      expect(element.querySelector('[role="alert"]')).toBeNull();
+      const addButtons = () =>
+        Array.from(
+          element.querySelectorAll<HTMLButtonElement>(
+            '.dashboard-heading__add:not([hidden]), .add-password-button, .dashboard-state button:not(.dashboard-retry)',
+          ),
+        );
+      expect(addButtons()).toHaveLength(2);
+      for (const button of addButtons()) {
+        expect(button.disabled).toBe(true);
+        button.click();
+      }
+      expect(open).not.toHaveBeenCalled();
+      if (outcome === 'failure') next.error(new Error('Repeated fixture failure'));
+      else {
+        next.next(
+          outcome === 'empty'
+            ? []
+            : [
+                {
+                  id: '1',
+                  siteName: 'https://alpha.example.com',
+                  password: 'Sample',
+                  createdAtUtc: '',
+                },
+              ],
+        );
+        next.complete();
+      }
+      await fixture.whenStable();
+      const target = element.querySelector(
+        outcome === 'failure'
+          ? '.dashboard-retry'
+          : outcome === 'empty'
+            ? '.dashboard-state button'
+            : '.password-row__site',
+      );
+      expect(document.activeElement).toBe(target);
+      expect(element.querySelector('.password-skeleton')).toBeNull();
+      expect(addButtons()).toHaveLength(outcome === 'empty' ? 1 : 2);
+      for (const button of addButtons()) {
+        expect(button.disabled).toBe(outcome === 'failure');
+        button.click();
+      }
+      expect(open).toHaveBeenCalledTimes(outcome === 'failure' ? 0 : outcome === 'empty' ? 1 : 2);
+    },
+  );
+  it('does not steal focus when the user selects another control during retry', async () => {
+    const { request, requests, fixture, element } = await setup();
+    request.error(new Error('Fixture'));
+    await fixture.whenStable();
+    const next = new Subject<PasswordEntry[]>();
+    requests.push(next);
+    const retry = element.querySelector('.dashboard-retry') as HTMLButtonElement;
+    retry.focus();
+    retry.click();
+    await fixture.whenStable();
+    // Represent an available control outside the results, such as navigation.
+    // The heading Add action is deliberately disabled during retry.
+    const navigation = document.createElement('button');
+    navigation.textContent = 'Navigation';
+    document.body.append(navigation);
+    try {
+      navigation.focus();
+      expect(document.activeElement).toBe(navigation);
+      next.next([
+        { id: '1', siteName: 'https://alpha.example.com', password: 'Sample', createdAtUtc: '' },
+      ]);
+      next.complete();
+      await fixture.whenStable();
+      expect(document.activeElement).toBe(navigation);
+    } finally {
+      navigation.remove();
+    }
   });
   it('clears loading on failure and displays only the load error', async () => {
     const { request, fixture, element } = await setup();

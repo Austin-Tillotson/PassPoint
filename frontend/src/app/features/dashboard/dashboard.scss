@@ -79,6 +79,8 @@
 }
 
 .password-list__heading {
+  background-color: var(--color-surface-pressed);
+  border-radius: var(--radius-surface) var(--radius-surface) 0 0;
   display: grid;
   grid-template-columns: var(--password-list-columns);
   gap: var(--space-4);

@@ -121,7 +121,7 @@
         <span>View</span>
       </div>
       <ul class="password-list__entries">
-        @for (entry of passwordEntries(); track entry.id) {
+        @for (entry of filteredEntries(); track entry.id) {
           <li [attr.data-entry-id]="entry.id">
             <app-password-row [siteName]="entry.siteName" (detailsRequested)="openDetails(entry)" />
           </li>

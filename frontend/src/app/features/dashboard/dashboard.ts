@@ -51,6 +51,13 @@ export class Dashboard implements OnInit {
 
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
   protected readonly searchQuery = signal('');
+  protected readonly normalizedQuery = computed(() => this.searchQuery().trim().toLowerCase());
+  protected readonly filteredEntries = computed(() => {
+    const query = this.normalizedQuery();
+    return query
+      ? this.passwordEntries().filter((entry) => entry.siteName.toLowerCase().includes(query))
+      : this.passwordEntries();
+  });
   protected readonly showSearch = computed(
     () => this.canAddPassword() && this.passwordEntries().length > 0,
   );

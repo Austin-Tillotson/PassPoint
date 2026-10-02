@@ -94,3 +94,44 @@ describe('Dashboard search control', () => {
     expect(element.querySelector('[aria-label="Clear search"]')).toBeNull();
   });
 });
+
+describe('Dashboard site filtering', () => {
+  it.each([
+    ['', ['1', '2', '3', '4', '5']],
+    ['   ', ['1', '2', '3', '4', '5']],
+    ['example.com', ['1', '2', '3', '4', '5']],
+    ['alpha.example', ['1']],
+    ['/portal', ['1', '4', '5']],
+    ['  PoRtAl  ', ['1', '4', '5']],
+    ['[home]', ['2']],
+    ['?next=', ['2']],
+    ['.*', []],
+    ['secret-only-needle', []],
+    ['no-such-site', []],
+  ])('matches only site URL substrings for %s', async (value, ids) => {
+    const { element, getAll, query } = await setup();
+
+    await query(value as string);
+
+    expect(
+      Array.from(element.querySelectorAll<HTMLElement>('[data-entry-id]')).map(
+        (row) => row.dataset['entryId'],
+      ),
+    ).toEqual(ids);
+    expect(getAll).toHaveBeenCalledOnce();
+  });
+
+  it('clearing restores canonical rows and unchanged row identity without fetching', async () => {
+    const { fixture, element, getAll, query } = await setup();
+    const firstRow = element.querySelector('[data-entry-id="1"]');
+
+    await query('portal');
+    expect(element.querySelector('[data-entry-id="1"]')).toBe(firstRow);
+    (element.querySelector('[aria-label="Clear search"]') as HTMLButtonElement).click();
+    await fixture.whenStable();
+
+    expect(element.querySelectorAll('[data-entry-id]').length).toBe(5);
+    expect(element.querySelector('[data-entry-id="1"]')).toBe(firstRow);
+    expect(getAll).toHaveBeenCalledOnce();
+  });
+});

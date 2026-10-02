@@ -15,6 +15,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faMagnifyingGlass,
+  faList,
+  faTableCellsLarge,
   faPlus,
   faKey,
   faRotateRight,
@@ -52,13 +54,24 @@ export class Dashboard implements OnInit {
   protected readonly isDeleting = signal(false);
 
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
+  protected readonly faList = faList;
+  protected readonly faTableCellsLarge = faTableCellsLarge;
+  protected readonly viewMode = signal<'list' | 'grid'>('list');
   protected readonly searchQuery = signal('');
   protected readonly normalizedQuery = computed(() => this.searchQuery().trim().toLowerCase());
   protected readonly filteredEntries = computed(() => {
     const query = this.normalizedQuery();
-    return query
+    const matches = query
       ? this.passwordEntries().filter((entry) => entry.siteName.toLowerCase().includes(query))
       : this.passwordEntries();
+    const siteLabel = (entry: PasswordEntry) =>
+      entry.siteName.replace(/^https?:\/\/(?:www\.)?/i, '');
+    return [...matches].sort((first, second) =>
+      siteLabel(first).localeCompare(siteLabel(second), undefined, {
+        sensitivity: 'base',
+        numeric: true,
+      }),
+    );
   });
   protected readonly showSearch = computed(
     () => this.canAddPassword() && this.passwordEntries().length > 0,

@@ -54,33 +54,62 @@
   @if (canAddPassword()) {
     <h2 class="collection-heading">
       All passwords
-      <span class="collection-heading__count" aria-hidden="true">{{ filteredEntries().length }}</span>
+      <span class="collection-heading__count" aria-hidden="true">{{
+        filteredEntries().length
+      }}</span>
     </h2>
   }
 
   @if (showSearch()) {
-    <div class="dashboard-search" role="search" aria-label="Saved passwords">
-      <fa-icon class="dashboard-search__icon" [icon]="faMagnifyingGlass" aria-hidden="true" />
-      <input
-        #searchInput
-        id="dashboard-search"
-        type="search"
-        aria-label="Search passwords by site"
-        placeholder="Search by site"
-        autocomplete="off"
-        [value]="searchQuery()"
-        (input)="updateSearch($event)"
-      />
-      @if (searchQuery()) {
-        <button
-          class="button button--icon dashboard-search__clear"
-          type="button"
-          aria-label="Clear search"
-          (click)="clearSearch()"
-        >
-          <fa-icon [icon]="faXmark" aria-hidden="true" />
-        </button>
-      }
+    <div class="collection-toolbar">
+      <div class="dashboard-search" role="search" aria-label="Saved passwords">
+        <fa-icon class="dashboard-search__icon" [icon]="faMagnifyingGlass" aria-hidden="true" />
+        <input
+          #searchInput
+          id="dashboard-search"
+          type="search"
+          aria-label="Search passwords by site"
+          placeholder="Search by site"
+          autocomplete="off"
+          [value]="searchQuery()"
+          (input)="updateSearch($event)"
+        />
+        @if (searchQuery()) {
+          <button
+            class="button button--icon dashboard-search__clear"
+            type="button"
+            aria-label="Clear search"
+            (click)="clearSearch()"
+          >
+            <fa-icon [icon]="faXmark" aria-hidden="true" />
+          </button>
+        }
+      </div>
+      <div class="collection-toolbar__options">
+        <select aria-label="Sort passwords" class="collection-sort">
+          <option value="name">Name, A–Z</option>
+        </select>
+        <div class="collection-views" role="group" aria-label="Password display">
+          <button
+            class="button button--icon"
+            type="button"
+            aria-label="List view"
+            [attr.aria-pressed]="viewMode() === 'list'"
+            (click)="viewMode.set('list')"
+          >
+            <fa-icon [icon]="faList" aria-hidden="true" />
+          </button>
+          <button
+            class="button button--icon"
+            type="button"
+            aria-label="Grid view"
+            [attr.aria-pressed]="viewMode() === 'grid'"
+            (click)="viewMode.set('grid')"
+          >
+            <fa-icon [icon]="faTableCellsLarge" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
     </div>
   }
 
@@ -93,7 +122,12 @@
     [textContent]="searchSummary()"
   ></p>
 
-  <section class="password-list" aria-label="Saved passwords" [attr.aria-busy]="isLoading()">
+  <section
+    class="password-list"
+    [class.password-list--grid]="viewMode() === 'grid' && showSearch() && !hasNoMatches()"
+    aria-label="Saved passwords"
+    [attr.aria-busy]="isLoading()"
+  >
     @if (isLoading()) {
       <div aria-hidden="true">
         @for (row of [1, 2, 3]; track row) {
@@ -145,14 +179,20 @@
         </button>
       </div>
     } @else if (hasLoaded()) {
-      <div class="password-list__heading" aria-hidden="true">
-        <span>Site</span>
-        <span>View</span>
-      </div>
+      @if (viewMode() === 'list') {
+        <div class="password-list__heading" aria-hidden="true">
+          <span>Site</span>
+          <span>View</span>
+        </div>
+      }
       <ul class="password-list__entries">
         @for (entry of filteredEntries(); track entry.id) {
           <li [attr.data-entry-id]="entry.id">
-            <app-password-row [siteName]="entry.siteName" (detailsRequested)="openDetails(entry)" />
+            <app-password-row
+              [siteName]="entry.siteName"
+              [grid]="viewMode() === 'grid'"
+              (detailsRequested)="openDetails(entry)"
+            />
           </li>
         }
       </ul>

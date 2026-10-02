@@ -108,6 +108,62 @@ describe('Dashboard search control', () => {
   });
 });
 
+describe('Dashboard display controls', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('sorts loaded entries by site rather than protocol without mutating the response', async () => {
+    const records = [
+      { ...entries[0], id: 'z', siteName: 'http://zebra.example.com' },
+      { ...entries[0], id: 'a', siteName: 'https://www.alpha.example.com' },
+    ];
+    const { element } = await setup(records);
+
+    expect(
+      Array.from(element.querySelectorAll<HTMLElement>('[data-entry-id]')).map(
+        (row) => row.dataset['entryId'],
+      ),
+    ).toEqual(['a', 'z']);
+    expect(records.map((entry) => entry.id)).toEqual(['z', 'a']);
+    expect(
+      element.querySelector('select[aria-label="Sort passwords"] option')?.textContent,
+    ).toContain('A–Z');
+  });
+
+  it('preserves search and entry identity across list/grid switches and opens the same details', async () => {
+    const { fixture, element, query, detail } = await setup();
+    const open = vi.spyOn(detail, 'open').mockImplementation(() => {});
+    await query('portal');
+    const row = element.querySelector('[data-entry-id="1"]');
+    const grid = element.querySelector<HTMLButtonElement>('[aria-label="Grid view"]')!;
+    const list = element.querySelector<HTMLButtonElement>('[aria-label="List view"]')!;
+
+    grid.focus();
+    grid.click();
+    await fixture.whenStable();
+
+    expect(grid.getAttribute('aria-pressed')).toBe('true');
+    expect(list.getAttribute('aria-pressed')).toBe('false');
+    expect(document.activeElement).toBe(grid);
+    expect(element.querySelectorAll('.password-row--grid')).toHaveLength(3);
+    expect(element.querySelector('.password-list__heading')).toBeNull();
+    expect(element.querySelector('[data-entry-id="1"]')).toBe(row);
+    element.querySelector<HTMLButtonElement>('.password-row__site')!.click();
+    expect(open).toHaveBeenCalledWith(entries[0]);
+
+    await query('no-such-site');
+    expect(element.querySelector('.dashboard-no-matches')).not.toBeNull();
+    element.querySelector<HTMLButtonElement>('.dashboard-search-reset')!.click();
+    await fixture.whenStable();
+    expect(element.querySelectorAll('.password-row--grid')).toHaveLength(5);
+
+    list.click();
+    await fixture.whenStable();
+    expect(element.querySelector('.password-row--grid')).toBeNull();
+    expect(element.querySelector('.password-list__heading')).not.toBeNull();
+    expect(list.getAttribute('aria-pressed')).toBe('true');
+  });
+});
+
 describe('Dashboard site filtering', () => {
   it.each([
     ['', ['1', '2', '3', '4', '5']],

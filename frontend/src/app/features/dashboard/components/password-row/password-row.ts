@@ -10,6 +10,7 @@ import { faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
 })
 export class PasswordRow {
   readonly siteName = input.required<string>();
+  readonly grid = input(false);
 
   readonly detailsRequested = output<void>();
 

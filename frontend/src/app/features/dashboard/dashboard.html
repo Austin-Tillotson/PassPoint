@@ -77,6 +77,15 @@
     </div>
   }
 
+  <p
+    class="search-results"
+    role="status"
+    aria-label="Search results"
+    aria-live="polite"
+    aria-atomic="true"
+    [textContent]="searchSummary()"
+  ></p>
+
   <section class="password-list" aria-label="Saved passwords" [attr.aria-busy]="isLoading()">
     @if (isLoading()) {
       <div aria-hidden="true">
@@ -113,6 +122,19 @@
           (click)="passwordDialog.open()"
         >
           <fa-icon [icon]="faPlus" aria-hidden="true" /> Add your first password
+        </button>
+      </div>
+    } @else if (hasNoMatches()) {
+      <div class="dashboard-state dashboard-no-matches">
+        <fa-icon class="dashboard-state__icon" [icon]="faMagnifyingGlass" aria-hidden="true" />
+        <h2>No matching passwords</h2>
+        <p>Try another site or clear your search.</p>
+        <button
+          class="button button--secondary dashboard-search-reset"
+          type="button"
+          (click)="clearSearch()"
+        >
+          Clear search
         </button>
       </div>
     } @else if (hasLoaded()) {

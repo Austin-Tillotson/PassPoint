@@ -62,6 +62,18 @@ export class Dashboard implements OnInit {
     () => this.canAddPassword() && this.passwordEntries().length > 0,
   );
 
+  protected readonly hasNoMatches = computed(
+    () => this.showSearch() && this.filteredEntries().length === 0,
+  );
+  protected readonly searchSummary = computed(() => {
+    if (!this.showSearch()) return '';
+    const total = this.passwordEntries().length;
+    const noun = total === 1 ? 'password' : 'passwords';
+    return this.normalizedQuery()
+      ? `${this.filteredEntries().length} of ${total} ${noun}`
+      : `${total} ${noun}`;
+  });
+
   protected readonly faPlus = faPlus;
   protected readonly faKey = faKey;
   protected readonly faRotateRight = faRotateRight;

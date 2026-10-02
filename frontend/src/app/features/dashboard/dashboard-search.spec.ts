@@ -135,3 +135,62 @@ describe('Dashboard site filtering', () => {
     expect(getAll).toHaveBeenCalledOnce();
   });
 });
+
+describe('Dashboard search results feedback', () => {
+  it('keeps one polite results region and input focus while counts change', async () => {
+    const { element, query } = await setup();
+    const status = element.querySelector('[aria-label="Search results"]')!;
+    const input = element.querySelector('input[type="search"]');
+
+    expect(status.textContent).toBe('5 passwords');
+    expect(status.getAttribute('aria-live')).toBe('polite');
+    await query('alpha');
+    expect(status.textContent).toBe('1 of 5 passwords');
+    await query('portal');
+    expect(status.textContent).toBe('3 of 5 passwords');
+    await query('no-such-site');
+
+    expect(status.textContent).toBe('0 of 5 passwords');
+    expect(element.querySelector('[aria-label="Search results"]')).toBe(status);
+    expect(element.querySelectorAll('[aria-label="Search results"]').length).toBe(1);
+    expect(document.activeElement).toBe(input);
+    expect(element.textContent).toContain('No matching passwords');
+    expect(element.textContent).not.toContain('No passwords yet');
+    expect((element.querySelector('.dashboard-heading__add') as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+  });
+
+  it('clears no matches back to all rows and focuses search', async () => {
+    const { fixture, element, query } = await setup();
+    await query('no-such-site');
+
+    const clear = element.querySelector<HTMLButtonElement>('.dashboard-search-reset')!;
+    clear.focus();
+    clear.click();
+    await fixture.whenStable();
+
+    expect(element.querySelector('.dashboard-no-matches')).toBeNull();
+    expect(element.querySelectorAll('[data-entry-id]').length).toBe(5);
+    expect(document.activeElement).toBe(element.querySelector('input[type="search"]'));
+  });
+
+  it('uses singular wording for a one-entry collection', async () => {
+    const { element, query } = await setup([entries[0]]);
+    expect(element.querySelector('[aria-label="Search results"]')?.textContent).toBe('1 password');
+
+    await query('no-such-site');
+
+    expect(element.querySelector('[aria-label="Search results"]')?.textContent).toBe(
+      '0 of 1 password',
+    );
+  });
+
+  it('does not describe a truly empty collection as no matches', async () => {
+    const { element } = await setup([]);
+
+    expect(element.textContent).toContain('No passwords yet');
+    expect(element.querySelector('.dashboard-no-matches')).toBeNull();
+    expect(element.querySelector('[aria-label="Search results"]')?.textContent).toBe('');
+  });
+});

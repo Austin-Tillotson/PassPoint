@@ -51,6 +51,32 @@
     (deleteRequested)="deletePasswordEntry($event)"
   />
 
+  @if (showSearch()) {
+    <div class="dashboard-search" role="search" aria-label="Saved passwords">
+      <fa-icon class="dashboard-search__icon" [icon]="faMagnifyingGlass" aria-hidden="true" />
+      <input
+        #searchInput
+        id="dashboard-search"
+        type="search"
+        aria-label="Search passwords by site"
+        placeholder="Search by site"
+        autocomplete="off"
+        [value]="searchQuery()"
+        (input)="updateSearch($event)"
+      />
+      @if (searchQuery()) {
+        <button
+          class="button button--icon dashboard-search__clear"
+          type="button"
+          aria-label="Clear search"
+          (click)="clearSearch()"
+        >
+          <fa-icon [icon]="faXmark" aria-hidden="true" />
+        </button>
+      }
+    </div>
+  }
+
   <section class="password-list" aria-label="Saved passwords" [attr.aria-busy]="isLoading()">
     @if (isLoading()) {
       <div aria-hidden="true">

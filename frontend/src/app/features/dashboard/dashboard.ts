@@ -14,6 +14,7 @@ import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faMagnifyingGlass,
   faPlus,
   faKey,
   faRotateRight,
@@ -39,12 +40,20 @@ export class Dashboard implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
   private readonly emptyAddButton = viewChild<ElementRef<HTMLButtonElement>>('emptyAddButton');
   private readonly headingAddButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
 
   private readonly detailDialog = viewChild.required(PasswordDetailDialog);
   protected readonly isDeleting = signal(false);
+
+  protected readonly faMagnifyingGlass = faMagnifyingGlass;
+  protected readonly searchQuery = signal('');
+  protected readonly showSearch = computed(
+    () => this.canAddPassword() && this.passwordEntries().length > 0,
+  );
 
   protected readonly faPlus = faPlus;
   protected readonly faKey = faKey;
@@ -141,6 +150,15 @@ export class Dashboard implements OnInit {
         },
         error: () => this.loadError.set('Unable to load your saved passwords.'),
       });
+  }
+
+  protected updateSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+  }
+
+  protected clearSearch(): void {
+    this.searchQuery.set('');
+    this.searchInput()?.nativeElement.focus();
   }
 
   protected openDetails(entry: PasswordEntry): void {

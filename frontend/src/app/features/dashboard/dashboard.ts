@@ -47,6 +47,8 @@ export class Dashboard implements OnInit {
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
 
   private readonly detailDialog = viewChild.required(PasswordDetailDialog);
+  private readonly addDialog = viewChild.required(AddPasswordDialog);
+  private editReturnTarget: HTMLElement | null = null;
   protected readonly isDeleting = signal(false);
 
   protected readonly faMagnifyingGlass = faMagnifyingGlass;
@@ -185,6 +187,13 @@ export class Dashboard implements OnInit {
     this.detailDialog().open(entry);
   }
 
+  protected editPasswordEntry(entry: PasswordEntry): void {
+    const active = document.activeElement;
+    this.editReturnTarget =
+      active instanceof HTMLElement && this.findRow(entry.id)?.contains(active) ? active : null;
+    this.addDialog().open(entry);
+  }
+
   protected savePasswordEntry(savedEntry: PasswordEntry): void {
     const wasEmpty = this.isEmpty();
     const isEdit = this.passwordEntries().some((entry) => entry.id === savedEntry.id);
@@ -197,8 +206,24 @@ export class Dashboard implements OnInit {
 
       return updatedEntries.sort((first, second) => first.siteName.localeCompare(second.siteName));
     });
-    this.announceSuccess(isEdit ? 'Password updated' : 'Password added');
+    const matchesSearch = savedEntry.siteName.toLowerCase().includes(this.normalizedQuery());
+    const message = isEdit ? 'Password updated' : 'Password added';
+    this.announceSuccess(
+      matchesSearch ? message : message + '. This entry does not match your search.',
+    );
     if (wasEmpty) this.focusAddAction();
+    else if (isEdit && !matchesSearch && this.editReturnTarget) {
+      const returnTarget = this.editReturnTarget;
+      afterNextRender(
+        () => {
+          if (!returnTarget.isConnected && document.activeElement === document.body) {
+            this.searchInput()?.nativeElement.focus();
+          }
+        },
+        { injector: this.injector },
+      );
+    }
+    this.editReturnTarget = null;
   }
 
   private focusAddAction(): void {
@@ -227,13 +252,15 @@ export class Dashboard implements OnInit {
         next: () => {
           this.isDeleting.set(false);
           const entries = this.passwordEntries();
-          const index = entries.findIndex((current) => current.id === entry.id);
-          const nextId = entries[index + 1]?.id ?? entries[index - 1]?.id;
+          const visible = this.filteredEntries();
+          const index = visible.findIndex((current) => current.id === entry.id);
+          const nextId = index < 0 ? undefined : (visible[index + 1]?.id ?? visible[index - 1]?.id);
           const deletedRow = this.findRow(entry.id);
           const shouldClose = this.detailDialog().isShowing(entry.id);
           const shouldFocus = shouldClose || !!deletedRow?.contains(document.activeElement);
           if (shouldClose) this.detailDialog().close();
           this.passwordEntries.set(entries.filter((current) => current.id !== entry.id));
+          if (this.passwordEntries().length === 0) this.searchQuery.set('');
           this.announceSuccess('Password deleted');
           if (shouldFocus) {
             afterNextRender(
@@ -243,7 +270,7 @@ export class Dashboard implements OnInit {
                   return;
                 const target = nextId
                   ? this.findRow(nextId)?.querySelector<HTMLElement>('.password-row__site')
-                  : this.emptyAddButton()?.nativeElement;
+                  : (this.emptyAddButton()?.nativeElement ?? this.searchFocusTarget());
                 target?.focus();
               },
               { injector: this.injector },
@@ -265,10 +292,18 @@ export class Dashboard implements OnInit {
       const target =
         this.emptyAddButton()?.nativeElement ??
         this.host.nativeElement.querySelector<HTMLButtonElement>('.password-row__site') ??
+        this.searchFocusTarget() ??
         this.headingAddButton().nativeElement;
       target.focus();
     }
     this.feedback.set('');
+  }
+
+  private searchFocusTarget(): HTMLElement | undefined {
+    return (
+      this.host.nativeElement.querySelector<HTMLButtonElement>('.dashboard-search-reset') ??
+      this.searchInput()?.nativeElement
+    );
   }
 
   private announceSuccess(message: string): void {

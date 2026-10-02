@@ -47,7 +47,7 @@
     [errorMessage]="deleteError()"
     [isDeleting]="isDeleting()"
     [deletingEntryId]="deletingEntryId()"
-    (editRequested)="passwordDialog.open($event)"
+    (editRequested)="editPasswordEntry($event)"
     (deleteRequested)="deletePasswordEntry($event)"
   />
 

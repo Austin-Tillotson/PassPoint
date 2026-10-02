@@ -1,7 +1,10 @@
+import { By } from '@angular/platform-browser';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 
+import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
+import { PasswordDetailDialog } from './components/password-detail-dialog/password-detail-dialog';
 import { Dashboard } from './dashboard';
 import type { PasswordEntry } from './models/password-entry';
 import { PasswordEntriesService } from './services/password-entries.service';
@@ -27,10 +30,15 @@ const entries: PasswordEntry[] = [
 async function setup(records: PasswordEntry[] | null = entries) {
   const request = new Subject<PasswordEntry[]>();
   const getAll = vi.fn(() => request);
+  const deletion = new Subject<void>();
+  const savedEntry = new Subject<PasswordEntry>();
+  const update = vi.fn(() => savedEntry);
 
   await TestBed.configureTestingModule({
     imports: [Dashboard],
-    providers: [{ provide: PasswordEntriesService, useValue: { getAll } }],
+    providers: [
+      { provide: PasswordEntriesService, useValue: { getAll, delete: () => deletion, update } },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(Dashboard);
@@ -51,7 +59,12 @@ async function setup(records: PasswordEntry[] | null = entries) {
     await fixture.whenStable();
   };
 
-  return { fixture, element, request, getAll, query };
+  const add = fixture.debugElement.query(By.directive(AddPasswordDialog))
+    .componentInstance as AddPasswordDialog;
+  const detail = fixture.debugElement.query(By.directive(PasswordDetailDialog))
+    .componentInstance as PasswordDetailDialog;
+
+  return { fixture, element, request, getAll, query, add, detail, deletion, savedEntry, update };
 }
 
 describe('Dashboard search control', () => {
@@ -192,5 +205,222 @@ describe('Dashboard search results feedback', () => {
     expect(element.textContent).toContain('No passwords yet');
     expect(element.querySelector('.dashboard-no-matches')).toBeNull();
     expect(element.querySelector('[aria-label="Search results"]')?.textContent).toBe('');
+  });
+});
+
+describe('Dashboard search during management', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it.each([true, false])(
+    'retains query and recomputes a matching/nonmatching add: %s',
+    async (matches) => {
+      const { fixture, element, query, add } = await setup();
+      await query('portal');
+
+      add.passwordSaved.emit({
+        ...entries[0],
+        id: 'new',
+        siteName: matches ? 'https://new.example.com/portal' : 'https://new.example.com/account',
+      });
+      await fixture.whenStable();
+
+      expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
+      expect(element.querySelectorAll('[data-entry-id]').length).toBe(matches ? 4 : 3);
+      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe(
+        matches ? 'Password added' : 'Password added. This entry does not match your search.',
+      );
+    },
+  );
+
+  it.each([true, false])(
+    'submits through the edit dialog and restores focus when the row stays/leaves results: %s',
+    async (matches) => {
+      const { fixture, element, query, savedEntry, update } = await setup();
+      await query('portal');
+
+      // JSDOM does not implement native modal focus restoration. Stub only
+      // that browser boundary; keep component opening, submission, and outputs real.
+      for (const dialog of element.querySelectorAll<HTMLDialogElement>('dialog')) {
+        let returnTarget: HTMLElement | null = null;
+        dialog.showModal = vi.fn(() => {
+          returnTarget = document.activeElement as HTMLElement;
+          dialog.setAttribute('open', '');
+          dialog.querySelector<HTMLElement>('button, input')?.focus();
+        });
+        dialog.close = vi.fn(() => {
+          dialog.removeAttribute('open');
+          returnTarget?.focus();
+        });
+      }
+
+      const row = element.querySelector<HTMLButtonElement>(
+        '[data-entry-id="1"] .password-row__site',
+      )!;
+      row.focus();
+      row.click();
+      await fixture.whenStable();
+
+      const details = element.querySelector<HTMLDialogElement>(
+        'app-password-detail-dialog dialog',
+      )!;
+      expect(details.open).toBe(true);
+      details.querySelector<HTMLButtonElement>('footer button')!.click();
+      await fixture.whenStable();
+
+      const formDialog = element.querySelector<HTMLDialogElement>(
+        'app-add-password-dialog dialog',
+      )!;
+      const site = formDialog.querySelector<HTMLInputElement>(
+        '[formControlName="siteName"] input',
+      )!;
+      expect(details.open).toBe(false);
+      expect(formDialog.open).toBe(true);
+      expect(site.value).toBe(entries[0].siteName);
+      expect(document.activeElement).toBe(site);
+
+      const editedEntry = {
+        ...entries[0],
+        siteName: matches
+          ? 'https://alpha.example.com/portal-new'
+          : 'https://alpha.example.com/account',
+      };
+      site.value = editedEntry.siteName;
+      site.dispatchEvent(new Event('input', { bubbles: true }));
+      formDialog
+        .querySelector('form')!
+        .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await fixture.whenStable();
+
+      expect(update).toHaveBeenCalledExactlyOnceWith(entries[0].id, {
+        siteName: editedEntry.siteName,
+        password: entries[0].password,
+      });
+      expect(formDialog.open).toBe(true);
+      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
+
+      savedEntry.next(editedEntry);
+      savedEntry.complete();
+      await fixture.whenStable();
+
+      expect(formDialog.open).toBe(false);
+      expect(element.querySelectorAll('[data-entry-id]')).toHaveLength(matches ? 3 : 2);
+      expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
+      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe(
+        matches ? 'Password updated' : 'Password updated. This entry does not match your search.',
+      );
+      expect(document.activeElement).toBe(
+        matches ? row : element.querySelector('input[type="search"]'),
+      );
+    },
+  );
+
+  it('does not steal focus from another selected control after an edit leaves results', async () => {
+    const { fixture, element, query, add, detail } = await setup();
+    await query('portal');
+    element.querySelector<HTMLButtonElement>('.password-row__site')!.focus();
+    vi.spyOn(add, 'open').mockImplementation(() => {});
+    detail.editRequested.emit(entries[0]);
+    add.passwordSaved.emit({ ...entries[0], siteName: 'https://alpha.example.com/account' });
+    const heading = element.querySelector<HTMLButtonElement>('.dashboard-heading__add')!;
+    heading.focus();
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(heading);
+  });
+
+  it('recomputes when an edit enters results without clearing the query', async () => {
+    const { fixture, element, query, add } = await setup();
+    await query('portal');
+
+    add.passwordSaved.emit({ ...entries[1], siteName: 'https://beta.example.com/portal' });
+    await fixture.whenStable();
+
+    expect(element.querySelectorAll('[data-entry-id]').length).toBe(4);
+    expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
+    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('Password updated');
+  });
+
+  it.each([0, 1, 2])('focuses a visible neighbor after filtered deletion %s', async (index) => {
+    const { fixture, element, query, detail, deletion } = await setup();
+    await query('portal');
+    const visible = [entries[0], entries[3], entries[4]];
+    const row = element.querySelectorAll<HTMLButtonElement>('.password-row__site')[index];
+    row.focus();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    detail.deleteRequested.emit(visible[index]);
+    deletion.next();
+    deletion.complete();
+    await fixture.whenStable();
+
+    const expectedId = index === 0 ? '4' : index === 1 ? '5' : '4';
+    expect(document.activeElement).toBe(
+      element.querySelector('[data-entry-id="' + expectedId + '"] .password-row__site'),
+    );
+    expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
+    expect(element.querySelector('.search-results')?.textContent).toBe('2 of 4 passwords');
+  });
+
+  it('focuses no-match Clear after deleting the last match with hidden entries left', async () => {
+    const { fixture, element, query, detail, deletion } = await setup();
+    await query('alpha');
+    element.querySelector<HTMLButtonElement>('.password-row__site')!.focus();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    detail.deleteRequested.emit(entries[0]);
+    deletion.next();
+    deletion.complete();
+    await fixture.whenStable();
+
+    expect(element.querySelector('.search-results')?.textContent).toBe('0 of 4 passwords');
+    expect(document.activeElement).toBe(element.querySelector('.dashboard-search-reset'));
+  });
+
+  it('clears the query after final stored-entry deletion before the next first save', async () => {
+    const { fixture, element, query, detail, deletion, add } = await setup([entries[0]]);
+    await query('alpha');
+    element.querySelector<HTMLButtonElement>('.password-row__site')!.focus();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    detail.deleteRequested.emit(entries[0]);
+    deletion.next();
+    deletion.complete();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(element.querySelector('.dashboard-state button'));
+    expect(element.querySelector('input[type="search"]')).toBeNull();
+
+    add.passwordSaved.emit(entries[1]);
+    await fixture.whenStable();
+    expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('');
+    expect(element.querySelectorAll('[data-entry-id]').length).toBe(1);
+  });
+
+  it('dismisses nonmatching-save feedback to an available no-match control', async () => {
+    const { fixture, element, query, add } = await setup();
+    await query('no-such-site');
+    add.passwordSaved.emit({ ...entries[0], id: 'new' });
+    await fixture.whenStable();
+    const dismiss = element.querySelector<HTMLButtonElement>(
+      '[aria-label="Dismiss success message"]',
+    )!;
+    dismiss.focus();
+    dismiss.click();
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(element.querySelector('.dashboard-search-reset'));
+    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
+  });
+
+  it('keeps the query and visible row after failed deletion', async () => {
+    const { fixture, element, query, detail, deletion } = await setup();
+    await query('alpha');
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    detail.deleteRequested.emit(entries[0]);
+    deletion.error(new Error('Fixture'));
+    await fixture.whenStable();
+
+    expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('alpha');
+    expect(element.querySelectorAll('[data-entry-id]').length).toBe(1);
+    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
   });
 });

@@ -156,6 +156,8 @@ describe('Dashboard search results feedback', () => {
     const input = element.querySelector('input[type="search"]');
 
     expect(status.textContent).toBe('5 passwords');
+    expect(element.querySelector('.collection-heading')?.textContent).toContain('All passwords');
+    expect(element.querySelector('.collection-heading__count')?.textContent).toBe('5');
     expect(status.getAttribute('aria-live')).toBe('polite');
     await query('alpha');
     expect(status.textContent).toBe('1 of 5 passwords');
@@ -164,6 +166,7 @@ describe('Dashboard search results feedback', () => {
     await query('no-such-site');
 
     expect(status.textContent).toBe('0 of 5 passwords');
+    expect(element.querySelector('.collection-heading__count')?.textContent).toBe('0');
     expect(element.querySelector('[aria-label="Search results"]')).toBe(status);
     expect(element.querySelectorAll('[aria-label="Search results"]').length).toBe(1);
     expect(document.activeElement).toBe(input);

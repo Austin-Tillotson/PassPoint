@@ -51,6 +51,13 @@
     (deleteRequested)="deletePasswordEntry($event)"
   />
 
+  @if (canAddPassword()) {
+    <h2 class="collection-heading">
+      All passwords
+      <span class="collection-heading__count" aria-hidden="true">{{ filteredEntries().length }}</span>
+    </h2>
+  }
+
   @if (showSearch()) {
     <div class="dashboard-search" role="search" aria-label="Saved passwords">
       <fa-icon class="dashboard-search__icon" [icon]="faMagnifyingGlass" aria-hidden="true" />
@@ -78,7 +85,7 @@
   }
 
   <p
-    class="search-results"
+    class="search-results visually-hidden"
     role="status"
     aria-label="Search results"
     aria-live="polite"

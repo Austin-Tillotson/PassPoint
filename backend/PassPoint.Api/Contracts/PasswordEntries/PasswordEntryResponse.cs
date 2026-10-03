@@ -2,6 +2,8 @@ namespace PassPoint.Api.Contracts.PasswordEntries;
 
 public class PasswordEntryResponse
 {
+    public Guid? FolderId { get; set; }
+
     public Guid Id { get; set; }
 
     public string SiteName { get; set; } = string.Empty;

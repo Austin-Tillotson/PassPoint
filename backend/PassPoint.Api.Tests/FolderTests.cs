@@ -12,7 +12,7 @@ using PassPoint.Api.Models;
 
 namespace PassPoint.Api.Tests;
 
-public class FolderTests : IDisposable
+public partial class FolderTests : IDisposable
 {
     private readonly SqliteConnection connection = new("Data Source=:memory:");
     protected readonly ServiceProvider Services;
@@ -120,4 +120,3 @@ public class FolderTests : IDisposable
         connection.Dispose();
     }
 }
-

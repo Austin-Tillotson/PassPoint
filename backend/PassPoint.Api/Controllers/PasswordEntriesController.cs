@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PassPoint.Api.Contracts.PasswordEntries;
 using PassPoint.Api.Data;
 using PassPoint.Api.Models;
@@ -91,6 +92,9 @@ public class PasswordEntriesController : ControllerBase
             });
         }
 
+        if (!await OwnsFolder(userId, request.FolderId))
+            return BadRequest(new { message = "Choose one of your folders or Unfiled." });
+
         var entry = new PasswordEntry
         {
             Id = Guid.NewGuid(),
@@ -98,10 +102,19 @@ public class PasswordEntriesController : ControllerBase
             EncryptedPassword = _passwordProtector.Protect(request.Password),
             CreatedAtUtc = DateTimeOffset.UtcNow,
             UserId = userId,
+            FolderId = request.FolderId,
         };
 
         _context.PasswordEntries.Add(entry);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when
+            (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation })
+        {
+            return Conflict(new { message = "The selected folder is no longer available. Choose another folder or Unfiled." });
+        }
 
         return CreatedAtAction(nameof(GetById), new
         {
@@ -140,10 +153,25 @@ public class PasswordEntriesController : ControllerBase
             });
         }
 
+        if (request.HasFolderId)
+        {
+            if (!await OwnsFolder(userId, request.FolderId))
+                return BadRequest(new { message = "Choose one of your folders or Unfiled." });
+            entry.FolderId = request.FolderId;
+        }
+
         entry.SiteName = siteName;
         entry.EncryptedPassword = _passwordProtector.Protect(request.Password);
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when
+            (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation })
+        {
+            return Conflict(new { message = "The selected folder is no longer available. Choose another folder or Unfiled." });
+        }
 
         return Ok(ToResponse(entry));
     }
@@ -168,16 +196,29 @@ public class PasswordEntriesController : ControllerBase
         }
 
         _context.PasswordEntries.Remove(entry);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when
+            (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation })
+        {
+            return Conflict(new { message = "The selected folder is no longer available. Choose another folder or Unfiled." });
+        }
 
         return NoContent();
     }
+
+    private Task<bool> OwnsFolder(string userId, Guid? folderId) =>
+        folderId is null ? Task.FromResult(true) :
+            _context.Folders.AnyAsync(folder => folder.Id == folderId && folder.UserId == userId);
 
     private PasswordEntryResponse ToResponse(PasswordEntry entry)
     {
         return new PasswordEntryResponse
         {
             Id = entry.Id,
+            FolderId = entry.FolderId,
             SiteName = entry.SiteName,
             Password = _passwordProtector.Unprotect(entry.EncryptedPassword),
             CreatedAtUtc = entry.CreatedAtUtc,

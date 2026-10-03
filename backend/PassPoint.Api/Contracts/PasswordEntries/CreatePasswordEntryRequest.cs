@@ -4,6 +4,8 @@ namespace PassPoint.Api.Contracts.PasswordEntries;
 
 public class CreatePasswordEntryRequest
 {
+    public Guid? FolderId { get; set; }
+
     [Required]
     [StringLength(200, MinimumLength = 1)]
     public string SiteName { get; set; } = string.Empty;

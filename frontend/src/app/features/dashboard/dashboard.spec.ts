@@ -1,3 +1,6 @@
+import { provideRouter } from '@angular/router';
+import { FolderStore } from '../../core/services/folder-store';
+import { FoldersService } from '../../core/services/folders.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
@@ -29,7 +32,7 @@ describe('Dashboard Add password actions', () => {
 
     await TestBed.configureTestingModule({
       imports: [Dashboard],
-      providers: [{
+      providers: [provideRouter([]), FolderStore, { provide: FoldersService, useValue: {} }, {
         provide: PasswordEntriesService,
         useValue: { getAll: () => of([{ id: 'existing', siteName: 'https://existing.example.com', password: 'Sample', createdAtUtc: '' }]) },
       }],

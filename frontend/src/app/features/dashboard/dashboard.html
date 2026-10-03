@@ -53,7 +53,7 @@
 
   @if (canAddPassword()) {
     <h2 class="collection-heading">
-      All passwords
+      {{ folderStore.label() }}
       <span class="collection-heading__count" aria-hidden="true">{{
         filteredEntries().length
       }}</span>
@@ -154,8 +154,8 @@
     } @else if (isEmpty()) {
       <div class="dashboard-state">
         <fa-icon class="dashboard-state__icon" [icon]="faKey" aria-hidden="true" />
-        <h2>No passwords yet</h2>
-        <p>Add your first entry to keep your logins in one place.</p>
+        <h2>{{ folderStore.selection() === 'all' ? 'No passwords yet' : 'No passwords in this folder' }}</h2>
+        <p>{{ folderStore.selection() === 'all' ? 'Add your first entry to keep your logins in one place.' : 'Add a password or move an existing entry here.' }}</p>
         <button
           #emptyAddButton
           class="button button--primary"

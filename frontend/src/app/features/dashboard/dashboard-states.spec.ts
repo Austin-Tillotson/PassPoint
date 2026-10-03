@@ -1,3 +1,6 @@
+import { provideRouter } from '@angular/router';
+import { FolderStore } from '../../core/services/folder-store';
+import { FoldersService } from '../../core/services/folders.service';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
@@ -40,7 +43,7 @@ describe('Dashboard request states', () => {
     const getAll = vi.fn(() => requests.shift()!);
     await TestBed.configureTestingModule({
       imports: [Dashboard],
-      providers: [
+      providers: [provideRouter([]), FolderStore, { provide: FoldersService, useValue: {} },
         { provide: PasswordEntriesService, useValue: { getAll, delete: () => deletion } },
       ],
     }).compileComponents();

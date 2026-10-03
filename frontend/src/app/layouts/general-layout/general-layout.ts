@@ -1,3 +1,4 @@
+import { FolderStore } from '../../core/services/folder-store';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -13,6 +14,7 @@ import { Sidebar } from '../../shared/components/sidebar/sidebar';
 
 @Component({
   selector: 'app-general-layout',
+  providers: [FolderStore],
   imports: [Header, MobileNavigation, RouterOutlet, Sidebar],
   templateUrl: './general-layout.html',
   styleUrl: './general-layout.scss',
@@ -25,6 +27,7 @@ export class GeneralLayout {
   protected readonly pageLabel = signal('PassPoint');
 
   constructor() {
+    inject(FolderStore).load();
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),

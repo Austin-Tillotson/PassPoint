@@ -16,8 +16,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 0 calc(2 * var(--space-4));
+  margin: var(--space-3) 0 var(--space-6);
   padding-inline: var(--space-3);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-border-layout);
   color: var(--color-text-primary);
   font-size: var(--font-size-brand);
   font-weight: var(--font-weight-semibold);
@@ -41,4 +43,8 @@
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
   }
+}
+
+@media (min-width: 48.0625rem) {
+  :host { overflow-y: auto; }
 }

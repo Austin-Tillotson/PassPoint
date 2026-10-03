@@ -1,3 +1,4 @@
+import { FoldersService } from '../../core/services/folders.service';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -16,7 +17,7 @@ describe('GeneralLayout mobile navigation', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [GeneralLayout],
-      providers: [
+      providers: [{ provide: FoldersService, useValue: { getAll: () => of([]) } },
         provideRouter([
           { path: 'dashboard', component: TestPage },
           { path: 'password-generator', component: TestPage },

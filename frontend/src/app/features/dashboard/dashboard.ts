@@ -1,6 +1,8 @@
+import { FolderStore } from '../../core/services/folder-store';
 import {
   Component,
   computed,
+  effect,
   DestroyRef,
   Injector,
   ElementRef,
@@ -38,6 +40,12 @@ import { PasswordEntriesService } from './services/password-entries.service';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+  protected readonly folderStore = inject(FolderStore);
+  protected readonly collectionEntries = computed(() => {
+    const selection = this.folderStore.selection();
+    return this.passwordEntries().filter(entry => selection === 'all' ||
+      (selection === 'unfiled' ? !entry.folderId : entry.folderId === selection));
+  });
   private readonly passwordEntriesService = inject(PasswordEntriesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
@@ -62,8 +70,8 @@ export class Dashboard implements OnInit {
   protected readonly filteredEntries = computed(() => {
     const query = this.normalizedQuery();
     const matches = query
-      ? this.passwordEntries().filter((entry) => entry.siteName.toLowerCase().includes(query))
-      : this.passwordEntries();
+      ? this.collectionEntries().filter((entry) => entry.siteName.toLowerCase().includes(query))
+      : this.collectionEntries();
     const siteLabel = (entry: PasswordEntry) =>
       entry.siteName.replace(/^https?:\/\/(?:www\.)?/i, '');
     return [...matches].sort((first, second) =>
@@ -74,7 +82,7 @@ export class Dashboard implements OnInit {
     );
   });
   protected readonly showSearch = computed(
-    () => this.canAddPassword() && this.passwordEntries().length > 0,
+    () => this.canAddPassword() && this.collectionEntries().length > 0,
   );
 
   protected readonly hasNoMatches = computed(
@@ -82,7 +90,7 @@ export class Dashboard implements OnInit {
   );
   protected readonly searchSummary = computed(() => {
     if (!this.showSearch()) return '';
-    const total = this.passwordEntries().length;
+    const total = this.collectionEntries().length;
     const noun = total === 1 ? 'password' : 'passwords';
     return this.normalizedQuery()
       ? `${this.filteredEntries().length} of ${total} ${noun}`
@@ -116,10 +124,27 @@ export class Dashboard implements OnInit {
       this.hasLoaded() &&
       !this.isLoading() &&
       !this.loadError() &&
-      this.passwordEntries().length === 0,
+      this.collectionEntries().length === 0,
   );
 
   constructor() {
+    effect(() => {
+      if (!this.hasLoaded() || this.isLoading() || this.loadError()) {
+        this.folderStore.passwordCounts.set(null);
+        return;
+      }
+
+      const counts: Record<string, number> = {};
+      for (const entry of this.passwordEntries()) {
+        const folderId = entry.folderId ?? 'unfiled';
+        counts[folderId] = (counts[folderId] ?? 0) + 1;
+      }
+      this.folderStore.passwordCounts.set(counts);
+    });
+    effect(() => {
+      this.folderStore.selection();
+      this.searchQuery.set('');
+    });
     afterNextRender(() => {
       if (typeof IntersectionObserver === 'undefined') {
         return;

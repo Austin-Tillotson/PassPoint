@@ -1,47 +1,64 @@
 <nav aria-label="Main navigation">
   <section class="navigation-section">
-    <h2>Overview</h2>
-
-    <ul>
-      <li>
-        <a
-          routerLink="/dashboard"
-          routerLinkActive="is-active"
-          ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="linkSelected.emit()"
-        >
-          <fa-icon
-            class="navigation-icon"
-            [icon]="faTableCellsLarge"
-            aria-hidden="true"
-          />
-          <span>Dashboard</span>
-        </a>
-      </li>
-    </ul>
+    <h2>Workspace</h2>
+    <ul><li>
+      <a routerLink="/dashboard" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: true }" (click)="linkSelected.emit()">
+        <fa-icon class="navigation-icon" [icon]="faTableCellsLarge" aria-hidden="true" />
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/password-generator" (click)="linkSelected.emit()"
+        routerLinkActive="is-active" ariaCurrentWhenActive="page">
+        <fa-icon class="navigation-icon" [icon]="faWandMagicSparkles" aria-hidden="true" />
+        <span>Password Generator</span>
+      </a>
+    </li></ul>
   </section>
 
   <section class="navigation-section">
-    <h2>Tools</h2>
-
+    <h2>Folders</h2>
     <ul>
       <li>
-        <a
-          routerLink="/password-generator"
-          (click)="linkSelected.emit()"
-          routerLinkActive="is-active"
-          ariaCurrentWhenActive="page"
-        >
-          <fa-icon
-            class="navigation-icon"
-            [icon]="faWandMagicSparkles"
-            aria-hidden="true"
-          />
-          <span>Password Generator</span>
+        <a routerLink="/dashboard" [queryParams]="{ collection: 'unfiled' }"
+          routerLinkActive="is-active" #unfiledLink="routerLinkActive" ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{ exact: true }" (click)="linkSelected.emit()">
+          <fa-icon class="navigation-icon" [style.color]="'var(--color-text-muted)'"
+            [icon]="unfiledLink.isActive ? faFolderOpen : faFolder" aria-hidden="true" />
+          <span>Unfiled</span>
+          @if (folderStore.passwordCounts(); as counts) {
+            <span class="folder-count" [attr.aria-label]="(counts['unfiled'] ?? 0) + ' passwords'">{{ counts['unfiled'] ?? 0 }}</span>
+          }
         </a>
       </li>
+      @for (folder of folderStore.folders(); track folder.id) {
+        <li>
+          <a routerLink="/dashboard" [queryParams]="{ folder: folder.id }"
+            routerLinkActive="is-active" #folderLink="routerLinkActive" ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: true }" (click)="linkSelected.emit()">
+            <fa-icon class="navigation-icon" [style.color]="folderColors()[folder.id]"
+              [icon]="folderLink.isActive ? faFolderOpen : faFolder" aria-hidden="true" />
+            <span>{{ folder.name }}</span>
+            @if (folderStore.passwordCounts(); as counts) {
+              <span class="folder-count" [attr.aria-label]="(counts[folder.id] ?? 0) + ' passwords'">{{ counts[folder.id] ?? 0 }}</span>
+            }
+          </a>
+        </li>
+      }
     </ul>
+    @if (folderStore.loading()) {
+      <p class="folder-status" role="status">Loading folders…</p>
+    }
+    @if (folderStore.error()) {
+      <div class="folder-error">
+        <p class="folder-status" role="alert">{{ folderStore.error() }}</p>
+        <button class="button button--icon folder-retry" type="button"
+          aria-label="Retry loading folders" title="Retry loading folders" (click)="folderStore.load()">
+          <fa-icon [icon]="faRotateRight" aria-hidden="true" />
+        </button>
+      </div>
+    }
   </section>
 
 </nav>

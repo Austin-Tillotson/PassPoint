@@ -3,6 +3,7 @@ namespace PassPoint.Api.Models;
 public class PasswordEntry
 {
     public Guid Id { get; set; }
+    public Guid? FolderId { get; set; }
 
     public string SiteName { get; set; } = string.Empty;
 

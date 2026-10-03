@@ -115,7 +115,8 @@ a.is-active .folder-count {
   overflow-wrap: anywhere;
 }
 
-.folder-retry {
+.folder-retry,
+.folder-heading button {
   flex-shrink: 0;
   width: 1.75rem;
   height: 1.75rem;
@@ -126,7 +127,25 @@ a.is-active .folder-count {
 }
 
 .folder-retry:hover:enabled,
-.folder-retry:focus-visible {
+.folder-retry:focus-visible,
+.folder-heading button:hover:enabled,
+.folder-heading button:focus-visible {
   background: var(--color-surface-pressed);
   color: var(--color-text-primary);
+}
+
+.folder-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.folder-heading h2 {
+  margin-bottom: 0;
+}
+
+.folder-heading button:hover:enabled,
+.folder-heading button:focus-visible:enabled {
+  color: var(--color-accent);
 }

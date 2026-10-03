@@ -18,7 +18,18 @@
   </section>
 
   <section class="navigation-section">
-    <h2>Folders</h2>
+    <div class="folder-heading">
+      <h2>Folders</h2>
+      <button
+        class="button button--icon"
+        type="button"
+        aria-label="Manage folders"
+        [disabled]="!folderStore.loaded() || folderStore.loading() || !!folderStore.error()"
+        (click)="folderStore.managerOpen.set(true)"
+      >
+        <fa-icon [icon]="faPen" aria-hidden="true" />
+      </button>
+    </div>
     <ul>
       <li>
         <a routerLink="/dashboard" [queryParams]="{ collection: 'unfiled' }"

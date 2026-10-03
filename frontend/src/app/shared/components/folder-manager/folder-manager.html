@@ -1,0 +1,122 @@
+<dialog
+  #dialog
+  aria-labelledby="folder-manager-title"
+  (click)="onBackdropClick($event)"
+  (cancel)="cancel($event)"
+  (close)="onClosed()"
+>
+  <div class="folder-manager" [attr.aria-busy]="pending()">
+    <header>
+      <div>
+        <p class="eyebrow">Workspace organization</p>
+        <h2 id="folder-manager-title">
+          {{
+            mode() === 'list'
+              ? 'Manage folders'
+              : mode() === 'create'
+                ? 'New folder'
+                : mode() === 'rename'
+                  ? 'Rename folder'
+                  : 'Delete folder'
+          }}
+        </h2>
+        <p class="description">Keep your passwords organized in a way that works for you.</p>
+      </div>
+      <button
+        class="button button--icon close"
+        type="button"
+        aria-label="Close folder manager"
+        [disabled]="pending()"
+        (click)="close()"
+      >
+        <fa-icon [icon]="faXmark" aria-hidden="true" />
+      </button>
+    </header>
+    <p class="notice" role="status" aria-live="polite">{{ notice() }}</p>
+    @if (mode() === 'list') {
+      <div class="list-heading">
+        <h3>Your folders</h3>
+        <span>{{ store.folders().length }}</span>
+      </div>
+      @if (store.folders().length) {
+        <ul>
+          @for (folder of store.folders(); track folder.id) {
+            <li>
+              <fa-icon class="folder-icon" [style.color]="store.folderColors()[folder.id]"
+                [icon]="faFolder" aria-hidden="true" />
+              <div class="folder-label">
+                <span>{{ folder.name }}</span>
+                @if (store.passwordCounts(); as counts) {
+                  <small>{{ counts[folder.id] ?? 0 }} {{ counts[folder.id] === 1 ? 'password' : 'passwords' }}</small>
+                }
+              </div>
+              <button
+                class="button button--icon rename-folder"
+                type="button"
+                [attr.aria-label]="'Rename ' + folder.name"
+                (click)="start('rename', folder)"
+              >
+                <fa-icon [icon]="faPen" aria-hidden="true" />
+              </button>
+              <button
+                class="button button--icon delete-folder"
+                type="button"
+                [attr.aria-label]="'Delete ' + folder.name"
+                (click)="start('delete', folder)"
+              >
+                <fa-icon [icon]="faTrash" aria-hidden="true" />
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty-state">Create your first folder to start organizing your passwords.</p>
+      }
+      <button class="button button--secondary new-folder" type="button" (click)="start('create')">
+        <fa-icon [icon]="faPlus" aria-hidden="true" /> New folder
+      </button>
+      <p class="folder-hint">Passwords without a folder stay in Unfiled.</p>
+    } @else {
+      <form (submit)="$event.preventDefault(); submit()">
+        @if (mode() === 'delete') {
+          <p>
+            Delete <strong>{{ selected()?.name }}</strong
+            >? Its passwords will move to Unfiled. No passwords will be deleted.
+          </p>
+        } @else {
+          <label for="folder-name">Folder name</label>
+          <input
+            id="folder-name"
+            [formControl]="name"
+            maxlength="50"
+            autocomplete="off"
+            [attr.aria-invalid]="name.touched && (name.invalid || !name.value.trim())"
+            [attr.aria-describedby]="error() ? 'folder-error' : null"
+          />
+        }
+        @if (error()) {
+          <p id="folder-error" class="error" role="alert">{{ error() }}</p>
+        }
+        <footer>
+          <button
+            class="button button--secondary"
+            type="button"
+            [disabled]="pending()"
+            (click)="back()"
+          >
+            Cancel
+          </button>
+          <button
+            class="button"
+            [class.button--primary]="mode() !== 'delete'"
+            [class.button--danger]="mode() === 'delete'"
+            type="submit"
+            [disabled]="pending()"
+          >
+            {{ pending() ? 'Saving…' : mode() === 'delete' ? 'Delete folder' : 'Save folder' }}
+          </button>
+        </footer>
+      </form>
+    }
+  </div>
+</dialog>

@@ -1,8 +1,8 @@
 import { FolderStore } from '../../../core/services/folder-store';
-import { Component, computed, inject, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faFolder, faFolderOpen, faRotateRight, faTableCellsLarge, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faFolderOpen, faPen, faRotateRight, faTableCellsLarge, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navigation-links',
@@ -12,12 +12,9 @@ import { faFolder, faFolderOpen, faRotateRight, faTableCellsLarge, faWandMagicSp
 })
 export class NavigationLinks {
   protected readonly folderStore = inject(FolderStore);
-  protected readonly folderColors = computed(() => {
-    const palette = ['#b57850', '#628568', '#8276ac', '#4c849d', '#ad6585', '#95802e'];
-    const folders = [...this.folderStore.folders()].sort((a, b) => a.id.localeCompare(b.id));
-    return Object.fromEntries(folders.map((folder, index) => [folder.id, palette[index % palette.length]]));
-  });
+  protected readonly folderColors = this.folderStore.folderColors;
   protected readonly faFolder = faFolder;
+  protected readonly faPen = faPen;
   protected readonly faFolderOpen = faFolderOpen;
   protected readonly faRotateRight = faRotateRight;
   readonly linkSelected = output<void>();

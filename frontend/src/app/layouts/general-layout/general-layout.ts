@@ -1,11 +1,8 @@
+import { FolderManager } from '../../shared/components/folder-manager/folder-manager';
 import { FolderStore } from '../../core/services/folder-store';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  NavigationEnd,
-  Router,
-  RouterOutlet,
-} from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 
 import { Header } from '../../shared/components/header/header';
@@ -15,7 +12,7 @@ import { Sidebar } from '../../shared/components/sidebar/sidebar';
 @Component({
   selector: 'app-general-layout',
   providers: [FolderStore],
-  imports: [Header, MobileNavigation, RouterOutlet, Sidebar],
+  imports: [FolderManager, Header, MobileNavigation, RouterOutlet, Sidebar],
   templateUrl: './general-layout.html',
   styleUrl: './general-layout.scss',
 })

@@ -160,6 +160,10 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
+    this.folderStore.folderDeleted.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(id => {
+      this.passwordEntries.update(entries => entries.map(entry =>
+        entry.folderId === id ? { ...entry, folderId: null } : entry));
+    });
     this.loadEntries();
   }
 

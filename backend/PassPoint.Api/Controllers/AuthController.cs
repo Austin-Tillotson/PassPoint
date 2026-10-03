@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PassPoint.Api.Contracts.Auth;
 using PassPoint.Api.Models;
+using PassPoint.Api.Data;
 
 namespace PassPoint.Api.Controllers;
 
@@ -12,13 +13,16 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly ApplicationDbContext _context;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _context = context;
     }
 
     [HttpPost("register")]
@@ -29,6 +33,7 @@ public class AuthController : ControllerBase
             UserName = request.Username.Trim()
         };
 
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
@@ -38,6 +43,16 @@ public class AuthController : ControllerBase
                 errors = result.Errors.Select(error => error.Description)
             });
         }
+
+        _context.Folders.AddRange(new[] { "Work", "Personal", "Finance" }.Select(name => new Folder
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Name = name,
+            NormalizedName = name.ToUpperInvariant(),
+        }));
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return StatusCode(StatusCodes.Status201Created, new
         {

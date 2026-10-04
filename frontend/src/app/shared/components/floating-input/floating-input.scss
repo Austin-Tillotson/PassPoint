@@ -48,10 +48,19 @@
 
 :host(.floating-input--dialog) {
   .floating-field input {
-    min-height: 3.5rem;
-    padding: var(--space-4);
-    font-size: var(--font-size-body);
+    min-height: 2.75rem;
+    padding: var(--space-3);
+    font-size: var(--font-size-caption);
     line-height: var(--line-height-body);
+  }
+
+  .floating-field label {
+    font-size: var(--font-size-caption);
+  }
+
+  .floating-field input:focus + label,
+  .floating-field input:not(:placeholder-shown) + label {
+    font-size: var(--font-size-caption-small);
   }
 
   .floating-field input:not(:focus):not(:placeholder-shown) + label {

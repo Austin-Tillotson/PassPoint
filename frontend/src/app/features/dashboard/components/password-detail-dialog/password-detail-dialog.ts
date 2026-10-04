@@ -1,6 +1,14 @@
 import { Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faEye, faEyeSlash, faGlobe, faPen, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEye,
+  faEyeSlash,
+  faGlobe,
+  faFolder,
+  faPen,
+  faTrash,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import type { PasswordEntry } from '../../models/password-entry';
 
 @Component({
@@ -11,6 +19,8 @@ import type { PasswordEntry } from '../../models/password-entry';
 })
 export class PasswordDetailDialog {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  readonly folderName = input('Unfiled');
+  readonly folderColor = input('var(--color-text-muted)');
   readonly errorMessage = input<string | null>(null);
   readonly isDeleting = input(false);
   readonly deletingEntryId = input<string | null>(null);
@@ -22,12 +32,17 @@ export class PasswordDetailDialog {
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
   protected readonly faGlobe = faGlobe;
+  protected readonly faFolder = faFolder;
   protected readonly faPen = faPen;
   protected readonly faTrash = faTrash;
   protected readonly faXmark = faXmark;
   protected readonly siteTitle = computed(() => {
     const site = this.entry()?.siteName ?? '';
-    try { return new URL(site).hostname; } catch { return site; }
+    try {
+      return new URL(site).hostname;
+    } catch {
+      return site;
+    }
   });
 
   open(entry: PasswordEntry): void {
@@ -52,7 +67,7 @@ export class PasswordDetailDialog {
   }
 
   protected togglePassword(): void {
-    this.isPasswordVisible.update(visible => !visible);
+    this.isPasswordVisible.update((visible) => !visible);
   }
 
   protected resetVisibility(): void {

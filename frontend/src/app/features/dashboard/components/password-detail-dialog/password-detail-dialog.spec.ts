@@ -29,7 +29,7 @@ describe('Password details', () => {
     component.close();
     component.open(entry);
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('code').textContent).toBe('********');
+    expect(fixture.nativeElement.querySelector('code').textContent).toBe('••••••••');
   });
 
   it('closes details before requesting edit for the selected entry', async () => {

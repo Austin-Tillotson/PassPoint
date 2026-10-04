@@ -40,11 +40,15 @@ import { PasswordEntriesService } from './services/password-entries.service';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+  private readonly deletedFolderIds = new Set<string>();
   protected readonly folderStore = inject(FolderStore);
   protected readonly collectionEntries = computed(() => {
     const selection = this.folderStore.selection();
-    return this.passwordEntries().filter(entry => selection === 'all' ||
-      (selection === 'unfiled' ? !entry.folderId : entry.folderId === selection));
+    return this.passwordEntries().filter(
+      (entry) =>
+        selection === 'all' ||
+        (selection === 'unfiled' ? !entry.folderId : entry.folderId === selection),
+    );
   });
   private readonly passwordEntriesService = inject(PasswordEntriesService);
   private readonly destroyRef = inject(DestroyRef);
@@ -104,6 +108,19 @@ export class Dashboard implements OnInit {
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly loadError = signal<string | null>(null);
   private readonly selectedEntryId = signal<string | null>(null);
+  protected readonly detailFolderColor = computed(() => {
+    const id = this.passwordEntries().find(entry => entry.id === this.selectedEntryId())?.folderId;
+    return (id && this.folderStore.folderColors()[id]) || 'var(--color-text-muted)';
+  });
+  protected readonly detailFolderName = computed(() => {
+    const id = this.passwordEntries().find(
+      (entry) => entry.id === this.selectedEntryId(),
+    )?.folderId;
+    return id
+      ? (this.folderStore.folders().find((folder) => folder.id === id)?.name ??
+          'Folder unavailable')
+      : 'Unfiled';
+  });
   private readonly deleteErrors = signal<Record<string, string>>({});
   protected readonly deleteError = computed(
     () => this.deleteErrors()[this.selectedEntryId() ?? ''] ?? null,
@@ -160,9 +177,11 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    this.folderStore.folderDeleted.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(id => {
-      this.passwordEntries.update(entries => entries.map(entry =>
-        entry.folderId === id ? { ...entry, folderId: null } : entry));
+    this.folderStore.folderDeleted.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((id) => {
+      this.deletedFolderIds.add(id);
+      this.passwordEntries.update((entries) =>
+        entries.map((entry) => (entry.folderId === id ? { ...entry, folderId: null } : entry)),
+      );
     });
     this.loadEntries();
   }
@@ -208,7 +227,13 @@ export class Dashboard implements OnInit {
       )
       .subscribe({
         next: (entries) => {
-          this.passwordEntries.set(entries);
+          this.passwordEntries.set(
+            entries.map((entry) =>
+              entry.folderId && this.deletedFolderIds.has(entry.folderId)
+                ? { ...entry, folderId: null }
+                : entry,
+            ),
+          );
           this.hasLoaded.set(true);
         },
         error: () => this.loadError.set('Unable to load your saved passwords.'),
@@ -249,17 +274,27 @@ export class Dashboard implements OnInit {
       return updatedEntries.sort((first, second) => first.siteName.localeCompare(second.siteName));
     });
     const matchesSearch = savedEntry.siteName.toLowerCase().includes(this.normalizedQuery());
+    const inCollection = this.collectionEntries().some((entry) => entry.id === savedEntry.id);
+    const isVisible = matchesSearch && inCollection;
     const message = isEdit ? 'Password updated' : 'Password added';
     this.announceSuccess(
-      matchesSearch ? message : message + '. This entry does not match your search.',
+      !inCollection
+        ? message + '. This entry is in a different collection.'
+        : matchesSearch
+          ? message
+          : message + '. This entry does not match your search.',
     );
     if (wasEmpty) this.focusAddAction();
-    else if (isEdit && !matchesSearch && this.editReturnTarget) {
+    else if (isEdit && !isVisible && this.editReturnTarget) {
       const returnTarget = this.editReturnTarget;
       afterNextRender(
         () => {
           if (!returnTarget.isConnected && document.activeElement === document.body) {
-            this.searchInput()?.nativeElement.focus();
+            (
+              this.emptyAddButton()?.nativeElement ??
+              this.searchInput()?.nativeElement ??
+              this.headingAddButton().nativeElement
+            ).focus();
           }
         },
         { injector: this.injector },
@@ -302,7 +337,7 @@ export class Dashboard implements OnInit {
           const shouldFocus = shouldClose || !!deletedRow?.contains(document.activeElement);
           if (shouldClose) this.detailDialog().close();
           this.passwordEntries.set(entries.filter((current) => current.id !== entry.id));
-          if (this.passwordEntries().length === 0) this.searchQuery.set('');
+          if (this.collectionEntries().length === 0) this.searchQuery.set('');
           this.announceSuccess('Password deleted');
           if (shouldFocus) {
             afterNextRender(

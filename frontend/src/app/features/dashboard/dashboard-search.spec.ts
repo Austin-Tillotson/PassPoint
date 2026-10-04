@@ -39,7 +39,10 @@ async function setup(records: PasswordEntry[] | null = entries) {
 
   await TestBed.configureTestingModule({
     imports: [Dashboard],
-    providers: [provideRouter([]), FolderStore, { provide: FoldersService, useValue: {} },
+    providers: [
+      provideRouter([]),
+      FolderStore,
+      { provide: FoldersService, useValue: {} },
       { provide: PasswordEntriesService, useValue: { getAll, delete: () => deletion, update } },
     ],
   }).compileComponents();
@@ -354,6 +357,7 @@ describe('Dashboard search during management', () => {
       await fixture.whenStable();
 
       expect(update).toHaveBeenCalledExactlyOnceWith(entries[0].id, {
+        folderId: null,
         siteName: editedEntry.siteName,
         password: entries[0].password,
       });

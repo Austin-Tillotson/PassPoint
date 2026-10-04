@@ -158,6 +158,12 @@ export class FolderManager {
 
   protected onClosed(): void {
     this.store.managerOpen.set(false);
-    if (this.returnTarget?.isConnected) this.returnTarget.focus();
+    if (this.returnTarget?.isConnected) {
+      this.returnTarget.focus();
+      // Deleting the active folder closes mobile navigation during the redirect.
+      if (document.activeElement !== this.returnTarget) {
+        document.querySelector<HTMLElement>('app-header .toggle-button')?.focus();
+      }
+    }
   }
 }

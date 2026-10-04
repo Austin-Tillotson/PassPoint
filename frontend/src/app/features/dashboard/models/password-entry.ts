@@ -6,4 +6,4 @@ export interface PasswordEntry {
   createdAtUtc: string;
 }
 
-export type NewPasswordEntry = Pick<PasswordEntry, 'siteName' | 'password'>;
+export type NewPasswordEntry = Pick<PasswordEntry, 'siteName' | 'password' | 'folderId'>;

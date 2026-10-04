@@ -176,6 +176,22 @@ public class PasswordEntriesController : ControllerBase
         return Ok(ToResponse(entry));
     }
 
+    [HttpPut("{id:guid}/favorite")]
+    public async Task<IActionResult> SetFavorite(Guid id, UpdateFavoriteRequest request)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+        if (request.IsFavorite is not bool isFavorite)
+            return BadRequest(new { message = "Favorite status is required." });
+
+        // Update only this column; concurrent password/folder edits remain intact.
+        var updated = await _context.PasswordEntries
+            .Where(entry => entry.Id == id && entry.UserId == userId)
+            .ExecuteUpdateAsync(update => update.SetProperty(entry => entry.IsFavorite, isFavorite));
+
+        return updated == 0 ? NotFound() : Ok(new FavoriteStatusResponse(id, isFavorite));
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -219,6 +235,7 @@ public class PasswordEntriesController : ControllerBase
         {
             Id = entry.Id,
             FolderId = entry.FolderId,
+            IsFavorite = entry.IsFavorite,
             SiteName = entry.SiteName,
             Password = _passwordProtector.Unprotect(entry.EncryptedPassword),
             CreatedAtUtc = entry.CreatedAtUtc,

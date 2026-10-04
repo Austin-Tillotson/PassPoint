@@ -9,6 +9,14 @@
       </a>
     </li>
     <li>
+      <a routerLink="/dashboard" [queryParams]="{ collection: 'favorites' }"
+        routerLinkActive="is-active" ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: true }" (click)="linkSelected.emit()">
+        <fa-icon class="navigation-icon" [icon]="faStar" aria-hidden="true" />
+        <span>Favorites</span>
+      </a>
+    </li>
+    <li>
       <a routerLink="/password-generator" (click)="linkSelected.emit()"
         routerLinkActive="is-active" ariaCurrentWhenActive="page">
         <fa-icon class="navigation-icon" [icon]="faWandMagicSparkles" aria-hidden="true" />

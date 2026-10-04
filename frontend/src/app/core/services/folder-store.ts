@@ -24,6 +24,7 @@ export class FolderStore {
   readonly selection = signal('all');
   readonly passwordCounts = signal<Record<string, number> | null>(null);
   readonly label = computed(() => this.selection() === 'all' ? 'All passwords'
+    : this.selection() === 'favorites' ? 'Favorites'
     : this.selection() === 'unfiled' ? 'Unfiled'
     : this.folders().find(folder => folder.id === this.selection())?.name ?? 'Folder');
 
@@ -77,7 +78,8 @@ export class FolderStore {
   private readSelection(): void {
     const params = this.router.parseUrl(this.router.url).queryParams;
     this.selection.set(
-      params['folder'] || (params['collection'] === 'unfiled' ? 'unfiled' : 'all'),
+      params['folder'] ||
+        (['unfiled', 'favorites'].includes(params['collection']) ? params['collection'] : 'all'),
     );
   }
 
@@ -88,6 +90,7 @@ export class FolderStore {
       !this.error() &&
       id !== 'all' &&
       id !== 'unfiled' &&
+      id !== 'favorites' &&
       !this.folders().some((folder) => folder.id === id)
     ) {
       void this.router.navigate(['/dashboard'], { replaceUrl: true });

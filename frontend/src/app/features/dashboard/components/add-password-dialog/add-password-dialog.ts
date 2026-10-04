@@ -86,7 +86,7 @@ export class AddPasswordDialog {
     this.passwordForm.reset({
       folderId: entry
         ? (entry.folderId ?? null)
-        : ['all', 'unfiled'].includes(this.folderStore.selection())
+        : ['all', 'unfiled', 'favorites'].includes(this.folderStore.selection())
           ? null
           : this.folderStore.selection(),
       siteName: entry?.siteName ?? '',

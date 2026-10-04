@@ -1,0 +1,21 @@
+<section aria-labelledby="quick-favorites-title">
+  <header>
+    <h2 id="quick-favorites-title">Within easy reach</h2>
+    <a routerLink="/dashboard" [queryParams]="{ collection: 'favorites' }">View all favorites</a>
+  </header>
+  <ul>
+    @for (entry of entries(); track entry.id) {
+      <li>
+        <button type="button" [attr.aria-label]="'Open favorite ' + siteLabel(entry.siteName)"
+          (click)="detailsRequested.emit(entry)">
+          <span class="site-icon"><fa-icon [icon]="faGlobe" aria-hidden="true" /></span>
+          <span class="site-copy">
+            <strong>{{ siteLabel(entry.siteName) }}</strong>
+            <span>{{ entry.siteName }}</span>
+          </span>
+          <fa-icon class="favorite-arrow" [icon]="faArrowRight" aria-hidden="true" />
+        </button>
+      </li>
+    }
+  </ul>
+</section>

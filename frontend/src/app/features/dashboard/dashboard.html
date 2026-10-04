@@ -7,7 +7,7 @@
 
     <button
       #headingAddButton
-      [hidden]="isEmpty()"
+      [hidden]="isEmpty() && folderStore.selection() !== 'favorites'"
       class="button button--primary dashboard-heading__add"
       type="button"
       [disabled]="!canAddPassword()"
@@ -56,6 +56,10 @@
     (editRequested)="editPasswordEntry($event)"
     (deleteRequested)="deletePasswordEntry($event)"
   />
+
+  @if (canAddPassword() && folderStore.selection() === 'all' && !normalizedQuery() && quickFavorites().length) {
+    <app-quick-favorites [entries]="quickFavorites()" (detailsRequested)="openDetails($event)" />
+  }
 
   @if (canAddPassword()) {
     <h2 class="collection-heading">
@@ -157,6 +161,15 @@
           <fa-icon [icon]="faRotateRight" aria-hidden="true" /> Retry
         </button>
       </div>
+    } @else if (isEmpty() && folderStore.selection() === 'favorites') {
+      <div class="dashboard-state">
+        <fa-icon class="dashboard-state__icon" [icon]="faStar" aria-hidden="true" />
+        <h2>No favorites yet</h2>
+        <p>Star a password in any folder to find it here.</p>
+        <a #emptyFavoritesLink class="button button--primary" routerLink="/dashboard"
+          >View all passwords</a
+        >
+      </div>
     } @else if (isEmpty()) {
       <div class="dashboard-state">
         <fa-icon class="dashboard-state__icon" [icon]="faKey" aria-hidden="true" />
@@ -219,7 +232,7 @@
     }
   </section>
 
-  @if (showFloatingAdd() && !isEmpty()) {
+  @if (showFloatingAdd() && (!isEmpty() || folderStore.selection() === 'favorites')) {
     <button
       class="button button--primary add-password-button"
       type="button"

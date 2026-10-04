@@ -193,4 +193,12 @@ describe('Password form submission', () => {
     expect(fixture.nativeElement.textContent).toContain('no longer available');
     expect(document.activeElement).toBe(fixture.nativeElement.querySelector('.folder-picker__toggle'));
   });
+  it('creates an Unfiled password when opened from Favorites', async () => {
+    const { fixture } = await setup(false);
+    TestBed.inject(FolderStore).selection.set('favorites');
+    fixture.componentInstance.open();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.folder-picker__toggle').textContent).toContain('Unfiled');
+    expect(fixture.componentInstance['passwordForm'].controls.folderId.value).toBeNull();
+  });
 });

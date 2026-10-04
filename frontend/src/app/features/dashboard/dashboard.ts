@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { FolderStore } from '../../core/services/folder-store';
 import {
   Component,
@@ -20,6 +21,7 @@ import {
   faList,
   faTableCellsLarge,
   faPlus,
+  faStar,
   faKey,
   faRotateRight,
   faTriangleExclamation,
@@ -30,24 +32,34 @@ import {
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
 import { PasswordDetailDialog } from './components/password-detail-dialog/password-detail-dialog';
 import { PasswordRow } from './components/password-row/password-row';
+import { QuickFavorites } from './components/quick-favorites/quick-favorites';
 import type { PasswordEntry } from './models/password-entry';
 import { PasswordEntriesService } from './services/password-entries.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AddPasswordDialog, FaIconComponent, PasswordRow, PasswordDetailDialog],
+  imports: [RouterLink, AddPasswordDialog, FaIconComponent, PasswordRow, PasswordDetailDialog, QuickFavorites],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
   private readonly deletedFolderIds = new Set<string>();
   protected readonly folderStore = inject(FolderStore);
+  protected readonly quickFavorites = computed(() => this.passwordEntries()
+    .filter(entry => entry.isFavorite)
+    .sort((a, b) => a.siteName.replace(/^https?:\/\/(?:www\.)?/i, '').localeCompare(
+      b.siteName.replace(/^https?:\/\/(?:www\.)?/i, ''), undefined, { sensitivity: 'base', numeric: true }))
+    .slice(0, 4));
   protected readonly collectionEntries = computed(() => {
     const selection = this.folderStore.selection();
     return this.passwordEntries().filter(
       (entry) =>
         selection === 'all' ||
-        (selection === 'unfiled' ? !entry.folderId : entry.folderId === selection),
+        (selection === 'favorites'
+          ? !!entry.isFavorite
+          : selection === 'unfiled'
+            ? !entry.folderId
+            : entry.folderId === selection),
     );
   });
   private readonly passwordEntriesService = inject(PasswordEntriesService);
@@ -56,6 +68,8 @@ export class Dashboard implements OnInit {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
+  private readonly emptyFavoritesLink =
+    viewChild<ElementRef<HTMLAnchorElement>>('emptyFavoritesLink');
   private readonly emptyAddButton = viewChild<ElementRef<HTMLButtonElement>>('emptyAddButton');
   private readonly headingAddButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('headingAddButton');
@@ -93,7 +107,10 @@ export class Dashboard implements OnInit {
     () => this.showSearch() && this.filteredEntries().length === 0,
   );
   protected readonly searchSummary = computed(() => {
-    if (!this.showSearch()) return '';
+    if (!this.showSearch())
+      return this.canAddPassword() && this.folderStore.selection() === 'favorites'
+        ? '0 favorites'
+        : '';
     const total = this.collectionEntries().length;
     const noun = total === 1 ? 'password' : 'passwords';
     return this.normalizedQuery()
@@ -102,6 +119,7 @@ export class Dashboard implements OnInit {
   });
 
   protected readonly faPlus = faPlus;
+  protected readonly faStar = faStar;
   protected readonly faKey = faKey;
   protected readonly faRotateRight = faRotateRight;
   protected readonly faTriangleExclamation = faTriangleExclamation;
@@ -251,38 +269,58 @@ export class Dashboard implements OnInit {
     if (!current) return;
     const returnTarget =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const target = !current.isFavorite;
+    let removedFromView = false;
+    let nextFocusId: string | undefined;
     this.favoritePending.update((pending) => ({ ...pending, [entry.id]: true }));
     this.favoriteErrors.update((errors) => ({ ...errors, [entry.id]: '' }));
     this.passwordEntriesService
-      .setFavorite(entry.id, target)
+      .setFavorite(entry.id, !current.isFavorite)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() =>
+        finalize(() => {
           this.favoritePending.update((pending) => {
             const updated = { ...pending };
             delete updated[entry.id];
-            if (!this.destroyRef.destroyed) {
-              afterNextRender(
-                () => {
-                  if (document.activeElement === document.body && returnTarget?.isConnected)
-                    returnTarget.focus();
-                },
-                { injector: this.injector },
-              );
-            }
             return updated;
-          }),
-        ),
+          });
+          if (!this.destroyRef.destroyed) {
+            afterNextRender(
+              () => {
+                if (document.activeElement !== document.body) return;
+                if (removedFromView) {
+                  const next = nextFocusId
+                    ? this.findRow(nextFocusId)?.querySelector<HTMLElement>('.password-row__site')
+                    : null;
+                  (
+                    next ??
+                    this.emptyFavoritesLink()?.nativeElement ??
+                    this.searchFocusTarget() ??
+                    this.headingAddButton().nativeElement
+                  ).focus();
+                } else if (returnTarget?.isConnected) {
+                  returnTarget.focus();
+                }
+              },
+              { injector: this.injector },
+            );
+          }
+        }),
       )
       .subscribe({
         next: (saved) => {
-          // Patch the flag only, preserving any folder or password changes made meanwhile.
+          const visible = this.filteredEntries();
+          const index = visible.findIndex((item) => item.id === entry.id);
+          nextFocusId = visible[index + 1]?.id ?? visible[index - 1]?.id;
+          // Patch only the flag so concurrent folder or password changes survive.
           this.passwordEntries.update((entries) =>
             entries.map((item) =>
               item.id === entry.id ? { ...item, isFavorite: saved.isFavorite } : item,
             ),
           );
+          removedFromView =
+            index >= 0 && !this.filteredEntries().some((item) => item.id === entry.id);
+          if (removedFromView && this.detailDialog().isShowing(entry.id))
+            this.detailDialog().close();
           this.announceSuccess(saved.isFavorite ? 'Added to favorites' : 'Removed from favorites');
         },
         error: () =>
@@ -400,7 +438,9 @@ export class Dashboard implements OnInit {
                   return;
                 const target = nextId
                   ? this.findRow(nextId)?.querySelector<HTMLElement>('.password-row__site')
-                  : (this.emptyAddButton()?.nativeElement ?? this.searchFocusTarget());
+                  : (this.emptyAddButton()?.nativeElement ??
+                    this.emptyFavoritesLink()?.nativeElement ??
+                    this.searchFocusTarget());
                 target?.focus();
               },
               { injector: this.injector },

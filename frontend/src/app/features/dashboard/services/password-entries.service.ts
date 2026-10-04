@@ -30,6 +30,14 @@ export class PasswordEntriesService {
     });
   }
 
+  setFavorite(id: string, isFavorite: boolean): Observable<{ id: string; isFavorite: boolean }> {
+    return this.http.put<{ id: string; isFavorite: boolean }>(
+      `${this.apiUrl}/${id}/favorite`,
+      { isFavorite },
+      { withCredentials: true },
+    );
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, {
       withCredentials: true,

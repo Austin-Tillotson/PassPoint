@@ -107,11 +107,16 @@ export class Dashboard implements OnInit {
   protected readonly faTriangleExclamation = faTriangleExclamation;
   protected readonly passwordEntries = signal<PasswordEntry[]>([]);
   protected readonly loadError = signal<string | null>(null);
-  private readonly selectedEntryId = signal<string | null>(null);
+  protected readonly selectedEntryId = signal<string | null>(null);
   protected readonly detailFolderColor = computed(() => {
     const id = this.passwordEntries().find(entry => entry.id === this.selectedEntryId())?.folderId;
     return (id && this.folderStore.folderColors()[id]) || 'var(--color-text-muted)';
   });
+  protected readonly favoritePending = signal<Record<string, boolean>>({});
+  protected readonly favoriteErrors = signal<Record<string, string>>({});
+  protected readonly selectedEntryIsFavorite = computed(
+    () => !!this.passwordEntries().find((entry) => entry.id === this.selectedEntryId())?.isFavorite,
+  );
   protected readonly detailFolderName = computed(() => {
     const id = this.passwordEntries().find(
       (entry) => entry.id === this.selectedEntryId(),
@@ -237,6 +242,54 @@ export class Dashboard implements OnInit {
           this.hasLoaded.set(true);
         },
         error: () => this.loadError.set('Unable to load your saved passwords.'),
+      });
+  }
+
+  protected toggleFavorite(entry: PasswordEntry): void {
+    if (this.favoritePending()[entry.id] || this.isDeleting()) return;
+    const current = this.passwordEntries().find((item) => item.id === entry.id);
+    if (!current) return;
+    const returnTarget =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const target = !current.isFavorite;
+    this.favoritePending.update((pending) => ({ ...pending, [entry.id]: true }));
+    this.favoriteErrors.update((errors) => ({ ...errors, [entry.id]: '' }));
+    this.passwordEntriesService
+      .setFavorite(entry.id, target)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() =>
+          this.favoritePending.update((pending) => {
+            const updated = { ...pending };
+            delete updated[entry.id];
+            if (!this.destroyRef.destroyed) {
+              afterNextRender(
+                () => {
+                  if (document.activeElement === document.body && returnTarget?.isConnected)
+                    returnTarget.focus();
+                },
+                { injector: this.injector },
+              );
+            }
+            return updated;
+          }),
+        ),
+      )
+      .subscribe({
+        next: (saved) => {
+          // Patch the flag only, preserving any folder or password changes made meanwhile.
+          this.passwordEntries.update((entries) =>
+            entries.map((item) =>
+              item.id === entry.id ? { ...item, isFavorite: saved.isFavorite } : item,
+            ),
+          );
+          this.announceSuccess(saved.isFavorite ? 'Added to favorites' : 'Removed from favorites');
+        },
+        error: () =>
+          this.favoriteErrors.update((errors) => ({
+            ...errors,
+            [entry.id]: 'Unable to update favorite. Please try again.',
+          })),
       });
   }
 

@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-password-row',
@@ -10,6 +10,11 @@ import { faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
 })
 export class PasswordRow {
   readonly siteName = input.required<string>();
+  readonly isFavorite = input(false);
+  readonly favoritePending = input(false);
+  readonly favoriteError = input('');
+  readonly favoriteRequested = output<void>();
+  protected readonly faStar = faStar;
   readonly grid = input(false);
 
   readonly detailsRequested = output<void>();

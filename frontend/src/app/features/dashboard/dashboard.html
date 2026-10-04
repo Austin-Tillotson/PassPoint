@@ -44,6 +44,10 @@
   <app-add-password-dialog #passwordDialog (passwordSaved)="savePasswordEntry($event)" />
 
   <app-password-detail-dialog
+    [isFavorite]="selectedEntryIsFavorite()"
+    [favoritePending]="favoritePending()[selectedEntryId() ?? ''] || false"
+    [favoriteError]="favoriteErrors()[selectedEntryId() ?? ''] || ''"
+    (favoriteRequested)="toggleFavorite($event)"
     [folderName]="detailFolderName()"
     [folderColor]="detailFolderColor()"
     [errorMessage]="deleteError()"
@@ -194,13 +198,17 @@
       @if (viewMode() === 'list') {
         <div class="password-list__heading" aria-hidden="true">
           <span>Site</span>
-          <span>View</span>
+          <span>Actions</span>
         </div>
       }
       <ul class="password-list__entries">
         @for (entry of filteredEntries(); track entry.id) {
           <li [attr.data-entry-id]="entry.id">
             <app-password-row
+              [isFavorite]="!!entry.isFavorite"
+              [favoritePending]="!!favoritePending()[entry.id] || isDeleting()"
+              [favoriteError]="favoriteErrors()[entry.id] || ''"
+              (favoriteRequested)="toggleFavorite(entry)"
               [siteName]="entry.siteName"
               [grid]="viewMode() === 'grid'"
               (detailsRequested)="openDetails(entry)"

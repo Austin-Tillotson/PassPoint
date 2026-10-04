@@ -23,7 +23,7 @@ describe('Password details', () => {
 
   it('masks the password again when reopening an entry', async () => {
     const { fixture, component } = await setup();
-    fixture.nativeElement.querySelector('[aria-pressed]').click();
+    fixture.nativeElement.querySelector('.password-detail__password [aria-pressed]').click();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('code').textContent).toBe(entry.password);
     component.close();

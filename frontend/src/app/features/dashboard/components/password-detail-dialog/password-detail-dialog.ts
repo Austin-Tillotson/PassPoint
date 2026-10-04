@@ -1,6 +1,7 @@
 import { Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faStar,
   faEye,
   faEyeSlash,
   faGlobe,
@@ -19,6 +20,11 @@ import type { PasswordEntry } from '../../models/password-entry';
 })
 export class PasswordDetailDialog {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  readonly isFavorite = input(false);
+  readonly favoritePending = input(false);
+  readonly favoriteError = input('');
+  readonly favoriteRequested = output<PasswordEntry>();
+  protected readonly faStar = faStar;
   readonly folderName = input('Unfiled');
   readonly folderColor = input('var(--color-text-muted)');
   readonly errorMessage = input<string | null>(null);

@@ -1,5 +1,6 @@
 export interface PasswordEntry {
   id: string;
+  isFavorite?: boolean;
   folderId?: string | null;
   siteName: string;
   password: string;

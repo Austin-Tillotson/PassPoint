@@ -74,6 +74,58 @@ async function setup(records: PasswordEntry[] | null = entries) {
 }
 
 describe('Dashboard search control', () => {
+  it('synchronizes name header sorting with the dropdown and leaves Actions inert', async () => {
+    const { fixture, element } = await setup();
+    const select = element.querySelector<HTMLSelectElement>('.collection-sort')!;
+    const site = element.querySelector<HTMLButtonElement>('.password-list__heading button')!;
+    const ids = () => [...element.querySelectorAll('[data-entry-id]')].map(row => row.getAttribute('data-entry-id'));
+    site.click();
+    await fixture.whenStable();
+    expect(select.value).toBe('name-desc');
+    expect(ids()).toEqual(['5', '4', '3', '2', '1']);
+    site.click();
+    await fixture.whenStable();
+    expect(select.value).toBe('name');
+    expect(ids()).toEqual(['1', '2', '3', '4', '5']);
+    select.value = 'name-desc';
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(site.textContent).toContain('↓');
+    element.querySelector<HTMLElement>('.password-list__heading > span:last-child')!.click();
+    await fixture.whenStable();
+    expect(select.value).toBe('name-desc');
+    expect(ids()).toEqual(['5', '4', '3', '2', '1']);
+  });
+
+  it('sorts folders in navigation order and favorites first with alphabetical ties', async () => {
+    const records = entries.map((entry, index) => ({
+      ...entry,
+      folderId: ['work', 'personal', null, 'work', 'personal'][index],
+      isFavorite: index === 1 || index === 4,
+    }));
+    const { fixture, element, query } = await setup(records);
+    const store = TestBed.inject(FolderStore);
+    store.folders.set([{ id: 'personal', name: 'Personal' }, { id: 'work', name: 'Work' }]);
+    const select = element.querySelector<HTMLSelectElement>('.collection-sort')!;
+    const ids = () => [...element.querySelectorAll('[data-entry-id]')].map(row => row.getAttribute('data-entry-id'));
+    element.querySelector<HTMLButtonElement>('.password-list__folder-heading')!.click();
+    await fixture.whenStable();
+    expect(select.value).toBe('folder');
+    expect(ids()).toEqual(['3', '2', '5', '1', '4']);
+    store.folders.set([{ id: 'work', name: 'Work' }, { id: 'personal', name: 'Personal' }]);
+    await fixture.whenStable();
+    expect(ids()).toEqual(['3', '1', '4', '2', '5']);
+    select.value = 'favorites';
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(ids()).toEqual(['2', '5', '1', '3', '4']);
+    await query('portal');
+    expect(ids()).toEqual(['5', '1', '4']);
+    element.querySelector<HTMLButtonElement>('[aria-label="Grid view"]')!.click();
+    await fixture.whenStable();
+    expect(ids()).toEqual(['5', '1', '4']);
+  });
+
   it('preserves raw input and clears it while returning focus to search', async () => {
     const { fixture, element, query } = await setup();
 

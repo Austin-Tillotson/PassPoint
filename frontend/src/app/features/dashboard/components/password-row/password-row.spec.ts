@@ -1,0 +1,46 @@
+import { TestBed } from '@angular/core/testing';
+import { afterEach, vi } from 'vitest';
+import { PasswordRow } from './password-row';
+
+describe('Password row copying', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  async function setup(writeText: ReturnType<typeof vi.fn>) {
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    const fixture = TestBed.createComponent(PasswordRow);
+    fixture.componentRef.setInput('siteName', 'https://example.com');
+    fixture.componentRef.setInput('password', 'Sample-only');
+    fixture.componentRef.setInput('folderName', 'Work');
+    await fixture.whenStable();
+    return fixture;
+  }
+
+  it('copies the exact password without opening details or rendering the secret', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const fixture = await setup(writeText);
+    const details = vi.fn();
+    fixture.componentInstance.detailsRequested.subscribe(details);
+    fixture.nativeElement.querySelector('.password-row__copy').click();
+    await fixture.whenStable();
+    expect(writeText).toHaveBeenCalledWith('Sample-only');
+    expect(details).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).not.toContain('Sample-only');
+    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('Password copied.');
+    expect(fixture.nativeElement.querySelector('.password-row__folder').textContent).toContain('Work');
+  });
+
+  it('reports clipboard failure and allows retry', async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error('Denied'));
+    const fixture = await setup(writeText);
+    const button = fixture.nativeElement.querySelector('.password-row__copy');
+    button.click();
+    await fixture.whenStable();
+    expect(button.disabled).toBe(false);
+    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain('Unable to copy');
+    writeText.mockResolvedValue(undefined);
+    button.click();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('[role=alert]')).toBeNull();
+    expect(writeText).toHaveBeenCalledTimes(2);
+  });
+});

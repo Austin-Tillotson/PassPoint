@@ -45,6 +45,9 @@ import { PasswordEntriesService } from './services/password-entries.service';
 export class Dashboard implements OnInit {
   private readonly deletedFolderIds = new Set<string>();
   protected readonly folderStore = inject(FolderStore);
+  protected readonly folderNames = computed(() => Object.fromEntries(
+    this.folderStore.folders().map(folder => [folder.id, folder.name]),
+  ));
   protected readonly quickFavorites = computed(() => this.passwordEntries()
     .filter(entry => entry.isFavorite)
     .sort((a, b) => a.siteName.replace(/^https?:\/\/(?:www\.)?/i, '').localeCompare(
@@ -83,6 +86,18 @@ export class Dashboard implements OnInit {
   protected readonly faList = faList;
   protected readonly faTableCellsLarge = faTableCellsLarge;
   protected readonly viewMode = signal<'list' | 'grid'>('list');
+  protected readonly sortMode = signal<'name' | 'name-desc' | 'folder' | 'favorites'>('name');
+
+  protected updateSort(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === 'name' || value === 'name-desc' || value === 'folder' || value === 'favorites') {
+      this.sortMode.set(value);
+    }
+  }
+
+  protected toggleNameSort(): void {
+    this.sortMode.set(this.sortMode() === 'name' ? 'name-desc' : 'name');
+  }
   protected readonly searchQuery = signal('');
   protected readonly normalizedQuery = computed(() => this.searchQuery().trim().toLowerCase());
   protected readonly filteredEntries = computed(() => {
@@ -92,12 +107,19 @@ export class Dashboard implements OnInit {
       : this.collectionEntries();
     const siteLabel = (entry: PasswordEntry) =>
       entry.siteName.replace(/^https?:\/\/(?:www\.)?/i, '');
-    return [...matches].sort((first, second) =>
-      siteLabel(first).localeCompare(siteLabel(second), undefined, {
+    const mode = this.sortMode();
+    const folderOrder = new Map(this.folderStore.folders().map((folder, index) => [folder.id, index + 1]));
+    const folderRank = (entry: PasswordEntry) => entry.folderId
+      ? folderOrder.get(entry.folderId) ?? folderOrder.size + 1 : 0;
+    return [...matches].sort((first, second) => {
+      const groupOrder = mode === 'folder' ? folderRank(first) - folderRank(second)
+        : mode === 'favorites' ? Number(!!second.isFavorite) - Number(!!first.isFavorite) : 0;
+      const nameOrder = siteLabel(first).localeCompare(siteLabel(second), undefined, {
         sensitivity: 'base',
         numeric: true,
-      }),
-    );
+      });
+      return groupOrder || (mode === 'name-desc' ? -nameOrder : nameOrder);
+    });
   });
   protected readonly showSearch = computed(
     () => this.canAddPassword() && this.collectionEntries().length > 0,

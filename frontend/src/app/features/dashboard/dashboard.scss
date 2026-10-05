@@ -4,11 +4,19 @@
   box-sizing: border-box;
 }
 
+.collection-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
 .collection-heading {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 0 var(--space-4);
+  margin: 0;
   font-size: var(--font-size-ui);
   font-weight: var(--font-weight-semibold);
 }
@@ -23,6 +31,14 @@
   font-size: var(--font-size-caption);
   text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+.collection-toolbar__hint {
+  text-align: right;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-body);
 }
 
 .visually-hidden {
@@ -73,7 +89,7 @@
 }
 
 .password-list {
-  --password-list-columns: minmax(0, 1fr) 6rem;
+  --password-list-columns: minmax(0, 1fr) minmax(7rem, 0.5fr) 9.25rem;
 
   border-radius: var(--radius-surface);
 }
@@ -84,7 +100,7 @@
   display: grid;
   grid-template-columns: var(--password-list-columns);
   gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--color-border-layout);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
@@ -97,6 +113,28 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.password-list__heading > span:last-child { text-align: right; }
+
+.password-list__heading button {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.password-list__heading button:hover,
+.password-list__heading button:focus-visible { color: var(--color-accent); }
+
+@media (max-width: 40rem) {
+  .password-list { --password-list-columns: minmax(0, 1fr) 9.25rem; }
+  .password-list__folder-heading { display: none; }
 }
 
 .password-list__entries > li + li,
@@ -276,7 +314,7 @@
 
 .collection-toolbar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
@@ -288,11 +326,16 @@
   margin: 0;
 }
 
+.collection-toolbar__customize {
+  margin-left: auto;
+}
+
 .collection-toolbar__options {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   margin-left: auto;
+  justify-content: flex-end;
 }
 
 .collection-sort {
@@ -343,6 +386,9 @@
 }
 
 @media (max-width: 35rem) {
+  .collection-toolbar__customize {
+    width: 100%;
+  }
   .collection-toolbar .dashboard-search {
     flex-basis: 100%;
     max-width: none;

@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { PasswordDetailDialog } from './password-detail-dialog';
 
 describe('Password details', () => {
+  afterEach(() => vi.unstubAllGlobals());
   const entry = {
     id: '1',
     siteName: 'https://example.com',
@@ -20,6 +21,20 @@ describe('Password details', () => {
     await fixture.whenStable();
     return { fixture, dialog, component: fixture.componentInstance };
   }
+
+  it('copies a masked password and clears copy feedback when another entry opens', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    const { fixture, component } = await setup();
+    fixture.nativeElement.querySelector('.password-detail__copy').click();
+    await fixture.whenStable();
+    expect(writeText).toHaveBeenCalledWith(entry.password);
+    expect(fixture.nativeElement.querySelector('code').textContent).toBe('••••••••');
+    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('Password copied.');
+    component.open({ ...entry, id: '2' });
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('');
+  });
 
   it('masks the password again when reopening an entry', async () => {
     const { fixture, component } = await setup();

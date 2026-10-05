@@ -2,6 +2,7 @@ import { Component, ElementRef, computed, input, output, signal, viewChild } fro
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faStar,
+  faCopy,
   faEye,
   faEyeSlash,
   faGlobe,
@@ -34,6 +35,28 @@ export class PasswordDetailDialog {
   readonly deleteRequested = output<PasswordEntry>();
   protected readonly entry = signal<PasswordEntry | null>(null);
   protected readonly isPasswordVisible = signal(false);
+  protected readonly copying = signal(false);
+  protected readonly copyMessage = signal('');
+  protected readonly copyError = signal('');
+  protected readonly faCopy = faCopy;
+  private copyVersion = 0;
+
+  protected async copyPassword(): Promise<void> {
+    const entry = this.entry();
+    if (!entry || this.copying()) return;
+    const version = ++this.copyVersion;
+    this.copying.set(true);
+    this.copyMessage.set('');
+    this.copyError.set('');
+    try {
+      await navigator.clipboard.writeText(entry.password);
+      if (version === this.copyVersion) this.copyMessage.set('Password copied.');
+    } catch {
+      if (version === this.copyVersion) this.copyError.set('Unable to copy password. Please try again.');
+    } finally {
+      if (version === this.copyVersion) this.copying.set(false);
+    }
+  }
 
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
@@ -52,6 +75,7 @@ export class PasswordDetailDialog {
   });
 
   open(entry: PasswordEntry): void {
+    this.resetCopy();
     this.entry.set(entry);
     this.isPasswordVisible.set(false);
     this.dialog().nativeElement.showModal();
@@ -78,6 +102,14 @@ export class PasswordDetailDialog {
 
   protected resetVisibility(): void {
     this.isPasswordVisible.set(false);
+    this.resetCopy();
+  }
+
+  private resetCopy(): void {
+    this.copyVersion++;
+    this.copying.set(false);
+    this.copyMessage.set('');
+    this.copyError.set('');
   }
 
   protected onBackdropClick(event: MouseEvent): void {

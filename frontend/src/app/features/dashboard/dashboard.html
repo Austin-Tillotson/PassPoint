@@ -62,12 +62,17 @@
   }
 
   @if (canAddPassword()) {
+    <div class="collection-heading-row">
     <h2 class="collection-heading">
       {{ folderStore.label() }}
       <span class="collection-heading__count" aria-hidden="true">{{
         filteredEntries().length
       }}</span>
     </h2>
+      @if (showSearch()) {
+        <p class="collection-toolbar__hint">Your view preference</p>
+      }
+    </div>
   }
 
   @if (showSearch()) {
@@ -95,9 +100,13 @@
           </button>
         }
       </div>
-      <div class="collection-toolbar__options">
-        <select aria-label="Sort passwords" class="collection-sort">
+      <div class="collection-toolbar__customize">
+        <div class="collection-toolbar__options">
+        <select aria-label="Sort passwords" class="collection-sort" [value]="sortMode()" (change)="updateSort($event)">
           <option value="name">Name, A–Z</option>
+          <option value="name-desc">Name, Z–A</option>
+          <option value="folder">Folder</option>
+          <option value="favorites">Favorites first</option>
         </select>
         <div class="collection-views" role="group" aria-label="Password display">
           <button
@@ -118,6 +127,7 @@
           >
             <fa-icon [icon]="faTableCellsLarge" aria-hidden="true" />
           </button>
+        </div>
         </div>
       </div>
     </div>
@@ -209,8 +219,16 @@
       </div>
     } @else if (hasLoaded()) {
       @if (viewMode() === 'list') {
-        <div class="password-list__heading" aria-hidden="true">
-          <span>Site</span>
+        <div class="password-list__heading">
+          <button type="button" (click)="toggleNameSort()"
+            [attr.aria-label]="sortMode() === 'name' ? 'Sort by name, Z to A' : 'Sort by name, A to Z'">
+            Site <span aria-hidden="true">{{ sortMode() === 'name' ? '↑' : sortMode() === 'name-desc' ? '↓' : '' }}</span>
+          </button>
+          <button type="button" class="password-list__folder-heading"
+            (click)="sortMode.set('folder')" [attr.aria-pressed]="sortMode() === 'folder'"
+            aria-label="Sort by folder in navigation order">
+            Folder <span aria-hidden="true">{{ sortMode() === 'folder' ? '↑' : '' }}</span>
+          </button>
           <span>Actions</span>
         </div>
       }
@@ -218,6 +236,9 @@
         @for (entry of filteredEntries(); track entry.id) {
           <li [attr.data-entry-id]="entry.id">
             <app-password-row
+              [password]="entry.password"
+              [folderName]="entry.folderId ? folderNames()[entry.folderId] ?? 'Folder unavailable' : 'Unfiled'"
+              [folderColor]="folderStore.folderColors()[entry.folderId ?? ''] ?? 'var(--color-text-muted)'"
               [isFavorite]="!!entry.isFavorite"
               [favoritePending]="!!favoritePending()[entry.id] || isDeleting()"
               [favoriteError]="favoriteErrors()[entry.id] || ''"

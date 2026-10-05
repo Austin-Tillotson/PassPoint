@@ -1,4 +1,5 @@
 import { FolderStore } from '../../../core/services/folder-store';
+import { PasswordGeneratorState } from '../../../core/services/password-generator-state';
 import { Component, inject, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -11,6 +12,7 @@ import { faFolder, faFolderOpen, faPen, faRotateRight, faStar, faTableCellsLarge
   styleUrl: './navigation-links.scss',
 })
 export class NavigationLinks {
+  protected readonly generator = inject(PasswordGeneratorState);
   protected readonly folderStore = inject(FolderStore);
   protected readonly folderColors = this.folderStore.folderColors;
   protected readonly faStar = faStar;

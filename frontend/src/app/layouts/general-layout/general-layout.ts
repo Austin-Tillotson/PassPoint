@@ -1,4 +1,5 @@
 import { FolderManager } from '../../shared/components/folder-manager/folder-manager';
+import { PasswordGenerator } from '../../features/password-generator/password-generator';
 import { FolderStore } from '../../core/services/folder-store';
 import { AuthService } from '../../core/services/auth.service';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
@@ -13,7 +14,7 @@ import { Sidebar } from '../../shared/components/sidebar/sidebar';
 @Component({
   selector: 'app-general-layout',
   providers: [FolderStore],
-  imports: [FolderManager, Header, MobileNavigation, RouterOutlet, Sidebar],
+  imports: [PasswordGenerator, FolderManager, Header, MobileNavigation, RouterOutlet, Sidebar],
   templateUrl: './general-layout.html',
   styleUrl: './general-layout.scss',
 })

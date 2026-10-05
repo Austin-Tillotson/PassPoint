@@ -17,11 +17,11 @@
       </a>
     </li>
     <li>
-      <a routerLink="/password-generator" (click)="linkSelected.emit()"
-        routerLinkActive="is-active" ariaCurrentWhenActive="page">
+      <button class="navigation-action" type="button" aria-haspopup="dialog"
+        (click)="linkSelected.emit(); generator.open.set(true)">
         <fa-icon class="navigation-icon" [icon]="faWandMagicSparkles" aria-hidden="true" />
         <span>Password Generator</span>
-      </a>
+      </button>
     </li></ul>
   </section>
 

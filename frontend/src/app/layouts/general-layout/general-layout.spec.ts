@@ -55,13 +55,18 @@ describe('GeneralLayout mobile navigation', () => {
     expect(document.activeElement).toBe(toggle);
   });
 
-  it('closes and updates the current link when navigating to another page', async () => {
-    fixture.nativeElement.querySelector('.mobile-navigation a[href="/password-generator"]').click();
+  it('opens the generator over the current dashboard and closes mobile navigation', async () => {
+    const dialog = fixture.nativeElement.querySelector('app-password-generator dialog') as HTMLDialogElement;
+    dialog.showModal = () => dialog.setAttribute('open', '');
+    dialog.close = () => dialog.removeAttribute('open');
+    fixture.nativeElement.querySelector('.mobile-navigation .navigation-action').click();
     await fixture.whenStable();
 
-    expect(TestBed.inject(Router).url).toBe('/password-generator');
+    expect(TestBed.inject(Router).url).toBe('/dashboard');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(fixture.nativeElement.querySelector('.mobile-navigation [aria-current="page"]').textContent)
-      .toContain('Password Generator');
+    expect(fixture.nativeElement.querySelector('app-password-generator dialog').open).toBe(true);
+    fixture.nativeElement.querySelector('[aria-label="Close password generator"]').click();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(toggle);
   });
 });

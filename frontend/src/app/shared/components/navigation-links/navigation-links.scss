@@ -34,7 +34,8 @@ ul {
   list-style: none;
 }
 
-a {
+a,
+.navigation-action {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -49,6 +50,15 @@ a {
   text-decoration: none;
 }
 
+.navigation-action {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .navigation-icon {
   display: inline-flex;
   flex: 0 0 1.25rem;
@@ -61,12 +71,14 @@ a {
   line-height: 1;
 }
 
-a:hover:not(.is-active) {
+a:hover:not(.is-active),
+.navigation-action:hover {
   background-color: var(--color-surface-pressed);
   color: var(--color-text-primary);
 }
 
-a:hover:not(.is-active) .navigation-icon {
+a:hover:not(.is-active) .navigation-icon,
+.navigation-action:hover .navigation-icon {
   color: inherit;
 }
 

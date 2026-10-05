@@ -37,11 +37,7 @@ export const routes: Routes = [
       },
       {
         path: 'password-generator',
-        data: { pageLabel: 'Password Generator' },
-        loadComponent: () =>
-          import('./features/password-generator/password-generator').then(
-            (module) => module.PasswordGenerator,
-          ),
+        redirectTo: 'dashboard',
       },
     ],
   },

@@ -1,4 +1,6 @@
-import { Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
+import { ToastOutlet } from '../../../../shared/components/toast-outlet/toast-outlet';
+import { ToastService } from '../../../../core/services/toast.service';
+import { Component, ElementRef, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faStar,
@@ -15,20 +17,19 @@ import type { PasswordEntry } from '../../models/password-entry';
 
 @Component({
   selector: 'app-password-detail-dialog',
-  imports: [FaIconComponent],
+  imports: [ToastOutlet, FaIconComponent],
   templateUrl: './password-detail-dialog.html',
   styleUrl: './password-detail-dialog.scss',
 })
 export class PasswordDetailDialog {
+  private readonly toasts = inject(ToastService);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   readonly isFavorite = input(false);
   readonly favoritePending = input(false);
-  readonly favoriteError = input('');
   readonly favoriteRequested = output<PasswordEntry>();
   protected readonly faStar = faStar;
   readonly folderName = input('Unfiled');
   readonly folderColor = input('var(--color-text-muted)');
-  readonly errorMessage = input<string | null>(null);
   readonly isDeleting = input(false);
   readonly deletingEntryId = input<string | null>(null);
   readonly editRequested = output<PasswordEntry>();
@@ -36,8 +37,6 @@ export class PasswordDetailDialog {
   protected readonly entry = signal<PasswordEntry | null>(null);
   protected readonly isPasswordVisible = signal(false);
   protected readonly copying = signal(false);
-  protected readonly copyMessage = signal('');
-  protected readonly copyError = signal('');
   protected readonly faCopy = faCopy;
   private copyVersion = 0;
 
@@ -46,13 +45,11 @@ export class PasswordDetailDialog {
     if (!entry || this.copying()) return;
     const version = ++this.copyVersion;
     this.copying.set(true);
-    this.copyMessage.set('');
-    this.copyError.set('');
     try {
       await navigator.clipboard.writeText(entry.password);
-      if (version === this.copyVersion) this.copyMessage.set('Password copied.');
+      if (version === this.copyVersion) this.toasts.success('Password copied.');
     } catch {
-      if (version === this.copyVersion) this.copyError.set('Unable to copy password. Please try again.');
+      if (version === this.copyVersion) this.toasts.error('Unable to copy password. Please try again.');
     } finally {
       if (version === this.copyVersion) this.copying.set(false);
     }
@@ -108,8 +105,6 @@ export class PasswordDetailDialog {
   private resetCopy(): void {
     this.copyVersion++;
     this.copying.set(false);
-    this.copyMessage.set('');
-    this.copyError.set('');
   }
 
   protected onBackdropClick(event: MouseEvent): void {

@@ -1,3 +1,4 @@
+import { ToastService } from '../../core/services/toast.service';
 import { Component } from '@angular/core';
 import type { PasswordEntry } from './models/password-entry';
 import { TestBed } from '@angular/core/testing';
@@ -110,7 +111,7 @@ describe('Favorite controls', () => {
     await fixture.whenStable();
     expect(star.disabled).toBe(false);
     expect(star.getAttribute('aria-pressed')).toBe('true');
-    expect(element.textContent).toContain('Added to favorites');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toBe('Added to favorites');
     expect(document.activeElement).toBe(star);
   });
 
@@ -123,7 +124,7 @@ describe('Favorite controls', () => {
     await fixture.whenStable();
     expect(star.getAttribute('aria-pressed')).toBe('false');
     expect(star.disabled).toBe(false);
-    expect(element.querySelector('.password-row__error')?.textContent).toContain(
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain(
       'Please try again',
     );
     star.focus();

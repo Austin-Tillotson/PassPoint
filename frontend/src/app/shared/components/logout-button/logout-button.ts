@@ -4,6 +4,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-logout-button',
@@ -13,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 
 export class LogoutButton {
+  private readonly toasts = inject(ToastService);
   readonly username = input<string | null>(null);
   protected readonly userInitial = computed(() => this.username()?.charAt(0).toUpperCase() || '?');
   private readonly authService = inject(AuthService);
@@ -29,8 +31,14 @@ export class LogoutButton {
     this.isLoggingOut.set(true);
 
     this.authService.logout().subscribe({
-      next: () => this.router.navigateByUrl('/login'),
-      error: () => this.isLoggingOut.set(false),
+      next: () => {
+        this.toasts.clear();
+        void this.router.navigateByUrl('/login');
+      },
+      error: () => {
+        this.isLoggingOut.set(false);
+        this.toasts.error('Unable to log out. Please try again.');
+      },
     });
   }
 }

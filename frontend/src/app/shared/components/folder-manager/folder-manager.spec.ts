@@ -1,3 +1,4 @@
+import { ToastService } from '../../../core/services/toast.service';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -115,6 +116,6 @@ describe('Folder management', () => {
     await fixture.whenStable();
     expect(store.folders()).toEqual([]);
     expect(deleted).toHaveBeenCalledWith('work');
-    expect(element.textContent).toContain('passwords are now Unfiled');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain('passwords are now Unfiled');
   });
 });

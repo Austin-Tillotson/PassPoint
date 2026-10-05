@@ -1,3 +1,4 @@
+import { ToastService } from '../../../../core/services/toast.service';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, vi } from 'vitest';
 import { PasswordDetailDialog } from './password-detail-dialog';
@@ -22,7 +23,7 @@ describe('Password details', () => {
     return { fixture, dialog, component: fixture.componentInstance };
   }
 
-  it('copies a masked password and clears copy feedback when another entry opens', async () => {
+  it('copies a masked password and keeps the toast when another entry opens', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
     const { fixture, component } = await setup();
@@ -30,10 +31,10 @@ describe('Password details', () => {
     await fixture.whenStable();
     expect(writeText).toHaveBeenCalledWith(entry.password);
     expect(fixture.nativeElement.querySelector('code').textContent).toBe('••••••••');
-    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('Password copied.');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toBe('Password copied.');
     component.open({ ...entry, id: '2' });
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('');
+    expect(TestBed.inject(ToastService).toasts()).toHaveLength(1);
   });
 
   it('masks the password again when reopening an entry', async () => {
@@ -70,17 +71,13 @@ describe('Password details', () => {
     expect(button.textContent).toContain('Deleting');
   });
 
-  it('requests deletion without closing details and displays failure feedback', async () => {
+  it('requests deletion without closing details', async () => {
     const { fixture, component, dialog } = await setup();
     const deleted = vi.fn();
     component.deleteRequested.subscribe(deleted);
     fixture.nativeElement.querySelector('footer button:last-child').click();
     expect(deleted).toHaveBeenCalledWith(entry);
     expect(dialog.close).not.toHaveBeenCalled();
-    fixture.componentRef.setInput('errorMessage', 'Unable to delete the password entry.');
-    await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
-      'Unable to delete',
-    );
+
   });
 });

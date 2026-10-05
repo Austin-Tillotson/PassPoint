@@ -32,7 +32,6 @@
         <fa-icon [icon]="faXmark" aria-hidden="true" />
       </button>
     </header>
-    <p class="notice" role="status" aria-live="polite">{{ notice() }}</p>
     @if (mode() === 'list') {
       <div class="list-heading">
         <h3>Your folders</h3>
@@ -119,4 +118,5 @@
       </form>
     }
   </div>
+  <app-toast-outlet />
 </dialog>

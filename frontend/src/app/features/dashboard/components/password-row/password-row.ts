@@ -1,4 +1,5 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { ToastService } from '../../../../core/services/toast.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCopy, faFolder, faStar, faChevronRight, faGlobe } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,6 +10,7 @@ import { faCopy, faFolder, faStar, faChevronRight, faGlobe } from '@fortawesome/
   styleUrl: './password-row.scss',
 })
 export class PasswordRow {
+  private readonly toasts = inject(ToastService);
   readonly siteName = input.required<string>();
   protected readonly siteUrl = computed(() => {
     try {
@@ -24,26 +26,21 @@ export class PasswordRow {
   protected readonly faFolder = faFolder;
   protected readonly faCopy = faCopy;
   protected readonly copying = signal(false);
-  protected readonly copyMessage = signal('');
-  protected readonly copyError = signal('');
 
   protected async copyPassword(): Promise<void> {
     if (this.copying()) return;
     this.copying.set(true);
-    this.copyMessage.set('');
-    this.copyError.set('');
     try {
       await navigator.clipboard.writeText(this.password());
-      this.copyMessage.set('Password copied.');
+      this.toasts.success('Password copied.');
     } catch {
-      this.copyError.set('Unable to copy password. Please try again.');
+      this.toasts.error('Unable to copy password. Please try again.');
     } finally {
       this.copying.set(false);
     }
   }
   readonly isFavorite = input(false);
   readonly favoritePending = input(false);
-  readonly favoriteError = input('');
   readonly favoriteRequested = output<void>();
   protected readonly faStar = faStar;
   readonly grid = input(false);

@@ -1,3 +1,4 @@
+import { ToastService } from '../../core/services/toast.service';
 import { RouterLink } from '@angular/router';
 import { FolderStore } from '../../core/services/folder-store';
 import {
@@ -25,7 +26,6 @@ import {
   faKey,
   faRotateRight,
   faTriangleExclamation,
-  faCheck,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -43,6 +43,7 @@ import { PasswordEntriesService } from './services/password-entries.service';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+  private readonly toasts = inject(ToastService);
   private readonly deletedFolderIds = new Set<string>();
   protected readonly folderStore = inject(FolderStore);
   protected readonly folderNames = computed(() => Object.fromEntries(
@@ -153,7 +154,6 @@ export class Dashboard implements OnInit {
     return (id && this.folderStore.folderColors()[id]) || 'var(--color-text-muted)';
   });
   protected readonly favoritePending = signal<Record<string, boolean>>({});
-  protected readonly favoriteErrors = signal<Record<string, string>>({});
   protected readonly selectedEntryIsFavorite = computed(
     () => !!this.passwordEntries().find((entry) => entry.id === this.selectedEntryId())?.isFavorite,
   );
@@ -166,14 +166,8 @@ export class Dashboard implements OnInit {
           'Folder unavailable')
       : 'Unfiled';
   });
-  private readonly deleteErrors = signal<Record<string, string>>({});
-  protected readonly deleteError = computed(
-    () => this.deleteErrors()[this.selectedEntryId() ?? ''] ?? null,
-  );
-  protected readonly feedback = signal('');
-  protected readonly feedbackVersion = signal(0);
+
   protected readonly deletingEntryId = signal<string | null>(null);
-  protected readonly faCheck = faCheck;
   protected readonly faXmark = faXmark;
   protected readonly isLoading = signal(false);
   protected readonly hasLoaded = signal(false);
@@ -294,7 +288,6 @@ export class Dashboard implements OnInit {
     let removedFromView = false;
     let nextFocusId: string | undefined;
     this.favoritePending.update((pending) => ({ ...pending, [entry.id]: true }));
-    this.favoriteErrors.update((errors) => ({ ...errors, [entry.id]: '' }));
     this.passwordEntriesService
       .setFavorite(entry.id, !current.isFavorite)
       .pipe(
@@ -345,11 +338,7 @@ export class Dashboard implements OnInit {
             this.detailDialog().close();
           this.announceSuccess(saved.isFavorite ? 'Added to favorites' : 'Removed from favorites');
         },
-        error: () =>
-          this.favoriteErrors.update((errors) => ({
-            ...errors,
-            [entry.id]: 'Unable to update favorite. Please try again.',
-          })),
+        error: () => this.toasts.error('Unable to update favorite. Please try again.'),
       });
   }
 
@@ -428,11 +417,7 @@ export class Dashboard implements OnInit {
   protected deletePasswordEntry(entry: PasswordEntry): void {
     if (this.isDeleting()) return;
     if (!window.confirm(`Delete the password entry for ${entry.siteName}?`)) return;
-    this.deleteErrors.update((errors) => {
-      const updated = { ...errors };
-      delete updated[entry.id];
-      return updated;
-    });
+
     this.deletingEntryId.set(entry.id);
     this.isDeleting.set(true);
     this.passwordEntriesService
@@ -471,24 +456,9 @@ export class Dashboard implements OnInit {
         },
         error: () => {
           this.isDeleting.set(false);
-          this.deleteErrors.update((errors) => ({
-            ...errors,
-            [entry.id]: 'Unable to delete the password entry. Please try again.',
-          }));
+          this.toasts.error('Unable to delete the password entry. Please try again.');
         },
       });
-  }
-
-  protected dismissFeedback(event: Event): void {
-    if (document.activeElement === event.currentTarget) {
-      const target =
-        this.emptyAddButton()?.nativeElement ??
-        this.host.nativeElement.querySelector<HTMLButtonElement>('.password-row__site') ??
-        this.searchFocusTarget() ??
-        this.headingAddButton().nativeElement;
-      target.focus();
-    }
-    this.feedback.set('');
   }
 
   private searchFocusTarget(): HTMLElement | undefined {
@@ -499,8 +469,7 @@ export class Dashboard implements OnInit {
   }
 
   private announceSuccess(message: string): void {
-    this.feedback.set(message);
-    this.feedbackVersion.update((version) => version + 1);
+    this.toasts.success(message);
   }
 
   private findRow(id: string): HTMLElement | undefined {

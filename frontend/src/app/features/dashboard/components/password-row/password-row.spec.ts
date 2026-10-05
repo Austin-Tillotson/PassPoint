@@ -1,3 +1,4 @@
+import { ToastService } from '../../../../core/services/toast.service';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, vi } from 'vitest';
 import { PasswordRow } from './password-row';
@@ -25,7 +26,7 @@ describe('Password row copying', () => {
     expect(writeText).toHaveBeenCalledWith('Sample-only');
     expect(details).not.toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).not.toContain('Sample-only');
-    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toBe('Password copied.');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toBe('Password copied.');
     expect(fixture.nativeElement.querySelector('.password-row__folder').textContent).toContain('Work');
   });
 
@@ -36,11 +37,11 @@ describe('Password row copying', () => {
     button.click();
     await fixture.whenStable();
     expect(button.disabled).toBe(false);
-    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain('Unable to copy');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain('Unable to copy');
     writeText.mockResolvedValue(undefined);
     button.click();
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('[role=alert]')).toBeNull();
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.kind).toBe('success');
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 });

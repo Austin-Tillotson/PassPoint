@@ -1,3 +1,4 @@
+import { ToastService } from '../../core/services/toast.service';
 import { provideRouter } from '@angular/router';
 import { FolderStore } from '../../core/services/folder-store';
 import { FoldersService } from '../../core/services/folders.service';
@@ -343,7 +344,7 @@ describe('Dashboard search during management', () => {
 
       expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
       expect(element.querySelectorAll('[data-entry-id]').length).toBe(matches ? 4 : 3);
-      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe(
+      expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe(
         matches ? 'Password added' : 'Password added. This entry does not match your search.',
       );
     },
@@ -414,7 +415,7 @@ describe('Dashboard search during management', () => {
         password: entries[0].password,
       });
       expect(formDialog.open).toBe(true);
-      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
+      expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe('');
 
       savedEntry.next(editedEntry);
       savedEntry.complete();
@@ -423,7 +424,7 @@ describe('Dashboard search during management', () => {
       expect(formDialog.open).toBe(false);
       expect(element.querySelectorAll('[data-entry-id]')).toHaveLength(matches ? 3 : 2);
       expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
-      expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe(
+      expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe(
         matches ? 'Password updated' : 'Password updated. This entry does not match your search.',
       );
       expect(document.activeElement).toBe(
@@ -455,7 +456,7 @@ describe('Dashboard search during management', () => {
 
     expect(element.querySelectorAll('[data-entry-id]').length).toBe(4);
     expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('portal');
-    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('Password updated');
+    expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe('Password updated');
   });
 
   it.each([0, 1, 2])('focuses a visible neighbor after filtered deletion %s', async (index) => {
@@ -513,20 +514,17 @@ describe('Dashboard search during management', () => {
     expect(element.querySelectorAll('[data-entry-id]').length).toBe(1);
   });
 
-  it('dismisses nonmatching-save feedback to an available no-match control', async () => {
+  it('allows dismissing a nonmatching-save toast without changing the search', async () => {
     const { fixture, element, query, add } = await setup();
     await query('no-such-site');
     add.passwordSaved.emit({ ...entries[0], id: 'new' });
     await fixture.whenStable();
-    const dismiss = element.querySelector<HTMLButtonElement>(
-      '[aria-label="Dismiss success message"]',
-    )!;
-    dismiss.focus();
-    dismiss.click();
+    const toasts = TestBed.inject(ToastService);
+    toasts.dismiss(toasts.toasts()[0].id);
     await fixture.whenStable();
 
-    expect(document.activeElement).toBe(element.querySelector('.dashboard-search-reset'));
-    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
+    expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('no-such-site');
+    expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe('');
   });
 
   it('keeps the query and visible row after failed deletion', async () => {
@@ -539,6 +537,6 @@ describe('Dashboard search during management', () => {
 
     expect(element.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('alpha');
     expect(element.querySelectorAll('[data-entry-id]').length).toBe(1);
-    expect(element.querySelector('.dashboard-feedback p')?.textContent).toBe('');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain('Unable to delete');
   });
 });

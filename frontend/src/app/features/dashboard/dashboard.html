@@ -22,35 +22,15 @@
     {{ isLoading() ? 'Loading passwords…' : '' }}
   </p>
 
-  <div class="dashboard-feedback" [class.dashboard-feedback--visible]="!!feedback()">
-    <p role="status" aria-live="polite" aria-atomic="true">
-      @for (version of [feedbackVersion()]; track version) {
-        <span>{{ feedback() }}</span>
-      }
-    </p>
-    @if (feedback()) {
-      <fa-icon [icon]="faCheck" aria-hidden="true" />
-      <button
-        class="button button--icon"
-        type="button"
-        aria-label="Dismiss success message"
-        (click)="dismissFeedback($event)"
-      >
-        <fa-icon [icon]="faXmark" aria-hidden="true" />
-      </button>
-    }
-  </div>
 
   <app-add-password-dialog #passwordDialog (passwordSaved)="savePasswordEntry($event)" />
 
   <app-password-detail-dialog
     [isFavorite]="selectedEntryIsFavorite()"
     [favoritePending]="favoritePending()[selectedEntryId() ?? ''] || false"
-    [favoriteError]="favoriteErrors()[selectedEntryId() ?? ''] || ''"
     (favoriteRequested)="toggleFavorite($event)"
     [folderName]="detailFolderName()"
     [folderColor]="detailFolderColor()"
-    [errorMessage]="deleteError()"
     [isDeleting]="isDeleting()"
     [deletingEntryId]="deletingEntryId()"
     (editRequested)="editPasswordEntry($event)"
@@ -241,7 +221,6 @@
               [folderColor]="folderStore.folderColors()[entry.folderId ?? ''] ?? 'var(--color-text-muted)'"
               [isFavorite]="!!entry.isFavorite"
               [favoritePending]="!!favoritePending()[entry.id] || isDeleting()"
-              [favoriteError]="favoriteErrors()[entry.id] || ''"
               (favoriteRequested)="toggleFavorite(entry)"
               [siteName]="entry.siteName"
               [grid]="viewMode() === 'grid'"

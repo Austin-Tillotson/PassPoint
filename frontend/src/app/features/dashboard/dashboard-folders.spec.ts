@@ -1,6 +1,7 @@
 import { By } from '@angular/platform-browser';
 import { AddPasswordDialog } from './components/add-password-dialog/add-password-dialog';
 import { Component } from '@angular/core';
+import { ToastService } from '../../core/services/toast.service';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -134,7 +135,7 @@ describe('Folder collections', () => {
     });
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelectorAll('[data-entry-id]').length).toBe(0);
-    expect(fixture.nativeElement.textContent).toContain('different collection');
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain('different collection');
     await router.navigateByUrl('/dashboard?collection=unfiled');
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelectorAll('[data-entry-id]').length).toBe(2);

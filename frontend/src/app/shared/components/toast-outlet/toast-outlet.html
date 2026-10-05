@@ -1,0 +1,16 @@
+@if (active()) {
+  <section class="toast-stack" aria-label="Notifications">
+    @for (toast of service.toasts(); track toast.id) {
+      <div #item class="toast" [class.toast--error]="toast.kind === 'error'"
+        (mouseenter)="service.pause(toast.id)" (mouseleave)="resume(toast.id, item)"
+        (focusin)="service.pause(toast.id)" (focusout)="onBlur(toast.id, item, $event)">
+        <fa-icon class="toast__icon" [icon]="toast.kind === 'error' ? faTriangleExclamation : faCheck" aria-hidden="true" />
+        <p [attr.role]="toast.kind === 'error' ? 'alert' : 'status'" aria-atomic="true">{{ toast.message }}</p>
+        <button #close class="button button--icon" type="button" aria-label="Dismiss notification"
+          (click)="dismiss(toast.id, close)">
+          <fa-icon [icon]="faXmark" aria-hidden="true" />
+        </button>
+      </div>
+    }
+  </section>
+}

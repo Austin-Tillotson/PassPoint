@@ -1,3 +1,4 @@
+import { ToastService } from '../../../../core/services/toast.service';
 import { provideRouter } from '@angular/router';
 import { FolderStore } from '../../../../core/services/folder-store';
 import { FoldersService } from '../../../../core/services/folders.service';
@@ -82,7 +83,7 @@ describe('Password form submission', () => {
     expect(fixture.nativeElement.querySelector('[formControlName=siteName] input').disabled).toBe(
       false,
     );
-    expect(fixture.nativeElement.querySelector('.password-dialog__errors').textContent).toContain(
+    expect(TestBed.inject(ToastService).toasts().at(-1)?.message).toContain(
       'Please try again',
     );
     submit();

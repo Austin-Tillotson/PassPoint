@@ -48,12 +48,8 @@ p {
 .description {
   margin: 0;
 }
-.notice:empty {
-  margin: 0;
-}
-.notice {
-  font-size: var(--font-size-caption);
-}
+
+
 .list-heading {
   display: flex;
   align-items: center;

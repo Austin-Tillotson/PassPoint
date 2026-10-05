@@ -1,3 +1,5 @@
+import { ToastOutlet } from '../toast-outlet/toast-outlet';
+import { ToastService } from '../../../core/services/toast.service';
 import {
   Component,
   DestroyRef,
@@ -20,11 +22,12 @@ import { Folder, FoldersService } from '../../../core/services/folders.service';
 
 @Component({
   selector: 'app-folder-manager',
-  imports: [ReactiveFormsModule, FaIconComponent],
+  imports: [ToastOutlet, ReactiveFormsModule, FaIconComponent],
   templateUrl: './folder-manager.html',
   styleUrl: './folder-manager.scss',
 })
 export class FolderManager {
+  private readonly toasts = inject(ToastService);
   protected readonly store = inject(FolderStore);
   private readonly injector = inject(Injector);
   private readonly api = inject(FoldersService);
@@ -35,7 +38,6 @@ export class FolderManager {
   protected readonly selected = signal<Folder | null>(null);
   protected readonly pending = signal(false);
   protected readonly error = signal('');
-  protected readonly notice = signal('');
   protected readonly name = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.maxLength(50)],
@@ -53,7 +55,6 @@ export class FolderManager {
         document.activeElement instanceof HTMLElement ? document.activeElement : null;
       this.mode.set('list');
       this.error.set('');
-      this.notice.set('');
       this.focusControl();
       this.dialog().nativeElement.showModal();
     });
@@ -65,7 +66,6 @@ export class FolderManager {
     this.selected.set(folder ?? null);
     this.name.reset(folder?.name ?? '');
     this.error.set('');
-    this.notice.set('');
     this.focusControl();
   }
 
@@ -106,7 +106,7 @@ export class FolderManager {
         next: (folder) => {
           if (deleting) this.store.removeFolder(selected!.id);
           else this.store.saveFolder(folder as Folder);
-          this.notice.set(
+          this.toasts.success(
             deleting
               ? 'Folder deleted. Its passwords are now Unfiled.'
               : selected
@@ -117,7 +117,11 @@ export class FolderManager {
           this.focusControl();
         },
         error: (error: HttpErrorResponse) => {
-          this.error.set(
+          if (error.status === 409 && !deleting) {
+            this.error.set('You already have a folder with that name.');
+            return;
+          }
+          this.toasts.error(
             error.status === 409
               ? deleting
                 ? 'The folder changed. Please try deleting it again.'

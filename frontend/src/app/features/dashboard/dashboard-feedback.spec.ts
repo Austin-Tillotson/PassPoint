@@ -1,3 +1,4 @@
+import { ToastService } from '../../core/services/toast.service';
 import { provideRouter } from '@angular/router';
 import { FolderStore } from '../../core/services/folder-store';
 import { FoldersService } from '../../core/services/folders.service';
@@ -48,75 +49,19 @@ describe('Dashboard action feedback', () => {
 
   afterEach(() => vi.restoreAllMocks());
 
-  it('confirms add and edit once in a persistent polite region without moving focus', async () => {
+  it('stacks add and edit confirmations without moving focus', async () => {
     const { fixture, element, add } = await setup();
-    const heading = element.querySelector('.dashboard-heading__add') as HTMLButtonElement;
+    const heading = element.querySelector<HTMLButtonElement>('.dashboard-heading__add')!;
     heading.focus();
-
     add.passwordSaved.emit({ ...entries[0], id: 'new' });
-    await fixture.whenStable();
-    expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe(
-      'Password added',
-    );
-
-    const announcement = element.querySelector('.dashboard-feedback [role="status"] span');
-
     add.passwordSaved.emit({ ...entries[0], id: 'another-new' });
-    await fixture.whenStable();
-    expect(element.querySelector('.dashboard-feedback [role="status"] span')).not.toBe(
-      announcement,
-    );
-    expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe(
-      'Password added',
-    );
-
     add.passwordSaved.emit({ ...entries[0], siteName: 'https://edited.example.com' });
     await fixture.whenStable();
-    expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe(
-      'Password updated',
-    );
-    expect(document.activeElement).toBe(heading);
-
-    (element.querySelector('[aria-label="Dismiss success message"]') as HTMLButtonElement).click();
-    await fixture.whenStable();
-    expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe('');
+    expect(TestBed.inject(ToastService).toasts().map(toast => toast.message)).toEqual([
+      'Password added', 'Password added', 'Password updated',
+    ]);
     expect(document.activeElement).toBe(heading);
   });
-
-  it.each(['populated', 'empty'])(
-    'restores focus after dismissing feedback with a %s list',
-    async (state) => {
-      const { fixture, element, add, detail, deletion } = await setup(
-        state === 'empty' ? [entries[0]] : entries,
-      );
-
-      if (state === 'empty') {
-        detail.deleteRequested.emit(entries[0]);
-        deletion.next();
-        deletion.complete();
-      } else {
-        add.passwordSaved.emit({ ...entries[0], id: 'new' });
-      }
-      await fixture.whenStable();
-
-      const dismiss = element.querySelector<HTMLButtonElement>(
-        '[aria-label="Dismiss success message"]',
-      )!;
-      dismiss.focus();
-      expect(document.activeElement).toBe(dismiss);
-      dismiss.click();
-      await fixture.whenStable();
-
-      expect(element.querySelector('[aria-label="Dismiss success message"]')).toBeNull();
-      expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe('');
-      expect(document.activeElement).toBe(
-        element.querySelector(
-          state === 'empty' ? '.dashboard-state button' : '.password-row__site',
-        ),
-      );
-    },
-  );
-
   it.each([0, 1, 2, 3])(
     'focuses next, previous, or empty action after deletion case %s',
     async (index) => {
@@ -133,7 +78,7 @@ describe('Dashboard action feedback', () => {
       deletion.next();
       deletion.complete();
       await fixture.whenStable();
-      expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe(
+      expect((TestBed.inject(ToastService).toasts().at(-1)?.message ?? '')).toBe(
         'Password deleted',
       );
 
@@ -149,32 +94,17 @@ describe('Dashboard action feedback', () => {
     },
   );
 
-  it('guards pending deletes and keeps failure attached to its entry across unrelated saves', async () => {
-    const { fixture, element, deletion, remove, add, detail } = await setup();
-    vi.spyOn(detail, 'open').mockImplementation(() => {});
-
-    (element.querySelectorAll('.password-row__site')[0] as HTMLButtonElement).click();
-
+  it('guards pending deletes and reports failures through a toast', async () => {
+    const { fixture, deletion, remove, detail } = await setup();
     detail.deleteRequested.emit(entries[0]);
     detail.deleteRequested.emit(entries[0]);
     expect(remove).toHaveBeenCalledOnce();
-
     deletion.error(new Error('Fixture'));
     await fixture.whenStable();
-    expect(element.querySelector('.dashboard-feedback [role="status"]')?.textContent).toBe('');
-    expect(detail.errorMessage()).toContain('Unable to delete');
-
-    (element.querySelectorAll('.password-row__site')[1] as HTMLButtonElement).click();
-    await fixture.whenStable();
-    expect(detail.errorMessage()).toBeNull();
-
-    add.passwordSaved.emit({ ...entries[2], id: 'new' });
-
-    (element.querySelectorAll('.password-row__site')[0] as HTMLButtonElement).click();
-    await fixture.whenStable();
-    expect(detail.errorMessage()).toContain('Unable to delete');
+    expect(TestBed.inject(ToastService).toasts().at(-1)).toMatchObject({
+      kind: 'error', message: 'Unable to delete the password entry. Please try again.',
+    });
   });
-
   it('does not close or focus away from an unrelated detail popup on delayed success', async () => {
     const { fixture, element, deletion, detail } = await setup();
     vi.spyOn(detail, 'isShowing').mockReturnValue(false);

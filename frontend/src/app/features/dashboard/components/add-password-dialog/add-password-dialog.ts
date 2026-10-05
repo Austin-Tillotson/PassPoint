@@ -1,3 +1,5 @@
+import { ToastOutlet } from '../../../../shared/components/toast-outlet/toast-outlet';
+import { ToastService } from '../../../../core/services/toast.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FolderStore } from '../../../../core/services/folder-store';
@@ -23,11 +25,12 @@ import { PasswordEntriesService } from '../../services/password-entries.service'
 
 @Component({
   selector: 'app-add-password-dialog',
-  imports: [FloatingInput, ReactiveFormsModule, FaIconComponent],
+  imports: [ToastOutlet, FloatingInput, ReactiveFormsModule, FaIconComponent],
   templateUrl: './add-password-dialog.html',
   styleUrl: './add-password-dialog.scss',
 })
 export class AddPasswordDialog {
+  private readonly toasts = inject(ToastService);
   protected readonly folderStore = inject(FolderStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly passwordEntriesService = inject(PasswordEntriesService);
@@ -148,13 +151,13 @@ export class AddPasswordDialog {
             (error.status === 400 &&
               error.error?.message === 'Choose one of your folders or Unfiled.')
           ) {
-            this.errorMessage.set(
+            this.toasts.error(
               'The selected folder may no longer be available. Check your folder selection and try again.',
             );
             this.folderStore.load();
             return;
           }
-          this.errorMessage.set(
+          this.toasts.error(
             editingEntry
               ? 'Unable to update the password. Please try again.'
               : 'Unable to add the password. Please try again.',

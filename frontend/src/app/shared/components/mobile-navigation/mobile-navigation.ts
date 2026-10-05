@@ -11,6 +11,7 @@ import { NavigationLinks } from '../navigation-links/navigation-links';
 })
 
 export class MobileNavigation {
+  readonly username = input<string | null>(null);
   readonly isOpen = input(false);
   readonly navigationClosed = output<void>();
 }

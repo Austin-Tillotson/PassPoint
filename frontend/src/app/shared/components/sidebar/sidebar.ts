@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { LogoutButton } from '../logout-button/logout-button';
 import { NavigationLinks } from '../navigation-links/navigation-links';
@@ -10,4 +10,6 @@ import { NavigationLinks } from '../navigation-links/navigation-links';
   styleUrl: './sidebar.scss',
 })
 
-export class Sidebar {}
+export class Sidebar {
+  readonly username = input<string | null>(null);
+}

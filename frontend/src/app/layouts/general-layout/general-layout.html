@@ -1,8 +1,9 @@
-<app-sidebar />
+<app-sidebar [username]="username()" />
 
 <main class="app-content">
   <app-header
     #header
+    [username]="username()"
     [isNavigationOpen]="isMobileNavigationOpen()"
     [pageLabel]="pageLabel()"
     (navigationToggled)="toggleMobileNavigation()"
@@ -10,6 +11,7 @@
   />
 
   <app-mobile-navigation
+    [username]="username()"
     [isOpen]="isMobileNavigationOpen()"
     (navigationClosed)="closeMobileNavigation(header)"
     (keydown.escape)="closeMobileNavigation(header)"

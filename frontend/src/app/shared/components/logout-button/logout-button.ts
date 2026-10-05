@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,8 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 
 export class LogoutButton {
+  readonly username = input<string | null>(null);
+  protected readonly userInitial = computed(() => this.username()?.charAt(0).toUpperCase() || '?');
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 

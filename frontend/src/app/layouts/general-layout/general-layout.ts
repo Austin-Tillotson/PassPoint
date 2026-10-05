@@ -1,5 +1,6 @@
 import { FolderManager } from '../../shared/components/folder-manager/folder-manager';
 import { FolderStore } from '../../core/services/folder-store';
+import { AuthService } from '../../core/services/auth.service';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -17,6 +18,7 @@ import { Sidebar } from '../../shared/components/sidebar/sidebar';
   styleUrl: './general-layout.scss',
 })
 export class GeneralLayout {
+  protected readonly username = signal<string | null>(null);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
@@ -24,6 +26,10 @@ export class GeneralLayout {
   protected readonly pageLabel = signal('PassPoint');
 
   constructor() {
+    inject(AuthService).getCurrentUser().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: user => this.username.set(user.username),
+      error: () => this.username.set(null),
+    });
     inject(FolderStore).load();
     this.router.events
       .pipe(

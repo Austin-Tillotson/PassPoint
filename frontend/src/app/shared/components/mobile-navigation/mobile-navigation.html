@@ -5,5 +5,5 @@
 >
   <app-navigation-links (linkSelected)="navigationClosed.emit()" />
 
-  <app-logout-button class="logout-button--mobile" />
+  <app-logout-button class="logout-button--mobile" [username]="username()" />
 </div>

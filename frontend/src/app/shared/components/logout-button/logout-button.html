@@ -1,7 +1,13 @@
-<button
+<div class="account-footer">
+  <span class="account-footer__avatar" aria-hidden="true">{{ userInitial() }}</span>
+  <span class="account-footer__name" [title]="username() ?? 'User'">{{ username() ?? 'User' }}</span>
+  <button
   class="logout-button"
   type="button"
   [disabled]="isLoggingOut()"
+  [attr.aria-label]="isLoggingOut() ? 'Logging out…' : 'Log out'"
+  [title]="isLoggingOut() ? 'Logging out…' : 'Log out'"
+  [attr.aria-busy]="isLoggingOut()"
   (click)="logout()"
 >
   <fa-icon
@@ -10,5 +16,5 @@
     aria-hidden="true"
   />
 
-  <span>{{ isLoggingOut() ? 'Logging out...' : 'Log out' }}</span>
 </button>
+</div>

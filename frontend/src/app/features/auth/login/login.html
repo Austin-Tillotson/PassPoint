@@ -1,51 +1,23 @@
-<main class="auth-page">
-  <app-card class="card--large card--no-radius card--full-width">
-    <h1>Log into PassPoint</h1>
+<section class="auth-page" aria-labelledby="login-title">
+  <p class="auth-page__eyebrow">Your dashboard awaits</p>
+  <h1 id="login-title">Welcome back.</h1>
+  <p class="auth-page__intro">Sign in to access your pass points.</p>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <app-floating-input
-        id="username"
-        label="Username"
-        autocomplete="username"
-        formControlName="username"
-      />
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" [attr.aria-busy]="isSubmitting()">
+    <app-floating-input [id]="'username'" label="Username" autocomplete="username" formControlName="username" />
+    <app-floating-input [id]="'password'" label="Password" type="password" autocomplete="current-password" formControlName="password" />
+    @if (errorMessage()) {
+      <div class="auth-page__errors" role="alert"><p>{{ errorMessage() }}</p></div>
+    }
+    <button class="button button--primary" type="submit" [disabled]="loginForm.invalid || isSubmitting()">
+      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
 
-      <app-floating-input
-        id="password"
-        label="Password"
-        type="password"
-        autocomplete="current-password"
-        formControlName="password"
-      />
-
-      @if (errorMessage()) {
-        <div class="auth-page__errors" role="alert">
-          <p>{{ errorMessage() }}</p>
-        </div>
-      }
-
-      <button
-        class="button button--primary"
-        type="submit"
-        [disabled]="loginForm.invalid || isSubmitting()"
-      >
-        {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
-      </button>
-
-      <button
-        class="button button--secondary button--full-width auth-page__demo-button"
-        type="button"
-        [disabled]="isSubmitting()"
-        (click)="loginAsDemo()"
-      >
-        Demo
-      </button>
-    </form>
-
-    <p>
-      <a class="button button--secondary button--full-width" routerLink="/register">
-        Create an account
-      </a>
-    </p>
-  </app-card>
-</main>
+  <section class="auth-page__demo" aria-labelledby="demo-title">
+    <h2 id="demo-title">Just taking a look?</h2>
+    <p>Explore the demo workspace. No account needed.</p>
+    <button class="button button--secondary" type="button" [disabled]="isSubmitting()" (click)="loginAsDemo()">Explore demo</button>
+  </section>
+  <p class="auth-page__switch">New to PassPoint? <a routerLink="/register">Create an account</a></p>
+</section>

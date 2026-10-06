@@ -1,42 +1,73 @@
 :host {
   display: block;
 }
-
 .auth-page {
-  display: grid;
-  min-height: 100dvh;
-  place-items: center;
+  color: var(--color-text-primary);
 }
-
+.auth-page__eyebrow {
+  margin: 0 0 var(--space-3);
+  color: var(--color-accent);
+  font-size: var(--font-size-caption-small);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caption);
+  text-transform: uppercase;
+}
+.auth-page h1 {
+  margin: 0;
+  font-size: var(--font-size-brand);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+}
+.auth-page__intro {
+  margin: var(--space-3) 0 var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-ui);
+}
 .auth-page form {
   display: grid;
 }
-
-.auth-page .form-field {
-  display: grid;
-  margin-bottom: 1rem;
+.auth-page .button {
+  width: 100%;
 }
-
-.auth-page h1 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
-}
-
-.auth-page form + p {
-  margin: 3rem 0 0;
-}
-
 .auth-page__errors {
-  margin: 0 0 1rem;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3);
+  border-left: 2px solid var(--color-error);
+  background: var(--color-page-background);
   color: var(--color-error);
-  font-size: 0.875rem;
+  font-size: var(--font-size-caption);
 }
-
 .auth-page__errors p {
   margin: 0;
 }
-
-.auth-page__demo-button {
-  margin-top: 0.75rem;
+.auth-page__demo {
+  border-top: 1px solid var(--color-border-layout);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+}
+.auth-page__demo h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-semibold);
+}
+.auth-page__demo p,
+.auth-page__note {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+.auth-page__switch {
+  margin: var(--space-6) 0 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+.auth-page__switch a {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  text-underline-offset: 3px;
+}
+.auth-page .button--secondary:hover:enabled {
+  color: var(--color-accent);
 }

@@ -1,1 +1,29 @@
-<router-outlet />
+<div class="auth-shell">
+  <header class="auth-header">
+    <a class="brand" routerLink="/login" aria-label="PassPoint sign in">
+      <img src="passpoint-icon.png" width="36" height="36" alt="" />
+      <span>Pass<span class="brand-accent">Point</span></span>
+    </a>
+  </header>
+
+  <main class="auth-content">
+    <section class="welcome" aria-labelledby="welcome-title">
+      <p class="eyebrow">Organized with Pass Points</p>
+      <h2 id="welcome-title">Your passwords.<br />All in one place.</h2>
+      <p class="welcome-intro">An organized workspace for your passwords, filtered by folder, easy to reach favorites, password generation.</p>
+      <div class="vault-preview" aria-hidden="true">
+        <div class="preview-heading"><span>All passwords</span><span class="preview-count">3</span><span class="preview-label">YOUR WORKSPACE</span></div>
+        <div class="preview-row"><span class="site-avatar">D</span><div><b>Design studio</b><small>••••••••••••</small></div><span class="folder-tag">Work</span><fa-icon [icon]="faStar" /></div>
+        <div class="preview-row"><span class="site-avatar">R</span><div><b>Reading list</b><small>••••••••••••</small></div><span class="folder-tag">Personal</span><fa-icon [icon]="faStar" /></div>
+        <div class="preview-row"><span class="site-avatar">T</span><div><b>Travel plans</b><small>••••••••••••</small></div><span class="folder-tag">Personal</span><fa-icon [icon]="faStar" /></div>
+      </div>
+      <ul class="highlights">
+        <li><fa-icon [icon]="faFolder" aria-hidden="true" /> Keep things together with folders</li>
+        <li><fa-icon [icon]="faStar" aria-hidden="true" /> Find your favorites at a glance</li>
+        <li><fa-icon [icon]="faWandMagicSparkles" aria-hidden="true" /> Generate a fresh password in seconds</li>
+      </ul>
+    </section>
+    <section class="auth-panel" aria-label="Account access"><router-outlet /></section>
+  </main>
+  <footer class="auth-footer">Built for exploration. Use sample data only, never real passwords.</footer>
+</div>

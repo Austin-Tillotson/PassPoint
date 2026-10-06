@@ -1,50 +1,19 @@
-<main class="auth-page">
-  <app-card class="card--large card--no-radius card--full-width">
-    <h1>Create an account</h1>
+<section class="auth-page" aria-labelledby="register-title">
+  <p class="auth-page__eyebrow">Get organized and secure with Pass Points</p>
+  <h1 id="register-title">Your own workspace.</h1>
+  <p class="auth-page__intro">Create an account and start organizing your passwords.</p>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <app-floating-input
-        id="username"
-        label="Username"
-        autocomplete="username"
-        formControlName="username"
-      />
-
-      <app-floating-input
-        id="password"
-        label="Password"
-        type="password"
-        autocomplete="new-password"
-        formControlName="password"
-      />
-
-      <app-floating-input
-        id="confirm-password"
-        label="Confirm password"
-        type="password"
-        autocomplete="new-password"
-        formControlName="confirmPassword"
-      />
-
-      @if (errorMessage()) {
-        <div class="auth-page__errors" role="alert">
-          <p>{{ errorMessage() }}</p>
-        </div>
-      }
-
-      <button 
-        class="button button--primary" 
-        type="submit" 
-        [disabled]="registerForm.invalid || isSubmitting()"
-      >
-        {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
-      </button>
-    </form>
-
-    <p>
-      <a class="button button--secondary button--full-width" routerLink="/login">
-        Sign in
-      </a>
-    </p>
-  </app-card>
-</main>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" [attr.aria-busy]="isSubmitting()">
+    <app-floating-input [id]="'username'" label="Username" autocomplete="username" formControlName="username" />
+    <app-floating-input [id]="'password'" label="Password" type="password" autocomplete="new-password" formControlName="password" />
+    <app-floating-input [id]="'confirm-password'" label="Confirm password" type="password" autocomplete="new-password" formControlName="confirmPassword" />
+    @if (errorMessage()) {
+      <div class="auth-page__errors" role="alert"><p>{{ errorMessage() }}</p></div>
+    }
+    <p class="auth-page__note">This is a demonstration project. Choose a password you don't use elsewhere.</p>
+    <button class="button button--primary" type="submit" [disabled]="registerForm.invalid || isSubmitting()">
+      {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
+    </button>
+  </form>
+  <p class="auth-page__switch">Already have an account? <a routerLink="/login">Sign in</a></p>
+</section>

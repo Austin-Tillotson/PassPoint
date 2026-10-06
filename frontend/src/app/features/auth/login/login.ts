@@ -8,7 +8,6 @@ import {
   AuthCredentials,
   AuthService,
 } from '../../../core/services/auth.service';
-import { Card } from '../../../shared/components/card/card';
 import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
 
 const DEMO_CREDENTIALS: AuthCredentials = {
@@ -18,7 +17,7 @@ const DEMO_CREDENTIALS: AuthCredentials = {
 
 @Component({
   selector: 'app-login',
-  imports: [Card, FloatingInput, ReactiveFormsModule, RouterLink],
+  imports: [FloatingInput, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

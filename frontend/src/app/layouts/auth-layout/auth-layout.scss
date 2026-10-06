@@ -1,0 +1,176 @@
+:host {
+  display: block;
+}
+.auth-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.auth-header,
+.auth-content,
+.auth-footer {
+  width: min(100% - 4rem, 70rem);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+.auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-6);
+  border-bottom: 1px solid var(--color-border-layout);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-brand);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-brand);
+}
+.brand-accent {
+  color: var(--color-accent);
+}
+.auth-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(2rem, 7vw, 6rem);
+  padding-block: 3rem;
+}
+.eyebrow {
+  color: var(--color-accent);
+  font-size: var(--font-size-caption-small);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caption);
+  text-transform: uppercase;
+  margin: 0 0 var(--space-4);
+}
+h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+}
+.welcome-intro {
+  max-width: 26rem;
+  margin: var(--space-4) 0 var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-ui);
+}
+.vault-preview {
+  overflow: hidden;
+  border: 1px solid var(--color-border-layout);
+  border-radius: var(--radius-surface);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+.preview-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface-pressed);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+}
+.preview-count {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+}
+.preview-label {
+  margin-left: auto;
+  font-size: var(--font-size-caption-small);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-muted);
+}
+.preview-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border-layout);
+  font-size: var(--font-size-caption);
+}
+.site-avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-border-layout);
+  border-radius: var(--radius-control);
+  color: var(--color-text-secondary);
+}
+.preview-row b {
+  font-weight: var(--font-weight-medium);
+}
+.preview-row small {
+  display: block;
+  color: var(--color-text-subtle);
+  letter-spacing: var(--letter-spacing-caption);
+}
+.folder-tag {
+  margin-left: auto;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption-small);
+}
+.preview-row fa-icon {
+  color: var(--color-accent);
+}
+.highlights {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+.highlights li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.highlights fa-icon {
+  width: 1rem;
+  color: var(--color-accent);
+}
+.auth-panel {
+  min-width: 0;
+  padding: 2rem;
+  border: 1px solid var(--color-border-layout);
+  border-radius: var(--radius-surface);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-surface);
+}
+.auth-footer {
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--color-border-layout);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-caption-small);
+}
+@media (max-width: 50rem) {
+  .auth-header,
+  .auth-content,
+  .auth-footer {
+    width: min(100% - 2rem, 30rem);
+  }
+  .auth-content {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-6);
+    gap: var(--space-6);
+  }
+  .welcome {
+    display: none;
+  }
+  .auth-panel {
+    padding: var(--space-6);
+  }
+}

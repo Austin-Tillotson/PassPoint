@@ -1,4 +1,5 @@
 import { SiteIcon } from '../../../../shared/components/site-icon/site-icon';
+import { siteDisplayName } from '../../../../shared/utils/site-address';
 import { ToastOutlet } from '../../../../shared/components/toast-outlet/toast-outlet';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Component, ElementRef, computed, inject, input, output, signal, viewChild } from '@angular/core';
@@ -61,14 +62,7 @@ export class PasswordDetailDialog {
   protected readonly faPen = faPen;
   protected readonly faTrash = faTrash;
   protected readonly faXmark = faXmark;
-  protected readonly siteTitle = computed(() => {
-    const site = this.entry()?.siteName ?? '';
-    try {
-      return new URL(site).hostname;
-    } catch {
-      return site;
-    }
-  });
+  protected readonly siteTitle = computed(() => siteDisplayName(this.entry()?.siteName ?? ''));
 
   open(entry: PasswordEntry): void {
     this.resetCopy();

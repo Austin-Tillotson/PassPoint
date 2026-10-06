@@ -69,11 +69,11 @@ describe('Favorite controls', () => {
     const tiles = element.querySelectorAll<HTMLButtonElement>('app-quick-favorites button');
     expect(tiles).toHaveLength(4);
     expect([...tiles].map(tile => tile.querySelector('strong')?.textContent)).toEqual([
-      'alpha.example', 'bravo.example', 'delta.example', 'echo.example',
+      'alpha', 'bravo', 'delta', 'echo',
     ]);
     tiles[0].click();
     await fixture.whenStable();
-    expect(element.querySelector('#password-detail-title')?.textContent).toContain('alpha.example');
+    expect(element.querySelector('#password-detail-title')?.textContent).toContain('alpha');
     expect(element.querySelector('app-password-detail-dialog dialog')?.hasAttribute('open')).toBe(true);
     const search = element.querySelector<HTMLInputElement>('#dashboard-search')!;
     search.value = 'bravo';

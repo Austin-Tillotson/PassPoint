@@ -1,4 +1,5 @@
 import { SiteIcon } from '../../../../shared/components/site-icon/site-icon';
+import { siteDisplayName } from '../../../../shared/utils/site-address';
 import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -16,11 +17,5 @@ export class QuickFavorites {
   readonly detailsRequested = output<PasswordEntry>();
   protected readonly faArrowRight = faArrowRight;
 
-  protected siteLabel(site: string): string {
-    try {
-      return new URL(site).hostname.replace(/^www\./i, '');
-    } catch {
-      return site;
-    }
-  }
+  protected readonly siteLabel = siteDisplayName;
 }

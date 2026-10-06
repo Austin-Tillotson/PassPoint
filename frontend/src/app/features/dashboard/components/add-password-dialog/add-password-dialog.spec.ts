@@ -42,6 +42,18 @@ describe('Password form submission', () => {
     return { fixture, dialog, response, service, submit };
   }
 
+  it('saves a scheme-free address without rewriting it', async () => {
+    const { fixture, service, submit } = await setup();
+    const site: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName=siteName] input');
+    site.value = ' www.example.co.uk/login ';
+    site.dispatchEvent(new Event('input'));
+    submit();
+    await fixture.whenStable();
+    expect(service.update).toHaveBeenCalledWith(entry.id, expect.objectContaining({
+      siteName: 'www.example.co.uk/login',
+    }));
+  });
+
   it('shows linked field errors and focuses the first invalid input', async () => {
     const { fixture, service, submit } = await setup(false);
     expect(document.activeElement).toBe(

@@ -1,4 +1,5 @@
 import { SiteIcon } from '../../../../shared/components/site-icon/site-icon';
+import { parseSiteAddress, siteDisplayName } from '../../../../shared/utils/site-address';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { ToastService } from '../../../../core/services/toast.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -13,14 +14,7 @@ import { faCopy, faFolder, faStar, faChevronRight, faGlobe } from '@fortawesome/
 export class PasswordRow {
   private readonly toasts = inject(ToastService);
   readonly siteName = input.required<string>();
-  protected readonly siteUrl = computed(() => {
-    try {
-      const url = new URL(this.siteName());
-      return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
-    } catch {
-      return null;
-    }
-  });
+  protected readonly siteUrl = computed(() => parseSiteAddress(this.siteName())?.href ?? null);
   readonly password = input('');
   readonly folderName = input('Unfiled');
   readonly folderColor = input('var(--color-text-muted)');
@@ -51,10 +45,6 @@ export class PasswordRow {
   protected readonly faGlobe = faGlobe;
   protected readonly faChevronRight = faChevronRight;
 
-  protected readonly displayedSiteName = computed(() =>
-    this.siteName()
-      .replace(/^https?:\/\/(?:www\.)?/i, '')
-      .replace(/[^a-z]+$/i, ''),
-  );
+  protected readonly displayedSiteName = computed(() => siteDisplayName(this.siteName()));
 
 }

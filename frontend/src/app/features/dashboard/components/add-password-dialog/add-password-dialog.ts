@@ -1,3 +1,4 @@
+import { parseSiteAddress } from '../../../../shared/utils/site-address';
 import { ToastOutlet } from '../../../../shared/components/toast-outlet/toast-outlet';
 import { ToastService } from '../../../../core/services/toast.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -72,7 +73,7 @@ export class AddPasswordDialog {
     folderId: new FormControl<string | null>(null),
     siteName: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.pattern(/^https?:\/\/.+/i)],
+      validators: [Validators.required, control => parseSiteAddress(control.value) ? null : { siteAddress: true }],
     }),
     password: new FormControl('', {
       nonNullable: true,
@@ -123,6 +124,7 @@ export class AddPasswordDialog {
 
     const editingEntry = this.editingEntry();
     const passwordEntry = this.passwordForm.getRawValue();
+    passwordEntry.siteName = passwordEntry.siteName.trim();
 
     this.errorMessage.set(null);
     this.isSubmitting.set(true);

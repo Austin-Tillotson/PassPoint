@@ -75,7 +75,7 @@ describe('Folder collections', () => {
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('input[type=search]').value).toBe('');
     expect(fixture.nativeElement.querySelector('.password-row__name').textContent).toContain(
-      'other.example',
+      'other',
     );
     await router.navigateByUrl('/dashboard?folder=empty');
     await fixture.whenStable();

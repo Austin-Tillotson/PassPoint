@@ -122,7 +122,7 @@ describe('Dashboard request states', () => {
     await fixture.whenStable();
     expect(element.querySelector('.password-skeleton')).toBeNull();
     expect(element.querySelector('.password-row__name')?.textContent).toContain(
-      'alpha.example.com',
+      'alpha.example',
     );
     expect(element.querySelector('.password-list')?.getAttribute('aria-busy')).toBe('false');
   });

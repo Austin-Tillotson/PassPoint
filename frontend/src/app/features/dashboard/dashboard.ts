@@ -1,3 +1,4 @@
+import { siteDisplayName } from '../../shared/utils/site-address';
 import { ToastService } from '../../core/services/toast.service';
 import { RouterLink } from '@angular/router';
 import { FolderStore } from '../../core/services/folder-store';
@@ -51,8 +52,8 @@ export class Dashboard implements OnInit {
   ));
   protected readonly quickFavorites = computed(() => this.passwordEntries()
     .filter(entry => entry.isFavorite)
-    .sort((a, b) => a.siteName.replace(/^https?:\/\/(?:www\.)?/i, '').localeCompare(
-      b.siteName.replace(/^https?:\/\/(?:www\.)?/i, ''), undefined, { sensitivity: 'base', numeric: true }))
+    .sort((a, b) => siteDisplayName(a.siteName).localeCompare(
+      siteDisplayName(b.siteName), undefined, { sensitivity: 'base', numeric: true }))
     .slice(0, 4));
   protected readonly collectionEntries = computed(() => {
     const selection = this.folderStore.selection();
@@ -107,7 +108,7 @@ export class Dashboard implements OnInit {
       ? this.collectionEntries().filter((entry) => entry.siteName.toLowerCase().includes(query))
       : this.collectionEntries();
     const siteLabel = (entry: PasswordEntry) =>
-      entry.siteName.replace(/^https?:\/\/(?:www\.)?/i, '');
+      siteDisplayName(entry.siteName);
     const mode = this.sortMode();
     const folderOrder = new Map(this.folderStore.folders().map((folder, index) => [folder.id, index + 1]));
     const folderRank = (entry: PasswordEntry) => entry.folderId

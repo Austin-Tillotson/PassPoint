@@ -1,0 +1,21 @@
+<span class="site-icon">
+  @if (loadedUrl() !== faviconUrl() || !faviconUrl()) {
+    <span class="site-icon__initial">{{ initial() }}</span>
+  }
+  @for (url of faviconUrl() ? [faviconUrl()!] : []; track url) {
+    @if (failedUrl() !== url) {
+      <img
+        [src]="url"
+        alt=""
+        width="20"
+        height="20"
+        loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
+        [class.is-loaded]="loadedUrl() === url"
+        (load)="loadedUrl.set(url)"
+        (error)="failedUrl.set(url); loadedUrl.set(null)"
+      />
+    }
+  }
+</span>

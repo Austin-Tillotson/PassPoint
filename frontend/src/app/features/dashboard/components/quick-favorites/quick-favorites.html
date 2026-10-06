@@ -8,7 +8,7 @@
       <li>
         <button type="button" [attr.aria-label]="'Open favorite ' + siteLabel(entry.siteName)"
           (click)="detailsRequested.emit(entry)">
-          <span class="site-icon"><fa-icon [icon]="faGlobe" aria-hidden="true" /></span>
+          <app-site-icon [site]="entry.siteName" />
           <span class="site-copy">
             <strong>{{ siteLabel(entry.siteName) }}</strong>
             <span>{{ entry.siteName }}</span>

@@ -19,7 +19,9 @@ a {
   font-size: var(--font-size-caption-small);
   text-underline-offset: var(--space-1);
 }
-a:hover { color: var(--color-accent); }
+a:hover {
+  color: var(--color-accent);
+}
 ul {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -28,7 +30,9 @@ ul {
   padding: 0;
   list-style: none;
 }
-li { min-width: 0; }
+li {
+  min-width: 0;
+}
 button {
   display: flex;
   align-items: center;
@@ -49,16 +53,7 @@ button:hover {
   border-color: var(--color-accent);
   background: var(--color-page-background);
 }
-.site-icon {
-  display: grid;
-  place-items: center;
-  flex: 0 0 2.25rem;
-  height: 2.25rem;
-  border: 1px solid var(--color-border-layout);
-  border-radius: var(--radius-control);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-ui);
-}
+
 .site-copy {
   display: grid;
   gap: var(--space-1);
@@ -88,8 +83,12 @@ button:focus-visible .favorite-arrow {
   color: var(--color-accent);
 }
 @media (max-width: 60rem) {
-  ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 36rem) {
-  ul { grid-template-columns: minmax(0, 1fr); }
+  ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

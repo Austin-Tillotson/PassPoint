@@ -1,3 +1,4 @@
+import { SiteIcon } from '../../../../shared/components/site-icon/site-icon';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { ToastService } from '../../../../core/services/toast.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -5,7 +6,7 @@ import { faCopy, faFolder, faStar, faChevronRight, faGlobe } from '@fortawesome/
 
 @Component({
   selector: 'app-password-row',
-  imports: [FaIconComponent],
+  imports: [SiteIcon, FaIconComponent],
   templateUrl: './password-row.html',
   styleUrl: './password-row.scss',
 })
@@ -47,7 +48,6 @@ export class PasswordRow {
 
   readonly detailsRequested = output<void>();
 
-  protected readonly failedFaviconUrl = signal<string | null>(null);
   protected readonly faGlobe = faGlobe;
   protected readonly faChevronRight = faChevronRight;
 
@@ -57,21 +57,4 @@ export class PasswordRow {
       .replace(/[^a-z]+$/i, ''),
   );
 
-  protected readonly faviconUrl = computed(() => {
-    try {
-      return `${new URL(this.siteName()).origin}/favicon.ico`;
-    } catch {
-      return '';
-    }
-  });
-
-  protected readonly shouldShowFavicon = computed(() => {
-    const faviconUrl = this.faviconUrl();
-
-    return faviconUrl !== '' && this.failedFaviconUrl() !== faviconUrl;
-  });
-
-  protected handleFaviconError(): void {
-    this.failedFaviconUrl.set(this.faviconUrl());
-  }
 }

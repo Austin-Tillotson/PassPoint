@@ -1,3 +1,4 @@
+import { SiteIcon } from '../../../../shared/components/site-icon/site-icon';
 import { ToastOutlet } from '../../../../shared/components/toast-outlet/toast-outlet';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Component, ElementRef, computed, inject, input, output, signal, viewChild } from '@angular/core';
@@ -7,7 +8,6 @@ import {
   faCopy,
   faEye,
   faEyeSlash,
-  faGlobe,
   faFolder,
   faPen,
   faTrash,
@@ -17,7 +17,7 @@ import type { PasswordEntry } from '../../models/password-entry';
 
 @Component({
   selector: 'app-password-detail-dialog',
-  imports: [ToastOutlet, FaIconComponent],
+  imports: [SiteIcon, ToastOutlet, FaIconComponent],
   templateUrl: './password-detail-dialog.html',
   styleUrl: './password-detail-dialog.scss',
 })
@@ -57,7 +57,6 @@ export class PasswordDetailDialog {
 
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
-  protected readonly faGlobe = faGlobe;
   protected readonly faFolder = faFolder;
   protected readonly faPen = faPen;
   protected readonly faTrash = faTrash;

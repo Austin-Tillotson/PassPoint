@@ -23,7 +23,7 @@
 
 .button--primary {
   background-color: var(--color-accent);
-  color: var(--color-surface);
+  color: var(--color-text-on-accent);
 }
 
 .button--primary:hover:not(:disabled) {

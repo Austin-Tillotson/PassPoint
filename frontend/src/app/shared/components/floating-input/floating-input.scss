@@ -25,7 +25,7 @@
 .floating-field input:focus + label,
 .floating-field input:not(:placeholder-shown) + label {
   top: 0;
-  color: var(--color-orange-hover);
+  color: var(--color-accent-hover);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   transform: translateY(-50%);

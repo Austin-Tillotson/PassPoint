@@ -14,7 +14,10 @@ export class FolderStore {
   readonly folderDeleted = new Subject<string>();
   readonly folders = signal<Folder[]>([]);
   readonly folderColors = computed(() => {
-    const palette = ['#b57850', '#628568', '#8276ac', '#4c849d', '#ad6585', '#95802e'];
+    const palette = [
+      'var(--color-folder-1)', 'var(--color-folder-2)', 'var(--color-folder-3)',
+      'var(--color-folder-4)', 'var(--color-folder-5)', 'var(--color-folder-6)',
+    ];
     const folders = [...this.folders()].sort((a, b) => a.id.localeCompare(b.id));
     return Object.fromEntries(folders.map((folder, index) => [folder.id, palette[index % palette.length]]));
   });

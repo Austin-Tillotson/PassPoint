@@ -1,4 +1,8 @@
-:root {
+// The default palette also applies before a theme preference is selected.
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
   --color-page-background: #f8f9fb;
   --color-surface: #ffffff;
   --color-surface-pressed: #eef0f3;
@@ -22,13 +26,14 @@
   --color-accent-hover: #bc471c;
   --color-accent-pressed: #a13d15;
   --color-accent-light: #fcf0e9;
+  --color-text-on-accent: #ffffff;
 
-  // Aliases used by existing components.
-  --color-orange-primary: var(--color-accent);
-  --color-orange-hover: var(--color-accent-hover);
-  --color-orange-dark: var(--color-accent);
-  --color-orange-light: var(--color-accent-light);
-  --color-orange-outline: var(--color-accent);
+  --color-folder-1: #b57850;
+  --color-folder-2: #628568;
+  --color-folder-3: #8276ac;
+  --color-folder-4: #4c849d;
+  --color-folder-5: #ad6585;
+  --color-folder-6: #95802e;
 
   --color-error: #b91c1c;
   --color-error-border: #dc2626;

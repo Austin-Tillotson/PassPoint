@@ -4,16 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import {
-  AuthCredentials,
-  AuthService,
-} from '../../../core/services/auth.service';
+import { AuthCredentials, AuthService } from '../../../core/services/auth.service';
 import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
-
-const DEMO_CREDENTIALS: AuthCredentials = {
-  username: 'Demo',
-  password: 'Password123',
-};
 
 @Component({
   selector: 'app-login',
@@ -21,7 +13,6 @@ const DEMO_CREDENTIALS: AuthCredentials = {
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-
 export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -41,16 +32,32 @@ export class Login {
   });
 
   protected onSubmit(): void {
-  if (this.loginForm.invalid) {
-    this.loginForm.markAllAsTouched();
-    return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.login(this.loginForm.getRawValue());
   }
 
-  this.login(this.loginForm.getRawValue());
-}
-
-protected loginAsDemo(): void {
-    this.login(DEMO_CREDENTIALS);
+  protected loginAsDemo(): void {
+    if (this.isSubmitting()) return;
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+    this.authService
+      .startDemo()
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => void this.router.navigate(['/dashboard']),
+        error: (error: HttpErrorResponse) =>
+          this.errorMessage.set(
+            error.status === 429
+              ? 'The demo is busy. Please try again in a few minutes.'
+              : error.status === 409
+                ? 'Sign out of your current account before starting a demo.'
+                : 'Unable to start the demo. Please try again.',
+          ),
+      });
   }
 
   private login(credentials: AuthCredentials): void {

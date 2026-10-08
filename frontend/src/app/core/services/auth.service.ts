@@ -10,6 +10,8 @@ export interface AuthCredentials {
 
 export interface AuthenticatedUser {
   username: string;
+  isDemo?: boolean;
+  demoExpiresAtUtc?: string | null;
 }
 
 @Injectable({
@@ -18,6 +20,14 @@ export interface AuthenticatedUser {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
+
+  startDemo(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/demo`, {}, { withCredentials: true });
+  }
+
+  resetDemo(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/demo/reset`, {}, { withCredentials: true });
+  }
 
   register(credentials: AuthCredentials): Observable<{ username: string }> {
     return this.http.post<{ username: string }>(

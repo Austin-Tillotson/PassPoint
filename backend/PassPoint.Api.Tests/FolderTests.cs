@@ -25,6 +25,8 @@ public partial class FolderTests : IDisposable
         services.AddLogging();
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection));
         services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddSingleton<Microsoft.AspNetCore.DataProtection.IDataProtectionProvider>(
+            new Microsoft.AspNetCore.DataProtection.EphemeralDataProtectionProvider());
         Services = services.BuildServiceProvider();
         Context = Services.GetRequiredService<ApplicationDbContext>();
         Context.Database.EnsureCreated();
@@ -101,7 +103,11 @@ public partial class FolderTests : IDisposable
     public async Task RegistrationCreatesDefaultsOnlyOnce()
     {
         var controller = new AuthController(Services.GetRequiredService<UserManager<ApplicationUser>>(),
-            Services.GetRequiredService<SignInManager<ApplicationUser>>(), Context);
+            Services.GetRequiredService<SignInManager<ApplicationUser>>(), Context,
+            new PassPoint.Api.Services.DemoSessionService(Context,
+                Services.GetRequiredService<UserManager<ApplicationUser>>(),
+                new PassPoint.Api.Services.PasswordProtector(new Microsoft.AspNetCore.DataProtection.EphemeralDataProtectionProvider()),
+                TimeProvider.System));
         var request = new PassPoint.Api.Contracts.Auth.RegisterRequest
         {
             Username = "new-user", Password = "ValidPassword1!",

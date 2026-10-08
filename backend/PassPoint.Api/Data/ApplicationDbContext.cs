@@ -20,6 +20,7 @@ public class ApplicationDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ApplicationUser>().HasIndex(user => new { user.IsDemo, user.DemoExpiresAtUtc });
 
         modelBuilder.Entity<Folder>(entity =>
         {

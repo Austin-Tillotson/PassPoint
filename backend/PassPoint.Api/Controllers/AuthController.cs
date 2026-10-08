@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using PassPoint.Api.Contracts.Auth;
 using PassPoint.Api.Models;
 using PassPoint.Api.Data;
+using PassPoint.Api.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace PassPoint.Api.Controllers;
 
@@ -14,20 +18,25 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ApplicationDbContext _context;
+    private readonly DemoSessionService _demos;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        DemoSessionService demos)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _context = context;
+        _demos = demos;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
+        if (string.Equals(request.Username.Trim(), "Demo", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { errors = new[] { "Please choose a different username." } });
         var user = new ApplicationUser
         {
             UserName = request.Username.Trim()
@@ -63,6 +72,9 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
+        // Retire the old public shared-account credentials.
+        if (string.Equals(request.Username.Trim(), "Demo", StringComparison.OrdinalIgnoreCase))
+            return Unauthorized(new { message = "Use Explore demo to start a private demo workspace." });
         var result = await _signInManager.PasswordSignInAsync(
             request.Username.Trim(),
             request.Password,
@@ -83,6 +95,8 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
+        var user = await _userManager.GetUserAsync(User);
+        if (user?.IsDemo == true) await _demos.DeleteAsync(user.Id, HttpContext.RequestAborted);
         await _signInManager.SignOutAsync();
 
         return NoContent();
@@ -90,11 +104,45 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("me")]
-    public IActionResult GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser()
     {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null) return Unauthorized();
         return Ok(new
         {
-            username = User.Identity?.Name
+            username = user.IsDemo ? "Demo workspace" : user.UserName,
+            isDemo = user.IsDemo,
+            demoExpiresAtUtc = user.DemoExpiresAtUtc,
         });
+    }
+
+    [HttpPost("demo")]
+    [EnableRateLimiting("demo")]
+    public async Task<IActionResult> StartDemo()
+    {
+        var current = await _userManager.GetUserAsync(User);
+        if (current is not null)
+        {
+            if (!current.IsDemo) return Conflict(new { message = "Sign out before starting a demo." });
+            if (await _demos.IsActiveAsync(current.Id)) return NoContent();
+        }
+        var user = await _demos.CreateAsync(HttpContext.RequestAborted);
+        await _signInManager.SignInWithClaimsAsync(user, new AuthenticationProperties
+        {
+            IsPersistent = false,
+            AllowRefresh = false,
+            ExpiresUtc = new DateTimeOffset(user.DemoExpiresAtUtc!.Value, TimeSpan.Zero),
+        }, [new Claim(DemoSessionService.ClaimType, "true")]);
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpPost("demo/reset")]
+    [EnableRateLimiting("demo")]
+    public async Task<IActionResult> ResetDemo()
+    {
+        var id = _userManager.GetUserId(User);
+        return id is not null && await _demos.ResetAsync(id, HttpContext.RequestAborted)
+            ? NoContent() : Forbid();
     }
 }

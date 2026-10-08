@@ -17,6 +17,14 @@
     (keydown.escape)="closeMobileNavigation(header)"
   />
 
+  @if (isDemo()) {
+    <aside class="demo-notice" aria-label="Demo session">
+      <p><strong>Demo workspace</strong> Your changes are temporary. This session lasts up to two hours.</p>
+      <button class="button button--secondary" type="button" [disabled]="resettingDemo()" (click)="resetDemo()">
+        {{ resettingDemo() ? 'Resetting…' : 'Reset demo' }}
+      </button>
+    </aside>
+  }
   <router-outlet />
 </main>
 <app-folder-manager />

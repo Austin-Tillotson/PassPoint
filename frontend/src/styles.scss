@@ -26,6 +26,12 @@ body {
   margin: 0;
 }
 
+dialog::backdrop {
+  background-color: var(--color-backdrop);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
 input,
 textarea,
 select,

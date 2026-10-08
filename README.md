@@ -1,20 +1,20 @@
 # PassPoint
 
-PassPoint is a full-stack password-manager demonstration project that showcases backend-focused web development; use demo data only, never real passwords.
+PassPoint is a full-stack password-manager project; use demo data only, never real passwords.
 
 ## Screenshots
 
-| Login | Registration |
+| Login — Light theme | Login — Dark theme |
 | --- | --- |
-| ![PassPoint login page](./docs/screenshots/login.png) | ![PassPoint registration page](./docs/screenshots/register.png) |
+| ![PassPoint login page in light theme](./docs/screenshots/login_light.png) | ![PassPoint login page in dark theme](./docs/screenshots/login_dark.png) |
 
-| Dashboard | Add password |
+| Dashboard — Light theme | Dashboard — Dark theme |
 | --- | --- |
-| ![PassPoint dashboard](./docs/screenshots/dashboard.png) | ![PassPoint add-password dialog](./docs/screenshots/add_password.png) |
+| ![PassPoint dashboard in light theme](./docs/screenshots/dashboard_light.png) | ![PassPoint dashboard in dark theme](./docs/screenshots/dashboard_dark.png) |
 
-| Password generator |
-| --- |
-| ![PassPoint password generator](./docs/screenshots/gen_password.png) |
+| Password details | Password generator |
+| --- | --- |
+| ![PassPoint password details dialog](./docs/screenshots/password_details.png) | ![PassPoint password generator dialog](./docs/screenshots/password_generator.png) |
 
 ## About PassPoint
 
@@ -34,12 +34,9 @@ The site also offers a demo account with a quick log in. Use this for quick use 
 - Responsive desktop and mobile navigation
 - Client-side form validation and API error feedback
 - Automatic site favicon display when available
-
-## Future Features
-
 - Functional search bar for the passwords
 - Folder groups for the passwords
-- Further UI refinement
+- Light/dark themes
 
 ## Live Demo
 

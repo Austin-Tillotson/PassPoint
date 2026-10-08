@@ -99,6 +99,7 @@ public class PasswordEntriesController : ControllerBase
         {
             Id = Guid.NewGuid(),
             SiteName = siteName,
+            Username = NormalizeUsername(request.Username),
             EncryptedPassword = _passwordProtector.Protect(request.Password),
             CreatedAtUtc = DateTimeOffset.UtcNow,
             UserId = userId,
@@ -161,6 +162,7 @@ public class PasswordEntriesController : ControllerBase
         }
 
         entry.SiteName = siteName;
+        if (request.HasUsername) entry.Username = NormalizeUsername(request.Username);
         entry.EncryptedPassword = _passwordProtector.Protect(request.Password);
 
         try
@@ -229,6 +231,9 @@ public class PasswordEntriesController : ControllerBase
         folderId is null ? Task.FromResult(true) :
             _context.Folders.AnyAsync(folder => folder.Id == folderId && folder.UserId == userId);
 
+    private static string? NormalizeUsername(string? username) =>
+        string.IsNullOrWhiteSpace(username) ? null : username.Trim();
+
     private PasswordEntryResponse ToResponse(PasswordEntry entry)
     {
         return new PasswordEntryResponse
@@ -237,6 +242,7 @@ public class PasswordEntriesController : ControllerBase
             FolderId = entry.FolderId,
             IsFavorite = entry.IsFavorite,
             SiteName = entry.SiteName,
+            Username = entry.Username,
             Password = _passwordProtector.Unprotect(entry.EncryptedPassword),
             CreatedAtUtc = entry.CreatedAtUtc,
         };

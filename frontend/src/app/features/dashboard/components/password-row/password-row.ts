@@ -16,6 +16,7 @@ export class PasswordRow {
   readonly siteName = input.required<string>();
   protected readonly siteUrl = computed(() => parseSiteAddress(this.siteName())?.href ?? null);
   readonly password = input('');
+  readonly username = input<string | null>(null);
   readonly folderName = input('Unfiled');
   readonly folderColor = input('var(--color-text-muted)');
   protected readonly faFolder = faFolder;

@@ -88,7 +88,7 @@
 }
 
 .password-list {
-  --password-list-columns: minmax(0, 1fr) minmax(7rem, 0.5fr) 9.25rem;
+  --password-list-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(6rem, 0.6fr) 9.25rem;
 
   border-radius: var(--radius-surface);
 }
@@ -133,7 +133,8 @@
 
 @media (max-width: 40rem) {
   .password-list { --password-list-columns: minmax(0, 1fr) 9.25rem; }
-  .password-list__folder-heading { display: none; }
+  .password-list__folder-heading,
+  .password-list__username-heading { display: none; }
 }
 
 .password-list__entries > li + li,

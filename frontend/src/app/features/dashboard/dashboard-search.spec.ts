@@ -411,6 +411,7 @@ describe('Dashboard search during management', () => {
 
       expect(update).toHaveBeenCalledExactlyOnceWith(entries[0].id, {
         folderId: null,
+        username: '',
         siteName: editedEntry.siteName,
         password: entries[0].password,
       });

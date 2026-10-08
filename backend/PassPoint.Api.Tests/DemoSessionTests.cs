@@ -68,6 +68,8 @@ public class DemoSessionTests : FolderTests
         foreach (var entry in entries)
         {
             var sample = DemoDataset.Entries.Single(sample => sample.Site == entry.SiteName);
+            Assert.Equal(sample.Username, entry.Username);
+            Assert.Matches("^[a-z]{2,5}demouser123$", entry.Username!);
             Assert.NotEqual(sample.Password, entry.EncryptedPassword);
             Assert.Equal(sample.Password, protector.Unprotect(entry.EncryptedPassword));
         }

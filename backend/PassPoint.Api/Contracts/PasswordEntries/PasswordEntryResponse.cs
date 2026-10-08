@@ -10,6 +10,8 @@ public class PasswordEntryResponse
 
     public string SiteName { get; set; } = string.Empty;
 
+    public string? Username { get; set; }
+
     public string Password { get; set; } = string.Empty;
 
     public DateTimeOffset CreatedAtUtc { get; set; }

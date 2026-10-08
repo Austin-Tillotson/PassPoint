@@ -44,4 +44,17 @@ describe('Password row copying', () => {
     expect(TestBed.inject(ToastService).toasts().at(-1)?.kind).toBe('success');
     expect(writeText).toHaveBeenCalledTimes(2);
   });
+
+  it('keeps a blank list cell but omits the empty username section in grid view', async () => {
+    const fixture = await setup(vi.fn());
+    expect(fixture.nativeElement.querySelector('.password-row__username').textContent.trim()).toBe('');
+    fixture.componentRef.setInput('grid', true);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.password-row__username')).toBeNull();
+    fixture.componentRef.setInput('username', 'gitdemouser123');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.password-row__username').textContent).toContain('gitdemouser123');
+    expect(fixture.nativeElement.querySelector('.password-row__username').nextElementSibling.className).toBe('password-row__password');
+    expect(fixture.nativeElement.textContent).not.toContain('Sample-only');
+  });
 });

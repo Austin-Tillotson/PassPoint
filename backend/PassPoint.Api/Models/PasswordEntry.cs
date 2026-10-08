@@ -8,6 +8,9 @@ public class PasswordEntry
 
     public string SiteName { get; set; } = string.Empty;
 
+    [System.ComponentModel.DataAnnotations.StringLength(256)]
+    public string? Username { get; set; }
+
     public string EncryptedPassword { get; set; } = string.Empty;
 
     public DateTimeOffset CreatedAtUtc { get; set; }

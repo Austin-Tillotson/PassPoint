@@ -6,6 +6,9 @@ public class CreatePasswordEntryRequest
 {
     public Guid? FolderId { get; set; }
 
+    [StringLength(256)]
+    public string? Username { get; set; }
+
     [Required]
     [StringLength(200, MinimumLength = 1)]
     public string SiteName { get; set; } = string.Empty;

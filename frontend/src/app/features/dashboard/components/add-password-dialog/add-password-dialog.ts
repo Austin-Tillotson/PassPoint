@@ -71,6 +71,7 @@ export class AddPasswordDialog {
 
   protected readonly passwordForm = new FormGroup({
     folderId: new FormControl<string | null>(null),
+    username: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(256)] }),
     siteName: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, control => parseSiteAddress(control.value) ? null : { siteAddress: true }],
@@ -94,6 +95,7 @@ export class AddPasswordDialog {
           ? null
           : this.folderStore.selection(),
       siteName: entry?.siteName ?? '',
+      username: entry?.username ?? '',
       password: entry?.password ?? '',
     });
 
@@ -107,7 +109,8 @@ export class AddPasswordDialog {
     if (this.isSubmitting()) return;
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
-      const fieldName = this.passwordForm.controls.siteName.invalid ? 'siteName' : 'password';
+      const fieldName = this.passwordForm.controls.siteName.invalid ? 'siteName'
+        : this.passwordForm.controls.username.invalid ? 'username' : 'password';
       this.dialog()
         .nativeElement.querySelector<HTMLInputElement>(`[formControlName="${fieldName}"] input`)
         ?.focus();
@@ -125,6 +128,7 @@ export class AddPasswordDialog {
     const editingEntry = this.editingEntry();
     const passwordEntry = this.passwordForm.getRawValue();
     passwordEntry.siteName = passwordEntry.siteName.trim();
+    passwordEntry.username = passwordEntry.username.trim();
 
     this.errorMessage.set(null);
     this.isSubmitting.set(true);

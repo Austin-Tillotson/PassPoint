@@ -42,6 +42,7 @@ public class DemoSessionService(ApplicationDbContext context, UserManager<Applic
         context.PasswordEntries.AddRange(DemoDataset.Entries.Select((sample, index) => new PasswordEntry
         {
             Id = Guid.NewGuid(), UserId = userId, SiteName = sample.Site,
+            Username = sample.Username,
             EncryptedPassword = protector.Protect(sample.Password),
             FolderId = sample.Folder is null ? null : folders[sample.Folder].Id,
             IsFavorite = sample.Favorite,

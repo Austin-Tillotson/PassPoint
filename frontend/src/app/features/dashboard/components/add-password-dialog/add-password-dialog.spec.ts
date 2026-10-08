@@ -70,6 +70,41 @@ describe('Password form submission', () => {
     expect(service.create).not.toHaveBeenCalled();
   });
 
+  it('loads and trims an optional username when editing', async () => {
+    const { fixture, service, submit } = await setup();
+    fixture.componentInstance.open({ ...entry, username: 'gitdemouser123' });
+    await fixture.whenStable();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName=username] input');
+    expect(input.value).toBe('gitdemouser123');
+    input.value = '  another-user  ';
+    input.dispatchEvent(new Event('input'));
+    submit();
+    expect(service.update).toHaveBeenCalledWith(entry.id, expect.objectContaining({ username: 'another-user' }));
+  });
+
+  it('submits an empty username to clear it', async () => {
+    const { fixture, service, submit } = await setup();
+    fixture.componentInstance.open({ ...entry, username: 'gitdemouser123' });
+    await fixture.whenStable();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName=username] input');
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    submit();
+    expect(service.update).toHaveBeenCalledWith(entry.id, expect.objectContaining({ username: '' }));
+  });
+
+  it('blocks an overlong username and focuses its linked error', async () => {
+    const { fixture, service, submit } = await setup();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName=username] input');
+    input.value = 'a'.repeat(257);
+    input.dispatchEvent(new Event('input'));
+    submit();
+    await fixture.whenStable();
+    expect(service.update).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(input);
+    expect(input.getAttribute('aria-describedby')).toBe('entry-username-error');
+  });
+
   it('blocks duplicate submissions and dismissal while pending, then retains values on failure', async () => {
     const { fixture, dialog, service, response, submit } = await setup();
     submit();
@@ -169,6 +204,7 @@ describe('Password form submission', () => {
       siteName: entry.siteName,
       password: entry.password,
       folderId: null,
+      username: '',
     });
   });
 

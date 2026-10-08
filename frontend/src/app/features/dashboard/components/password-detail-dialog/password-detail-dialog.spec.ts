@@ -48,6 +48,19 @@ describe('Password details', () => {
     expect(fixture.nativeElement.querySelector('code').textContent).toBe('••••••••');
   });
 
+  it('shows username above password only when the entry has one', async () => {
+    const { fixture, component } = await setup();
+    expect(fixture.nativeElement.querySelector('.password-detail__username')).toBeNull();
+    component.open({ ...entry, username: 'instademouser123' });
+    await fixture.whenStable();
+    const username = fixture.nativeElement.querySelector('.password-detail__username');
+    expect(username.textContent).toBe('instademouser123');
+    expect(username.nextElementSibling.textContent).toBe('Password');
+    component.open(entry);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.password-detail__username')).toBeNull();
+  });
+
   it('closes details before requesting edit for the selected entry', async () => {
     const { fixture, component, dialog } = await setup();
     const edited = vi.fn(() => expect(dialog.close).toHaveBeenCalledOnce());

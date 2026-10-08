@@ -204,6 +204,7 @@
             [attr.aria-label]="sortMode() === 'name' ? 'Sort by name, Z to A' : 'Sort by name, A to Z'">
             Site <span aria-hidden="true">{{ sortMode() === 'name' ? '↑' : sortMode() === 'name-desc' ? '↓' : '' }}</span>
           </button>
+          <span class="password-list__username-heading">Username</span>
           <button type="button" class="password-list__folder-heading"
             (click)="sortMode.set('folder')" [attr.aria-pressed]="sortMode() === 'folder'"
             aria-label="Sort by folder in navigation order">
@@ -217,6 +218,7 @@
           <li [attr.data-entry-id]="entry.id">
             <app-password-row
               [password]="entry.password"
+              [username]="entry.username ?? null"
               [folderName]="entry.folderId ? folderNames()[entry.folderId] ?? 'Folder unavailable' : 'Unfiled'"
               [folderColor]="folderStore.folderColors()[entry.folderId ?? ''] ?? 'var(--color-text-muted)'"
               [isFavorite]="!!entry.isFavorite"

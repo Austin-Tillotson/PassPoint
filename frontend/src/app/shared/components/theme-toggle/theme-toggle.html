@@ -1,0 +1,10 @@
+<button
+  class="theme-toggle"
+  type="button"
+  aria-label="Dark theme"
+  [attr.aria-pressed]="themes.theme() === 'dark'"
+  [title]="themes.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+  (click)="themes.toggle()"
+>
+  <fa-icon [icon]="themes.theme() === 'dark' ? faSun : faMoon" aria-hidden="true" />
+</button>

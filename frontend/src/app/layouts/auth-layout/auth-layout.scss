@@ -9,6 +9,10 @@
 .auth-header,
 .auth-content,
 .auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
   width: min(100% - 4rem, 70rem);
   margin-inline: auto;
   box-sizing: border-box;

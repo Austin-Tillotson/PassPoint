@@ -1,4 +1,5 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
+import { ThemeService } from '../../../core/services/theme.service';
 
 import { LogoutButton } from '../logout-button/logout-button';
 import { NavigationLinks } from '../navigation-links/navigation-links';
@@ -11,5 +12,6 @@ import { NavigationLinks } from '../navigation-links/navigation-links';
 })
 
 export class Sidebar {
+  protected readonly themes = inject(ThemeService);
   readonly username = input<string | null>(null);
 }

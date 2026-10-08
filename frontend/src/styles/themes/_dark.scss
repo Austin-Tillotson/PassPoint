@@ -1,0 +1,47 @@
+// Slate mockup palette, with complementary states and folder colors.
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-page-background: #10151e;
+  --color-surface: #171e29;
+  --color-surface-pressed: #1d2735;
+  --color-sidebar: #131923;
+  --color-input: #121923;
+  --color-site-icon-background: #ffffff;
+
+  --color-text-primary: #edf1f8;
+  --color-text-secondary: #c2ccdb;
+  --color-text-muted: #a2aebf;
+  --color-text-subtle: #a2aebf;
+  --color-placeholder: #a2aebf;
+
+  --color-border: #2a3443;
+  --color-border-layout: #2a3443;
+  --color-border-focus: var(--color-accent);
+  --color-focus-ring: var(--color-accent);
+
+  --color-disabled-background: var(--color-surface-pressed);
+  --color-disabled-text: var(--color-text-muted);
+  --color-disabled-border: var(--color-border);
+
+  --color-accent: #a9c5ff;
+  --color-accent-hover: #d0e0ff;
+  --color-accent-pressed: #8eb3fa;
+  --color-accent-light: #283955;
+  --color-text-on-accent: #10151e;
+
+  --color-folder-1: #dca77d;
+  --color-folder-2: #8fbc98;
+  --color-folder-3: #b1a2dc;
+  --color-folder-4: #80b8d0;
+  --color-folder-5: #d695b3;
+  --color-folder-6: #cdb769;
+
+  --color-error: #fca5a5;
+  --color-error-border: #f87171;
+
+  --color-shadow: rgb(0 0 0 / 35%);
+  --color-shadow-subtle: rgb(0 0 0 / 20%);
+  --color-shadow-faint: rgb(0 0 0 / 12%);
+  --color-backdrop: rgb(0 0 0 / 60%);
+}

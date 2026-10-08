@@ -1,9 +1,11 @@
 <header class="header">
   <span class="header__brand">
-    <img class="header__brand-icon" src="passpoint-icon.png" width="36" height="36" alt="" />
+    <img class="header__brand-icon" [src]="themes.logo()" width="36" height="36" alt="" />
     <span>Pass<span class="header__brand-accent">Point</span></span>
   </span>
   <span class="header__context">{{ pageLabel() }}</span>
+
+  <app-theme-toggle />
 
   <div class="current-user">
     <span

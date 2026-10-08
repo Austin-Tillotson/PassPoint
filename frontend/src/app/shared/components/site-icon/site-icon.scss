@@ -37,5 +37,5 @@ img.is-loaded {
 }
 
 .site-icon:has(img.is-loaded) {
-  background: var(--color-surface);
+  background: var(--color-site-icon-background);
 }

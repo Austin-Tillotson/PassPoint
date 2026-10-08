@@ -1,0 +1,24 @@
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
+  cursor: pointer;
+}
+
+.theme-toggle:hover,
+.theme-toggle:active {
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+}
